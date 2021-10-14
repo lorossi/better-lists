@@ -1,6 +1,6 @@
 #include "list.h"
 
-/* Pivate function. Create a node with link to previous and next node. */
+/*  Private function. Create a node with link to previous and next node. */
 Node *_createNode(Node *previous, Node *next, Data *data)
 {
   Node *new = NULL;
@@ -76,6 +76,24 @@ Node *_findNodeByValue(List *list, Data *data)
   return NULL;
 }
 
+int _findNodeIndexByValue(List *list, Data *data)
+/* Private function. Find node index in a list by its value. */
+{
+  Node *current = list->head;
+  int index = 0;
+
+  while (current != NULL)
+  {
+    if (current->data == *data)
+      return index;
+
+    current = current->next;
+    index++;
+  }
+
+  return -1;
+}
+
 /* Private function. Delete a a node. */
 void _deleteNode(Node *node)
 {
@@ -101,23 +119,24 @@ void _printNode(Node *node, int index)
 #endif
 }
 
-/* Get the data in a node. Returns -1 if error or the size of the data if successful.
-If destination is NULL, no value is passed. */
-int nodeGetData(Node *node, Data *destination)
+/*  Private function. Get the data in an item. Returns -1 if an error is encountered or the size of the data in case of success.
+If destination is NULL, no values is read. */
+int _nodeGetData(Node *node, Data *destination)
 {
   if (node != NULL)
   {
     if (destination != NULL)
+    {
       *destination = node->data;
-
-    return sizeof(*destination);
+      return sizeof(*destination);
+    }
   }
 
   return -1;
 }
 
-/* Set the data in a node. Returns -1 if error or the size of the data if successful. */
-int nodeSetData(Node *node, Data *data)
+/*  Private function. Set the data in an item. Returns -1 if an error is encountered or the size of the data in case of success. */
+int _nodeSetData(Node *node, Data *data)
 {
   if (node != NULL)
   {
@@ -126,18 +145,6 @@ int nodeSetData(Node *node, Data *data)
   }
 
   return -1;
-}
-
-/* Get the following node. */
-Node *nodeGetNext(Node *node)
-{
-  return node->next;
-}
-
-/* Get the previous node. */
-Node *nodeGetPrevious(Node *node)
-{
-  return node->previous;
 }
 
 /* Create and return a list. */
@@ -166,21 +173,51 @@ void listDelete(List *list)
   return;
 }
 
-/* Get an item in a list by its index. Returns -1 if error or the size of the data if successful. */
+/* Retrieve a node from a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
+int listGetNode(List *list, Node *destination, int index)
+{
+  Node *node;
+  node = _findNodeByIndex(list, index);
+
+  if (node != NULL)
+  {
+    destination = node;
+    return sizeof(*node);
+  }
+
+  return -1;
+}
+
+/* Retrieve a node from a list by its value. Returns -1 if an error is encountered or the size of the data in case of success. */
+int listGetNodeByValue(List *list, Node *destination, Data *value)
+{
+  Node *node;
+  node = _findNodeByValue(list, value);
+
+  if (node != NULL)
+  {
+    destination = node;
+    return sizeof(*node);
+  }
+
+  return -1;
+}
+
+/* Retrieve an item in a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
 int listGetItem(List *list, Data *destination, int index)
 {
   Node *node = _findNodeByIndex(list, index);
   if (node == NULL)
     return -1;
 
-  if (nodeGetData(node, destination))
+  if (_nodeGetData(node, destination))
     return sizeof(*destination);
 
   return -1;
 }
 
-/* Get the first item in a list. Returns -1 if error or the size of the data if successful.
-If destination is NULL, no value is passed. */
+/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
+If destination is NULL, no values is read. */
 int listGetFirstItem(List *list, Data *destination)
 {
   if (list->head != NULL)
@@ -194,8 +231,8 @@ int listGetFirstItem(List *list, Data *destination)
   return -1;
 }
 
-/* Get the last item in a list. Returns -1 if error or the size of the data if successful. 
-If destination is NULL, no value is passed. */
+/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success. 
+If destination is NULL, no values is read. */
 int listGetLastItem(List *list, Data *destination)
 {
   if (list->tail != NULL)
@@ -284,8 +321,8 @@ int listPrepend(List *list, Data *data)
   return 0;
 }
 
-/* Remove an item from the list according to its value. Returns -1 if error or the size of the data if successful.
-If destination is NULL, no value is passed. */
+/* Remove an item from the list according to its index. Returns -1 if an error is encountered or the size of the data in case of success.
+If destination is NULL, no values is read. */
 int listRemoveItem(List *list, Data *destination, int index)
 {
   Node *current = _findNodeByIndex(list, index);
@@ -314,7 +351,19 @@ int listRemoveItem(List *list, Data *destination, int index)
   return sizeof(*destination);
 }
 
-/* Pop the list, removing its last item. Returns -1 if error or the size of the data if successful. */
+/* Remove an item from the list according to its value. Returns -1 if an error is encountered or the size of the data in case of success. */
+int listRemoveItemByValue(List *list, Data *oldvalue)
+{
+  int index;
+  index = _findNodeIndexByValue(list, oldvalue);
+
+  if (index == -1)
+    return -1;
+
+  return listRemoveItem(list, NULL, index);
+}
+
+/* Pop the list, removing its last item. Returns -1 if an error is encountered or the size of the data in case of success. */
 int listPop(List *list, Data *last)
 {
   if (listRemoveItem(list, last, list->length - 1) != -1)
@@ -323,13 +372,37 @@ int listPop(List *list, Data *last)
   return -1;
 }
 
-/* Unshift the list, removing its first item. Returns -1 if error or the size of the data if successful. */
+/* Unshift the list, removing its first item. Returns -1 if an error is encountered or the size of the data in case of success. */
 int listUnshift(List *list, Data *first)
 {
   if (listRemoveItem(list, first, 0) != -1)
     return sizeof(*first);
 
   return -1;
+}
+
+/* Replace the data in an item according to its value. Returns its index if found, -1 in case of an error. */
+int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue)
+{
+  int index;
+  index = _findNodeIndexByValue(list, oldvalue);
+
+  if (index == -1)
+    return -1;
+
+  return listReplaceItem(list, newvalue, index);
+}
+
+/* Replace the data in an item according to its index. Returns its size if found, -1 in case of an error. */
+int listReplaceItem(List *list, Data *newvalue, int index)
+{
+  Node *node;
+  node = _findNodeByIndex(list, index);
+
+  if (node == NULL)
+    return -1;
+
+  return _nodeSetData(node, newvalue);
 }
 
 /* Remove all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
@@ -386,7 +459,6 @@ int listAddItem(List *list, Data *data, int position)
   {
     // add tail
     listAppend(list, data);
-
     return list->length - 2;
   }
 
@@ -406,16 +478,10 @@ int listAddItem(List *list, Data *data, int position)
   return position;
 }
 
-/* Check if data is in list. If found, returns its size. If not found, returns -1 */
-int dataInList(List *list, Data *data)
+/* Check if data is in list. If found, returns its position. If not found, returns -1 */
+int itemInList(List *list, Data *data)
 {
-  Node *node;
-  node = _findNodeByValue(list, data);
-
-  if (node != NULL)
-    return sizeof(node);
-
-  return -1;
+  return _findNodeIndexByValue(list, data);
 }
 
 /* Make an array out of the list. */
@@ -424,7 +490,7 @@ void listToArray(List *list, Data *array)
   for (int i = 0; i < listGetLength(list); i++)
   {
     Node *node = _findNodeByIndex(list, i);
-    nodeGetData(node, &array[i]);
+    _nodeGetData(node, &array[i]);
   }
 }
 
