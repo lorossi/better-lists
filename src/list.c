@@ -1,6 +1,6 @@
 #include "list.h"
 
-/*  Private function. Create a node with link to previous and next node. */
+/* Private function. Create a node with link to previous and next node. */
 Node *_createNode(Node *previous, Node *next, Data *data)
 {
   Node *new = NULL;
@@ -24,17 +24,17 @@ Node *_createNode(Node *previous, Node *next, Data *data)
 /* Private function. Find node in a list by its index. */
 Node *_findNodeByIndex(List *list, int index)
 {
-  if (index >= listGetLength(list))
+  if (index >= listGetSize(list))
     return NULL;
 
   Node *current;
   int count, increment;
 
   // if the node is closer to then end than to the start, go backwards
-  if (index > listGetLength(list) / 2)
+  if (index > listGetSize(list) / 2)
   {
     current = list->tail;
-    count = listGetLength(list) - 1;
+    count = listGetSize(list) - 1;
     increment = -1;
   }
   else
@@ -119,7 +119,7 @@ void _printNode(Node *node, int index)
 #endif
 }
 
-/*  Private function. Get the data in an item. Returns -1 if an error is encountered or the size of the data in case of success.
+/* Private function. Get the data in an item. Returns -1 if an error is encountered or the size of the data in case of success.
 If destination is NULL, no values is read. */
 int _nodeGetData(Node *node, Data *destination)
 {
@@ -135,7 +135,7 @@ int _nodeGetData(Node *node, Data *destination)
   return -1;
 }
 
-/*  Private function. Set the data in an item. Returns -1 if an error is encountered or the size of the data in case of success. */
+/* Private function. Set the data in an item. Returns -1 if an error is encountered or the size of the data in case of success. */
 int _nodeSetData(Node *node, Data *data)
 {
   if (node != NULL)
@@ -486,14 +486,25 @@ int itemInList(List *list, Data *data)
   return _findNodeIndexByValue(list, data);
 }
 
-/* Make an array out of the list. */
-void listToArray(List *list, Data *array)
+/* Make an array out of the list. Returns the size of the array */
+int listToArray(List *list, Data *array)
 {
-  for (int i = 0; i < listGetLength(list); i++)
+  int length;
+  Node *current;
+
+  length = listGetSize(list);
+  current = list->head;
+
+  for (int i = 0; i < length; i++)
   {
-    Node *node = _findNodeByIndex(list, i);
-    _nodeGetData(node, &array[i]);
+    if (current == NULL)
+      return i;
+
+    _nodeGetData(current, &array[i]);
+    current = current->next;
   }
+
+  return length;
 }
 
 /* Print the list in a readable manner */
@@ -538,7 +549,7 @@ void printListReverse(List *list, char *end)
 }
 
 /* Return the length of the list */
-int listGetLength(List *list)
+int listGetSize(List *list)
 {
   return list->length;
 }

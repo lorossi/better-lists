@@ -60,17 +60,9 @@ int listFindAndRemoveItems(List *list, Data *data, int remove_count);
 int listPop(List *list, Data *last);
 int listUnshift(List *list, Data *destination);
 int itemInList(List *list, Data *data);
-void listToArray(List *list, Data *array);
+int listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
-int listGetLength(List *list);
+int listGetSize(List *list);
 
 #endif
-
-/* 
-  TEST TO DO:
-    - list to array
-
-  GENERAL
-    - check comments uniformity
-*/

@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "list.h"
 
-// tested against memory leaks using VALGRING
+// tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
 const int LIST_TEST_SIZE = 1e5;
@@ -30,20 +30,21 @@ void quickPopulate(List *l)
 {
   for (int i = 0; i < LIST_TEST_SIZE; i++)
   {
-    Data d = i;
+    Data d = (Data)i;
     listAppend(l, &d);
   }
 }
 
 int main()
 {
+  // variable declaration
   Data d, t;
   List *l;
   // tests the empty list
   printYellow("Testing empty list...");
   // create list and try to get items
   l = listCreate();
-  assert(listGetLength(l) == 0);
+  assert(listGetSize(l) == 0);
   assert(listGetFirstItem(l, &d) == -1);
   assert(listGetLastItem(l, &d) == -1);
   assert(listGetItem(l, &d, 10) == -1);
@@ -55,7 +56,7 @@ int main()
   listDelete(l);
   printGreen("Passed.");
 
-  // test list population TODO
+  // test list population
   printYellow("Testing list population...");
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
@@ -63,7 +64,7 @@ int main()
     d = i;
     // append to list, check size
     assert(listAppend(l, &d) == i);
-    assert(listGetLength(l) == i + 1);
+    assert(listGetSize(l) == i + 1);
     // check if item was correctly added
     assert(listGetItem(l, &t, i) == sizeof(t));
     assert(t == i);
@@ -78,7 +79,6 @@ int main()
   assert(itemInList(l, &t) == -1);
   t = 0;
   assert(itemInList(l, &t) != -1);
-  // delete list and check if the item is in it
   listDelete(l);
 
   l = listCreate();
@@ -87,7 +87,7 @@ int main()
     Data d = i;
     // append data to list
     assert(listPrepend(l, &d) == 0);
-    assert(listGetLength(l) == i + 1);
+    assert(listGetSize(l) == i + 1);
     Data t;
     // check if appended data is inserted correctly
     assert(listGetItem(l, &t, 0) == sizeof(t));
@@ -114,7 +114,7 @@ int main()
   l = listCreate();
   d = 5;
   listPrepend(l, &d);
-  assert(listGetLength(l) == 1);
+  assert(listGetSize(l) == 1);
   assert(listGetItem(l, &d, 0) == sizeof(d));
   assert(d == 5);
   // try getting a non existent item
@@ -133,7 +133,7 @@ int main()
   {
     // remove first item and check if the value is correct
     assert(listUnshift(l, &d) != -1);
-    assert(listGetLength(l) == LIST_TEST_SIZE - i - 1);
+    assert(listGetSize(l) == LIST_TEST_SIZE - i - 1);
     assert(d == i);
   }
   listDelete(l);
@@ -145,7 +145,7 @@ int main()
   {
     // remove last item and check if the value is correct
     assert(listPop(l, &d) != -1);
-    assert(listGetLength(l) == LIST_TEST_SIZE - i - 1);
+    assert(listGetSize(l) == LIST_TEST_SIZE - i - 1);
     assert(d == LIST_TEST_SIZE - i - 1);
   }
   listDelete(l);
@@ -155,29 +155,39 @@ int main()
   quickPopulate(l);
   // remove and item
   assert(listRemoveItem(l, &d, LIST_TEST_SIZE / 2) != -1);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 1);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 1);
   d = 10;
   // remove some items by value
   assert(listFindAndRemoveItems(l, &d, -1) != 0);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 2);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 2);
   d = LIST_TEST_SIZE * 2;
   // remove some items by value
   assert(listFindAndRemoveItems(l, &d, 1) == 0);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 2);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 2);
   assert(listRemoveItem(l, NULL, 0) != 0);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 3);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 3);
   d = 1;
   // remove some items by value
   assert(listRemoveItemByValue(l, &d) != -1);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 4);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 4);
   // remove some non existent items
   assert(listRemoveItem(l, NULL, -1) == -1);
   d = -1;
   assert(listRemoveItemByValue(l, &d) == -1);
-  assert(listGetLength(l) == LIST_TEST_SIZE - 4);
+  assert(listGetSize(l) == LIST_TEST_SIZE - 4);
+  listDelete(l);
+
+  // test list to array
+  l = listCreate();
+  quickPopulate(l);
+  Data a[LIST_TEST_SIZE];
+  assert(listToArray(l, a) == LIST_TEST_SIZE);
+  for (int i = 0; i < LIST_TEST_SIZE; i++)
+    assert(i == a[i]);
   listDelete(l);
 
   printGreen("Passed.");
-
-  printSuccess("\nALL TESTS PASSED\n");
+  // if we got here, all assert work correctly
+  // YAY!
+  printSuccess("ALL TESTS PASSED");
 }
