@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "list.h"
 
-const int LIST_TEST_SIZE = 1e6;
+const int LIST_TEST_SIZE = 5000;
 
 void printGreen(char *s)
 {
@@ -44,7 +44,7 @@ int main()
   assert(listGetLastItem(l, &d) == -1);
   assert(listGetItem(l, &d, 10) == -1);
   assert(listRemoveItem(l, &d, 10) == -1);
-  assert(listRemoveItems(l, &d, 10) == 0);
+  assert(listFindAndRemoveItems(l, &d, 10) == 0);
   assert(listPop(l, &d) == -1);
   assert(listUnshift(l, &d) == -1);
   listDelete(l);
@@ -117,15 +117,16 @@ int main()
   l = listCreate();
   quickPopulate(l);
   assert(listRemoveItem(l, &d, LIST_TEST_SIZE / 2) != -1);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 1);
+  d = 10;
+  assert(listFindAndRemoveItems(l, &d, -1) != 0);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 2);
+  d = LIST_TEST_SIZE * 2;
+  assert(listFindAndRemoveItems(l, &d, 1) == 0);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 2);
 
   listDelete(l);
 
-  printGreen("Passed.");
-
-  // test list print TODO
-  printYellow("Testing list print...");
-  l = listCreate();
-  listDelete(l);
   printGreen("Passed.");
 
   printSuccess("\nALL TESTS PASSED\n");

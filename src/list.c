@@ -1,6 +1,6 @@
 #include "list.h"
 
-/* Internal function. Create a node with link to previous and next node */
+/* Pivate function. Create a node with link to previous and next node. */
 Node *_createNode(Node *previous, Node *next, Data *data)
 {
   Node *new = NULL;
@@ -21,7 +21,7 @@ Node *_createNode(Node *previous, Node *next, Data *data)
   return new;
 }
 
-/* Private function. Find node in a list by its index */
+/* Private function. Find node in a list by its index. */
 Node *_findNodeByIndex(List *list, int index)
 {
   if (index >= listGetLength(list))
@@ -60,7 +60,7 @@ Node *_findNodeByIndex(List *list, int index)
   return NULL;
 }
 
-/* Private function. Find node in a list by its value */
+/* Private function. Find node in a list by its value. */
 Node *_findNodeByValue(List *list, Data *data)
 {
   Node *current = list->head;
@@ -76,14 +76,14 @@ Node *_findNodeByValue(List *list, Data *data)
   return NULL;
 }
 
-/* Private function. Deleta a node */
+/* Private function. Delete a a node. */
 void _deleteNode(Node *node)
 {
   free(node);
   return;
 }
 
-/* Private function. Print the value of the node */
+/* Private function. Print the value of the node. */
 void _printNode(Node *node, int index)
 {
 #ifdef CUSTOMLIST
@@ -101,7 +101,7 @@ void _printNode(Node *node, int index)
 #endif
 }
 
-/* Get the data in a node. Returns -1 if error or the size of the data if successful.   */
+/* Get the data in a node. Returns -1 if error or the size of the data if successful. */
 int nodeGetData(Node *node, Data *destination)
 {
   if (node != NULL)
@@ -125,18 +125,19 @@ int nodeSetData(Node *node, Data *data)
   return -1;
 }
 
-/* Get the following node */
+/* Get the following node. */
 Node *nodeGetNext(Node *node)
 {
   return node->next;
 }
 
+/* Get the previous node. */
 Node *nodeGetPrevious(Node *node)
 {
   return node->previous;
 }
 
-/* Create and initialize a list */
+/* Create and return a list. */
 List *listCreate()
 {
   List *l = malloc(sizeof(List));
@@ -146,7 +147,7 @@ List *listCreate()
   return l;
 }
 
-/* Delete a list and all of each nodes */
+/* Delete a list and all of its nodes. */
 void listDelete(List *list)
 {
   Node *current = list->head;
@@ -163,14 +164,14 @@ void listDelete(List *list)
 }
 
 /* Get an item in a list by its index. Returns -1 if error or the size of the data if successful. */
-int listGetItem(List *list, Data *data, int index)
+int listGetItem(List *list, Data *destination, int index)
 {
   Node *node = _findNodeByIndex(list, index);
   if (node == NULL)
     return -1;
 
-  if (nodeGetData(node, data))
-    return sizeof(*data);
+  if (nodeGetData(node, destination))
+    return sizeof(*destination);
 
   return -1;
 }
@@ -199,7 +200,7 @@ int listGetLastItem(List *list, Data *destination)
   return -1;
 }
 
-/* Append and item to the list */
+/* Append an item to the list. */
 int listAppend(List *list, Data *data)
 {
   list->length++;
@@ -320,8 +321,9 @@ int listUnshift(List *list, Data *first)
   return -1;
 }
 
-/* Remove all occurrences of a certain value from the list. Return number of removed items */
-int listRemoveItems(List *list, Data *data, int remove_count)
+/* Remove all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
+removes all occurencies. */
+int listFindAndRemoveItems(List *list, Data *data, int remove_count)
 {
   int count = 0;
 
@@ -393,7 +395,7 @@ int listAddItem(List *list, Data *data, int position)
   return position;
 }
 
-/* Make an array out of the list */
+/* Make an array out of the list. */
 void listToArray(List *list, Data *array)
 {
   for (int i = 0; i < listGetLength(list); i++)

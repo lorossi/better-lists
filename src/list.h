@@ -56,9 +56,9 @@ int listGetLastItem(List *list, Data *destination);
 int listAppend(List *list, Data *data);
 int listPrepend(List *list, Data *data);
 int listRemoveItem(List *list, Data *destination, int index);
+int listFindAndRemoveItems(List *list, Data *data, int remove_count);
 int listPop(List *list, Data *last);
-int listUnshift(List *list, Data *first);
-int listRemoveItems(List *list, Data *data, int remove_count);
+int listUnshift(List *list, Data *destination);
 int listAddItem(List *list, Data *data, int position);
 void listToArray(List *list, Data *array);
 void printList(List *list, char *end);
@@ -80,4 +80,9 @@ int listGetLength(List *list);
     - node set data
     - node get next
     - node get previous
+    - what happens if I pass an empty pointer as destination?
+    - list to array
+
+  GENERAL
+    - check comments uniformity
 */
