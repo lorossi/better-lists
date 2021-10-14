@@ -66,11 +66,11 @@ int main()
   assert(listGetItem(l, NULL, 0) != 0);
   assert(listGetFirstItem(l, NULL) != 0);
   assert(listGetLastItem(l, NULL) != 0);
-  assert(dataInList(l, &d) != 0);
+  assert(itemInList(l, &d) != 0);
   t = LIST_TEST_SIZE + 1;
-  assert(dataInList(l, &t) == -1);
+  assert(itemInList(l, &t) == -1);
   listDelete(l);
-  assert(dataInList(l, &d) == -1);
+  assert(itemInList(l, &d) == -1);
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
   {
@@ -81,6 +81,12 @@ int main()
     assert(listGetItem(l, &t, 0) == sizeof(t));
     assert(t == i);
   }
+  d = 100;
+  assert(listReplaceItem(l, &d, 0) != 0);
+  assert(listGetFirstItem(l, &t) != 0);
+  assert(d == t);
+  t = 0;
+  assert(listReplaceItemByValue(l, &d, &t) != 0);
   listDelete(l);
 
   l = listCreate();
@@ -131,8 +137,15 @@ int main()
   assert(listFindAndRemoveItems(l, &d, 1) == 0);
   assert(listGetLength(l) == LIST_TEST_SIZE - 2);
   assert(listRemoveItem(l, NULL, 0) != 0);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 3);
+  d = 1;
+  assert(listRemoveItemByValue(l, &d) != -1);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 4);
 
-  listDelete(l);
+  assert(listRemoveItem(l, NULL, -1) == -1);
+  d = -1;
+  assert(listRemoveItemByValue(l, &d) == -1);
+  assert(listGetLength(l) == LIST_TEST_SIZE - 4);
 
   printGreen("Passed.");
 
