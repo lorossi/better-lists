@@ -60,6 +60,7 @@ int listFindAndRemoveItems(List *list, Data *data, int remove_count);
 int listPop(List *list, Data *last);
 int listUnshift(List *list, Data *destination);
 int listAddItem(List *list, Data *data, int position);
+int dataInList(List *list, Data *data);
 void listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);

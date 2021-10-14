@@ -406,6 +406,18 @@ int listAddItem(List *list, Data *data, int position)
   return position;
 }
 
+/* Check if data is in list. If found, returns its size. If not found, returns -1 */
+int dataInList(List *list, Data *data)
+{
+  Node *node;
+  node = _findNodeByValue(list, data);
+
+  if (node != NULL)
+    return sizeof(node);
+
+  return -1;
+}
+
 /* Make an array out of the list. */
 void listToArray(List *list, Data *array)
 {

@@ -34,7 +34,7 @@ void quickPopulate(List *l)
 
 int main()
 {
-  Data d;
+  Data d, t;
   List *l;
   // tests the empty list
   printYellow("Testing empty list...");
@@ -57,18 +57,20 @@ int main()
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
   {
-    Data d = i;
+    d = i;
     assert(listAppend(l, &d) == i);
     assert(listGetLength(l) == i + 1);
-    Data t;
     assert(listGetItem(l, &t, i) == sizeof(t));
     assert(t == i);
   }
   assert(listGetItem(l, NULL, 0) != 0);
   assert(listGetFirstItem(l, NULL) != 0);
   assert(listGetLastItem(l, NULL) != 0);
-
+  assert(dataInList(l, &d) != 0);
+  t = LIST_TEST_SIZE + 1;
+  assert(dataInList(l, &t) == -1);
   listDelete(l);
+  assert(dataInList(l, &d) == -1);
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
   {
@@ -92,7 +94,7 @@ int main()
 
   printGreen("Passed.");
 
-  // test list removal TODO
+  // test list removal
   printYellow("Testing list removal...");
 
   // test unshift
