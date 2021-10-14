@@ -64,6 +64,10 @@ int main()
     assert(listGetItem(l, &t, i) == sizeof(t));
     assert(t == i);
   }
+  assert(listGetItem(l, NULL, 0) != 0);
+  assert(listGetFirstItem(l, NULL) != 0);
+  assert(listGetLastItem(l, NULL) != 0);
+
   listDelete(l);
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
@@ -124,6 +128,7 @@ int main()
   d = LIST_TEST_SIZE * 2;
   assert(listFindAndRemoveItems(l, &d, 1) == 0);
   assert(listGetLength(l) == LIST_TEST_SIZE - 2);
+  assert(listRemoveItem(l, NULL, 0) != 0);
 
   listDelete(l);
 

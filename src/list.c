@@ -101,12 +101,15 @@ void _printNode(Node *node, int index)
 #endif
 }
 
-/* Get the data in a node. Returns -1 if error or the size of the data if successful. */
+/* Get the data in a node. Returns -1 if error or the size of the data if successful.
+If destination is NULL, no value is passed. */
 int nodeGetData(Node *node, Data *destination)
 {
   if (node != NULL)
   {
-    *destination = node->data;
+    if (destination != NULL)
+      *destination = node->data;
+
     return sizeof(*destination);
   }
 
@@ -176,24 +179,30 @@ int listGetItem(List *list, Data *destination, int index)
   return -1;
 }
 
-/* Get the first item in a list. Returns -1 if error or the size of the data if successful. */
+/* Get the first item in a list. Returns -1 if error or the size of the data if successful.
+If destination is NULL, no value is passed. */
 int listGetFirstItem(List *list, Data *destination)
 {
   if (list->head != NULL)
   {
-    *destination = list->head->data;
+    if (destination != NULL)
+      *destination = list->head->data;
+
     return sizeof(*destination);
   }
 
   return -1;
 }
 
-/* Get the last item in a list. Returns -1 if error or the size of the data if successful. */
+/* Get the last item in a list. Returns -1 if error or the size of the data if successful. 
+If destination is NULL, no value is passed. */
 int listGetLastItem(List *list, Data *destination)
 {
   if (list->tail != NULL)
   {
-    *destination = list->tail->data;
+    if (destination != NULL)
+      *destination = list->tail->data;
+
     return sizeof(*destination);
   }
 
@@ -275,7 +284,8 @@ int listPrepend(List *list, Data *data)
   return 0;
 }
 
-/* Remove an item from the list according to its value. Returns -1 if error or the size of the data if successful. */
+/* Remove an item from the list according to its value. Returns -1 if error or the size of the data if successful.
+If destination is NULL, no value is passed. */
 int listRemoveItem(List *list, Data *destination, int index)
 {
   Node *current = _findNodeByIndex(list, index);
@@ -295,7 +305,8 @@ int listRemoveItem(List *list, Data *destination, int index)
   else
     list->tail = current->previous;
 
-  *destination = current->data;
+  if (destination != NULL)
+    *destination = current->data;
 
   _deleteNode(current);
   list->length--;

@@ -80,7 +80,7 @@ int listGetLength(List *list);
     - node set data
     - node get next
     - node get previous
-    - what happens if I pass an empty pointer as destination?
+    - what happens if I pass an empty pointer as destination? DONE
     - list to array
 
   GENERAL
