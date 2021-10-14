@@ -41,26 +41,25 @@ typedef struct
   int length;
 } List;
 
-// Node related functions
-int nodeGetData(Node *node, Data *destination);
-int nodeSetData(Node *node, Data *data);
-Node *nodeGetNext(Node *node);
-Node *nodeGetPrevious(Node *node);
-
 // List related functions
 List *listCreate();
 void listDelete(List *list);
+int listGetNode(List *list, Node *destination, int index);
+int listGetNodeByValue(List *list, Node *destination, Data *value);
 int listGetItem(List *list, Data *data, int index);
 int listGetFirstItem(List *list, Data *destination);
 int listGetLastItem(List *list, Data *destination);
+int listAddItem(List *list, Data *data, int position);
 int listAppend(List *list, Data *data);
 int listPrepend(List *list, Data *data);
+int listReplaceItem(List *list, Data *newvalue, int index);
+int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue);
 int listRemoveItem(List *list, Data *destination, int index);
+int listRemoveItemByValue(List *list, Data *oldvalue); // TODO
 int listFindAndRemoveItems(List *list, Data *data, int remove_count);
 int listPop(List *list, Data *last);
 int listUnshift(List *list, Data *destination);
-int listAddItem(List *list, Data *data, int position);
-int dataInList(List *list, Data *data);
+int itemInList(List *list, Data *data);
 void listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
@@ -70,18 +69,11 @@ int listGetLength(List *list);
 
 /* 
   FUNCTIONS TO ADD:
-    - data in list
     - list get node
-    - list replace value
-      - at index
-      - from value
+      - by index - listGetNode
+      - by value - listGetNodeByValue
 
   TEST TO DO:
-    - node get data
-    - node set data
-    - node get next
-    - node get previous
-    - what happens if I pass an empty pointer as destination? DONE
     - list to array
 
   GENERAL
