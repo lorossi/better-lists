@@ -110,6 +110,15 @@ int main()
   assert(listReplaceItemByValue(l, &d, &t) != 0);
   listDelete(l);
 
+  // try adding elements
+  l = listCreate();
+  quickPopulate(l);
+  d = 999;
+  listAddItem(l, &d, 100);
+  assert(listGetItem(l, &t, 100) != -1);
+  assert(t == d);
+  listDelete(l);
+
   // create list and add item in front
   l = listCreate();
   d = 5;

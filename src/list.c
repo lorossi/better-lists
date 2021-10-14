@@ -76,8 +76,8 @@ Node *_findNodeByValue(List *list, Data *data)
   return NULL;
 }
 
-int _findNodeIndexByValue(List *list, Data *data)
 /* Private function. Find node index in a list by its value. */
+int _findNodeIndexByValue(List *list, Data *data)
 {
   Node *current = list->head;
   int index = 0;
@@ -147,6 +147,36 @@ int _nodeSetData(Node *node, Data *data)
   return -1;
 }
 
+/* Private function. Retrieve a node from a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
+int _listGetNode(List *list, Node *destination, int index)
+{
+  Node *node;
+  node = _findNodeByIndex(list, index);
+
+  if (node != NULL)
+  {
+    destination = node;
+    return sizeof(*node);
+  }
+
+  return -1;
+}
+
+/* Private function. Retrieve a node from a list by its value. Returns -1 if an error is encountered or the size of the data in case of success. */
+int _listGetNodeByValue(List *list, Node *destination, Data *value)
+{
+  Node *node;
+  node = _findNodeByValue(list, value);
+
+  if (node != NULL)
+  {
+    destination = node;
+    return sizeof(*node);
+  }
+
+  return -1;
+}
+
 /* Create and return a list. */
 List *listCreate()
 {
@@ -175,36 +205,6 @@ void listDelete(List *list)
   free(list);
 
   return;
-}
-
-/* Retrieve a node from a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
-int listGetNode(List *list, Node *destination, int index)
-{
-  Node *node;
-  node = _findNodeByIndex(list, index);
-
-  if (node != NULL)
-  {
-    destination = node;
-    return sizeof(*node);
-  }
-
-  return -1;
-}
-
-/* Retrieve a node from a list by its value. Returns -1 if an error is encountered or the size of the data in case of success. */
-int listGetNodeByValue(List *list, Node *destination, Data *value)
-{
-  Node *node;
-  node = _findNodeByValue(list, value);
-
-  if (node != NULL)
-  {
-    destination = node;
-    return sizeof(*node);
-  }
-
-  return -1;
 }
 
 /* Retrieve an item in a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */

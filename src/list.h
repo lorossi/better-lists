@@ -41,12 +41,12 @@ typedef struct
   int length;
 } List;
 
+typedef Node Iterator;
+
 // List related functions
 List *listCreate();
 void listDelete(List *list);
-int listGetNode(List *list, Node *destination, int index);
-int listGetNodeByValue(List *list, Node *destination, Data *value);
-int listGetItem(List *list, Data *data, int index);
+int listGetItem(List *list, Data *destination, int index);
 int listGetFirstItem(List *list, Data *destination);
 int listGetLastItem(List *list, Data *destination);
 int listAddItem(List *list, Data *data, int position);
@@ -64,5 +64,7 @@ int listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
 int listGetSize(List *list);
+
+// Iterator related functions - TODO
 
 #endif
