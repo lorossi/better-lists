@@ -1,7 +1,10 @@
 #include <assert.h>
 #include "list.h"
 
-const int LIST_TEST_SIZE = 5000;
+// tested against memory leaks using VALGRING
+// https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
+
+const int LIST_TEST_SIZE = 1e5;
 
 void printGreen(char *s)
 {
@@ -49,12 +52,7 @@ int main()
   assert(listFindAndRemoveItems(l, &d, 10) == 0);
   assert(listPop(l, &d) == -1);
   assert(listUnshift(l, &d) == -1);
-  // delete list adn try to remove items
   listDelete(l);
-  assert(listRemoveItem(l, &d, 10) == -1);
-  assert(listFindAndRemoveItems(l, &d, 10) == 0);
-  assert(listPop(l, &d) == -1);
-  assert(listUnshift(l, &d) == -1);
   printGreen("Passed.");
 
   // test list population TODO
@@ -82,7 +80,7 @@ int main()
   assert(itemInList(l, &t) != -1);
   // delete list and check if the item is in it
   listDelete(l);
-  assert(itemInList(l, &d) == -1);
+
   l = listCreate();
   for (int i = 0; i < LIST_TEST_SIZE; i++)
   {
@@ -177,6 +175,7 @@ int main()
   d = -1;
   assert(listRemoveItemByValue(l, &d) == -1);
   assert(listGetLength(l) == LIST_TEST_SIZE - 4);
+  listDelete(l);
 
   printGreen("Passed.");
 
