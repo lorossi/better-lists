@@ -150,11 +150,11 @@ int _nodeSetData(Node *node, Data *data)
 /* Create and return a list. */
 List *listCreate()
 {
-  List *l = malloc(sizeof(List));
-  l->head = NULL;
-  l->tail = NULL;
-  l->length = 0;
-  return l;
+  List *list = malloc(sizeof(List));
+  list->head = NULL;
+  list->tail = NULL;
+  list->length = 0;
+  return list;
 }
 
 /* Delete a list and all of its nodes. */
@@ -164,10 +164,14 @@ void listDelete(List *list)
 
   while (current != NULL)
   {
+    Node *next = current->next;
     _deleteNode(current);
-    current = current->next;
+    current = next;
   }
 
+  list->head = NULL;
+  list->tail = NULL;
+  list->length = 0;
   free(list);
 
   return;
@@ -216,8 +220,7 @@ int listGetItem(List *list, Data *destination, int index)
   return -1;
 }
 
-/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
-If destination is NULL, no values is read. */
+/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success. */
 int listGetFirstItem(List *list, Data *destination)
 {
   if (list->head != NULL)
@@ -231,8 +234,7 @@ int listGetFirstItem(List *list, Data *destination)
   return -1;
 }
 
-/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success. 
-If destination is NULL, no values is read. */
+/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success. */
 int listGetLastItem(List *list, Data *destination)
 {
   if (list->tail != NULL)

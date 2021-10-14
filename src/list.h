@@ -68,11 +68,6 @@ int listGetLength(List *list);
 #endif
 
 /* 
-  FUNCTIONS TO ADD:
-    - list get node
-      - by index - listGetNode
-      - by value - listGetNodeByValue
-
   TEST TO DO:
     - list to array
 
