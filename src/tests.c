@@ -1,10 +1,12 @@
-#include <assert.h>
+#include <assert.h> // for assertions
+#include <time.h>   // for random initialization
+#include <stdlib.h> // for random values
 #include "list.h"
 
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
-const int LIST_TEST_SIZE = 1e5;
+const int LIST_TEST_SIZE = 1e6;
 
 void printGreen(char *s)
 {
@@ -13,7 +15,7 @@ void printGreen(char *s)
 
 void printYellow(char *s)
 {
-  printf("\x1b[93;1m%s\x1b[0m\n", s);
+  printf("\x1b[93;1m%s\x1b[0m ", s);
 }
 
 void printRed(char *s)
@@ -40,6 +42,9 @@ int main()
   // variable declaration
   Data d, t;
   List *l;
+  Iterator *it;
+  srand(time(NULL));
+
   // tests the empty list
   printYellow("Testing empty list...");
   // create list and try to get items
@@ -196,6 +201,81 @@ int main()
   listDelete(l);
 
   printGreen("Passed.");
+
+  printYellow("Testing iterators...");
+  // create iterator and move it around
+  l = listCreate();
+  quickPopulate(l);
+  it = iteratorCreate(l, 0);
+  assert(iteratorGetData(it, &d) != -1);
+  assert(d == 0);
+  assert(iteratorPrevious(it) == -1);
+  assert(iteratorNext(it) != -1);
+  assert(iteratorGetData(it, &d) != -1);
+  assert(d == 1);
+  assert(iteratorEnded(it) == 0);
+  iteratorDelete(it);
+  listDelete(l);
+
+  // test if iterator correctly reaches end
+  l = listCreate();
+  quickPopulate(l);
+  it = iteratorCreate(l, 0);
+
+  for (int i = 0; i < LIST_TEST_SIZE; i++)
+    iteratorNext(it);
+
+  iteratorGetData(it, &d);
+  assert(iteratorEnded(it) == 1);
+
+  iteratorDelete(it);
+  listDelete(l);
+
+  // now make a bigger test
+  l = listCreate();
+  quickPopulate(l);
+  int count = 0;
+  // test forward iteration
+  for (it = iteratorCreate(l, 0); iteratorEnded(it) == 0; iteratorNext(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == count);
+    count++;
+  }
+  // test backward iteration
+  iteratorDelete(it);
+  for (it = iteratorCreate(l, 0); iteratorStarted(it) == 0; iteratorPrevious(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == count);
+    count++;
+  }
+  iteratorDelete(it);
+
+  it = iteratorCreate(l, 100);
+  assert(iteratorGetData(it, &d) != -1);
+  assert(d = 100);
+  iteratorDelete(it);
+  listDelete(l);
+
+  // test random read
+  l = listCreate();
+  quickPopulate(l);
+  int start;
+
+  for (int i = 0; i < 1000; i++)
+  {
+    start = rand() % LIST_TEST_SIZE;
+    it = iteratorCreate(l, start);
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == start);
+    iteratorDelete(it);
+  }
+
+  listDelete(l);
+
+  printGreen("Passed.");
+
   // if we got here, all assert work correctly
   // YAY!
   printSuccess("ALL TESTS PASSED");
