@@ -1,7 +1,7 @@
 #include "list.h"
 
 /* Private function. Create a node with link to previous and next node. */
-Node *_createNode(Node *previous, Node *next, Data *data)
+Node *_nodeCreate(Node *previous, Node *next, Data *data)
 {
   Node *new = NULL;
   new = (Node *)malloc(sizeof(Node));
@@ -19,6 +19,13 @@ Node *_createNode(Node *previous, Node *next, Data *data)
   new->data = *data;
 
   return new;
+}
+
+/* Private function. Delete a a node. */
+void _nodeDelete(Node *node)
+{
+  free(node);
+  return;
 }
 
 /* Private function. Find node in a list by its index. */
@@ -94,15 +101,8 @@ int _findNodeIndexByValue(List *list, Data *data)
   return -1;
 }
 
-/* Private function. Delete a a node. */
-void _deleteNode(Node *node)
-{
-  free(node);
-  return;
-}
-
 /* Private function. Print the value of the node. */
-void _printNode(Node *node, int index)
+void _nodePrint(Node *node, int index)
 {
 #ifdef CUSTOMLIST
   printf("item %i: non printable", index);
@@ -195,7 +195,7 @@ void listDelete(List *list)
   while (current != NULL)
   {
     Node *next = current->next;
-    _deleteNode(current);
+    _nodeDelete(current);
     current = next;
   }
 
@@ -256,7 +256,7 @@ int listAppend(List *list, Data *data)
   if (list->head == NULL)
   {
     // no head, create one
-    Node *head = _createNode(NULL, NULL, data);
+    Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
 
@@ -267,7 +267,7 @@ int listAppend(List *list, Data *data)
   {
     // no tail, create one
     // there's only one item in the list, the head
-    Node *tail = _createNode(list->head, NULL, data);
+    Node *tail = _nodeCreate(list->head, NULL, data);
     // update list and tail
     list->head->next = tail;
     list->tail = tail;
@@ -277,7 +277,7 @@ int listAppend(List *list, Data *data)
 
   // head and tail exist, change tail
   // update the formerly last node
-  Node *new_tail = _createNode(list->tail, NULL, data);
+  Node *new_tail = _nodeCreate(list->tail, NULL, data);
   list->tail->next = new_tail;
   list->tail = new_tail;
 
@@ -292,7 +292,7 @@ int listPrepend(List *list, Data *data)
   if (list->head == NULL)
   {
     // no head, create one
-    Node *head = _createNode(NULL, NULL, data);
+    Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
 
@@ -306,7 +306,7 @@ int listPrepend(List *list, Data *data)
     // update list
     list->tail = list->head;
     // create new head
-    Node *head = _createNode(NULL, list->tail, data);
+    Node *head = _nodeCreate(NULL, list->tail, data);
 
     list->tail->previous = head;
     // set new head
@@ -316,7 +316,7 @@ int listPrepend(List *list, Data *data)
 
   // head and tail exist, change head
   // update the formerly first node
-  Node *new_head = _createNode(NULL, list->head, data);
+  Node *new_head = _nodeCreate(NULL, list->head, data);
   list->head->previous = new_head;
   list->head = new_head;
 
@@ -347,7 +347,7 @@ int listRemoveItem(List *list, Data *destination, int index)
   if (destination != NULL)
     *destination = current->data;
 
-  _deleteNode(current);
+  _nodeDelete(current);
   list->length--;
 
   return sizeof(*destination);
@@ -425,12 +425,12 @@ int listFindAndRemoveItems(List *list, Data *data, int remove_count)
       // not first or last node
       current->previous->next = current->next;
       current->next->previous = current->previous;
-      _deleteNode(current);
+      _nodeDelete(current);
     }
     else if (current->previous == NULL && current->next == NULL)
     {
       // removing the only item
-      _deleteNode(list->head);
+      _nodeDelete(list->head);
       list->head = NULL;
       list->tail = NULL;
     }
@@ -472,7 +472,7 @@ int listAddItem(List *list, Data *data, int position)
 
   Node *previous = _findNodeByIndex(list, position - 1);
   Node *next = _findNodeByIndex(list, position);
-  Node *new = _createNode(previous, next, data);
+  Node *new = _nodeCreate(previous, next, data);
   previous->next = new;
   next->previous = new;
   list->length++;
@@ -516,7 +516,7 @@ void printList(List *list, char *end)
 
   while (current != NULL)
   {
-    _printNode(current, index);
+    _nodePrint(current, index);
 
     current = current->next;
     index++;
@@ -539,7 +539,7 @@ void printListReverse(List *list, char *end)
 
   while (current != NULL)
   {
-    _printNode(current, index);
+    _nodePrint(current, index);
 
     current = current->previous;
     index--;
@@ -552,4 +552,95 @@ void printListReverse(List *list, char *end)
 int listGetSize(List *list)
 {
   return list->length;
+}
+
+/* Returns an iterator for the list. If index == 0, the iterator starts at the head of the list.
+If index == -1, it starts at the end of the list. Otherwise, it starts at the corresponding index of the list */
+Iterator *iteratorCreate(List *list, int index)
+{
+  Iterator *new = NULL;
+  new = (Iterator *)malloc(sizeof(Iterator));
+
+  if (index > list->length - 1)
+    index = list->length - 1;
+
+  if (index == 0)
+  {
+    new->current = list->head;
+    new->next = list->head->next;
+    new->previous = NULL;
+  }
+  else if (index == -1)
+  {
+    new->current = list->tail;
+    new->previous = list->tail->previous;
+    new->next = NULL;
+  }
+  else
+  {
+    Node *node;
+    node = _findNodeByIndex(list, index);
+    new->current = node;
+  }
+
+  return new;
+}
+
+/* Delete an iterator. */
+void iteratorDelete(Iterator *it)
+{
+  free(it);
+  return;
+}
+
+/* Tells if the iterator has reached the end */
+int iteratorEnded(Iterator *it)
+{
+  if (it->next == NULL)
+    return 1;
+
+  return 0;
+}
+
+/* Tells if the iterator has reached the start */
+int iteratorStarted(Iterator *it)
+{
+  if (it->previous == NULL)
+    return 1;
+
+  return 0;
+}
+
+/* Moves the iterator forward by an item. Returns -1 if the list ended. */
+int iteratorNext(Iterator *it)
+{
+  if (it->next != NULL)
+  {
+    it->current = it->next;
+    it->previous = it->current->previous;
+    it->next = it->current->next;
+    return 0;
+  }
+
+  return -1;
+}
+
+/* Moves the iterator backward by an item. Returns -1 if the list ended. */
+int iteratorPrevious(Iterator *it)
+{
+  if (it->previous != NULL)
+  {
+    it->current = it->previous;
+    it->previous = it->current->previous;
+    it->next = it->current->next;
+    return 0;
+  }
+
+  return -1;
+}
+
+/* Loads the current value of the iterator. Returns -1 in case of error, the size of destination in case of success. */
+int iteratorGetData(Iterator *it, Data *destination)
+{
+  return _nodeGetData(it->current, destination);
 }
