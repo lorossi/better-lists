@@ -220,7 +220,8 @@ int listGetItem(List *list, Data *destination, int index)
   return -1;
 }
 
-/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success. */
+/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
+If parameter destination is NULL, nothing is loaded. */
 int listGetFirstItem(List *list, Data *destination)
 {
   if (list->head != NULL)
@@ -234,7 +235,8 @@ int listGetFirstItem(List *list, Data *destination)
   return -1;
 }
 
-/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success. */
+/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
+If parameter destination is NULL, nothing is loaded. */
 int listGetLastItem(List *list, Data *destination)
 {
   if (list->tail != NULL)
@@ -407,48 +409,37 @@ int listReplaceItem(List *list, Data *newvalue, int index)
   return _nodeSetData(node, newvalue);
 }
 
+/* Replces all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
+replace all occurencies. */
+int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_count)
+{
+  int count = 0;
+
+  while (count < replace_count || replace_count == -1)
+  {
+
+    if (listReplaceItemByValue(list, oldvalue, newvalue) == -1)
+      break;
+
+    count++;
+  }
+
+  return count;
+}
+
 /* Remove all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
 removes all occurencies. */
-int listFindAndRemoveItems(List *list, Data *data, int remove_count)
+int listCountRemove(List *list, Data *data, int remove_count)
 {
   int count = 0;
 
   while (count < remove_count || remove_count == -1)
   {
-    Node *current = _findNodeByValue(list, data);
 
-    if (current == NULL)
+    if (listRemoveItemByValue(list, data) == -1)
       break;
 
-    if (current->previous != NULL && current->next != NULL)
-    {
-      // not first or last node
-      current->previous->next = current->next;
-      current->next->previous = current->previous;
-      _nodeDelete(current);
-    }
-    else if (current->previous == NULL && current->next == NULL)
-    {
-      // removing the only item
-      _nodeDelete(list->head);
-      list->head = NULL;
-      list->tail = NULL;
-    }
-    else if (current->previous == NULL)
-    {
-      // deleting the first node in the list
-      list->head = current->next;
-      list->head->previous = NULL;
-    }
-    else if (current->next == NULL)
-    {
-      // deleting the last node in the list
-      list->tail = current->previous;
-      list->tail->next = NULL;
-    }
-
     count++;
-    list->length--;
   }
 
   return count;
@@ -481,7 +472,7 @@ int listAddItem(List *list, Data *data, int position)
 }
 
 /* Check if data is in list. If found, returns its position. If not found, returns -1 */
-int itemInList(List *list, Data *data)
+int dataInList(List *list, Data *data)
 {
   return _findNodeIndexByValue(list, data);
 }

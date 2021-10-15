@@ -59,12 +59,13 @@ int listAppend(List *list, Data *data);
 int listPrepend(List *list, Data *data);
 int listReplaceItem(List *list, Data *newvalue, int index);
 int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue);
+int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_count);
 int listRemoveItem(List *list, Data *destination, int index);
-int listRemoveItemByValue(List *list, Data *oldvalue); // TODO
-int listFindAndRemoveItems(List *list, Data *data, int remove_count);
+int listRemoveItemByValue(List *list, Data *oldvalue);
+int listCountRemove(List *list, Data *oldvalue, int remove_count);
 int listPop(List *list, Data *last);
 int listUnshift(List *list, Data *destination);
-int itemInList(List *list, Data *data);
+int dataInList(List *list, Data *data);
 int listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);

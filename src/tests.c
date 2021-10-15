@@ -6,7 +6,7 @@
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
-const int LIST_TEST_SIZE = 1e6;
+const int LIST_TEST_SIZE = 101;
 
 void printGreen(char *s)
 {
@@ -55,7 +55,7 @@ int main()
   assert(listGetItem(l, &d, 10) == -1);
   // now try to remove items
   assert(listRemoveItem(l, &d, 10) == -1);
-  assert(listFindAndRemoveItems(l, &d, 10) == 0);
+  assert(listCountRemove(l, &d, 10) == 0);
   assert(listPop(l, &d) == -1);
   assert(listUnshift(l, &d) == -1);
   listDelete(l);
@@ -78,12 +78,12 @@ int main()
   assert(listGetItem(l, NULL, 0) != 0);
   assert(listGetFirstItem(l, NULL) != 0);
   assert(listGetLastItem(l, NULL) != 0);
-  assert(itemInList(l, &d) != 0);
+  assert(dataInList(l, &d) != 0);
   // check if item is is list
   t = LIST_TEST_SIZE + 1;
-  assert(itemInList(l, &t) == -1);
+  assert(dataInList(l, &t) == -1);
   t = 0;
-  assert(itemInList(l, &t) != -1);
+  assert(dataInList(l, &t) != -1);
   listDelete(l);
 
   l = listCreate();
@@ -172,11 +172,11 @@ int main()
   assert(listGetSize(l) == LIST_TEST_SIZE - 1);
   d = 10;
   // remove some items by value
-  assert(listFindAndRemoveItems(l, &d, -1) != 0);
+  assert(listCountRemove(l, &d, -1) != 0);
   assert(listGetSize(l) == LIST_TEST_SIZE - 2);
   d = LIST_TEST_SIZE * 2;
   // remove some items by value
-  assert(listFindAndRemoveItems(l, &d, 1) == 0);
+  assert(listCountRemove(l, &d, 1) == 0);
   assert(listGetSize(l) == LIST_TEST_SIZE - 2);
   assert(listRemoveItem(l, NULL, 0) != 0);
   assert(listGetSize(l) == LIST_TEST_SIZE - 3);
@@ -231,23 +231,28 @@ int main()
   iteratorDelete(it);
   listDelete(l);
 
-  // now make a bigger test
   l = listCreate();
   quickPopulate(l);
   int count = 0;
   // test forward iteration
-  for (it = iteratorCreate(l, 0); iteratorEnded(it) == 0; iteratorNext(it))
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
   {
+    if (count == 0)
+      assert(iteratorStarted(it));
     assert(iteratorGetData(it, &d) != -1);
     assert(d == count);
     count++;
   }
+
   // test backward iteration
   iteratorDelete(it);
-  for (it = iteratorCreate(l, 0); iteratorStarted(it) == 0; iteratorPrevious(it))
+  count = 0;
+  for (it = iteratorCreate(l, -1); !iteratorStarted(it); iteratorPrevious(it))
   {
+    if (count == 0)
+      assert(iteratorEnded(it));
     assert(iteratorGetData(it, &d) != -1);
-    assert(d == count);
+    assert(d == LIST_TEST_SIZE - count - 1);
     count++;
   }
   iteratorDelete(it);
