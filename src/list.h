@@ -41,7 +41,12 @@ typedef struct
   int length;
 } List;
 
-typedef Node Iterator;
+typedef struct
+{
+  struct node *previous;
+  struct node *next;
+  struct node *current;
+} Iterator;
 
 // List related functions
 List *listCreate();
@@ -65,6 +70,13 @@ void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
 int listGetSize(List *list);
 
-// Iterator related functions - TODO
+// Iterator related functions
+Iterator *iteratorCreate(List *list, int start);
+void iteratorDelete(Iterator *it);
+int iteratorEnded(Iterator *it);
+int iteratorStarted(Iterator *it);
+int iteratorNext(Iterator *it);
+int iteratorPrevious(Iterator *it);
+int iteratorGetData(Iterator *it, Data *destination);
 
 #endif
