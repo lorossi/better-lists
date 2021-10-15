@@ -1,6 +1,6 @@
 # Better Lists
 
-A simple implementation of Doubly linked lists in C.
+A simple implementation of doubly linked lists in C.
 
 I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (it was my first year!), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years (and a degree) later.
 
