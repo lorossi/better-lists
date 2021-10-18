@@ -6,7 +6,7 @@
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
-const int LIST_TEST_SIZE = 101;
+const int LIST_TEST_SIZE = 1e6;
 
 void printGreen(char *s)
 {

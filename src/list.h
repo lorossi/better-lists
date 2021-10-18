@@ -1,5 +1,7 @@
 /* 
-  Lorenzo Rossi - 2021
+  Better Lists - Lorenzo Rossi - 2021
+  GitHub repo: https://github.com/lorossi/better-lists
+  Version 1.0.0
   Simple linked list library made because I wanted to kill some time.
   By default, the data stored inside the list is int.
   define CHARLIST, STRINGLIST, FLOATLIST, DOUBLELIST, respectively to store chars, strings, floats and double.
