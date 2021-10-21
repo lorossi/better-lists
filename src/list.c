@@ -177,6 +177,24 @@ int _listGetNodeByValue(List *list, Node *destination, Data *value)
   return -1;
 }
 
+/* Private function. Swap two nodes. */
+void _listSwapNodes(Node *n1, Node *n2)
+{
+
+#ifdef STRINGLIST
+  Data temp[STRINGSIZE];
+  strcpy(temp, n1->data);
+  strcpy(n1->data, n2->data);
+  strcpy(n2->data, temp);
+#else
+  Data temp;
+  temp = n1->data;
+  n1->data = n2->data;
+  n2->data = temp;
+
+#endif
+}
+
 /* Create and return a list. */
 List *listCreate()
 {
@@ -385,6 +403,21 @@ int listUnshift(List *list, Data *first)
   return -1;
 }
 
+/* Switch two items in a list according to their index. Returns -1 if an error is encountered. */
+int listSwap(List *list, int first_index, int second_index)
+{
+  // check if the indexes are in bound
+  if (first_index > list->length || second_index > list->length)
+    return -1;
+  // fetch the nodes
+  Node *n1, *n2;
+  n1 = _findNodeByIndex(list, first_index);
+  n2 = _findNodeByIndex(list, second_index);
+  // swap two nodes
+  _listSwapNodes(n1, n2);
+  return 0;
+}
+
 /* Replace the data in an item according to its value. Returns its index if found, -1 in case of an error. */
 int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue)
 {
@@ -545,6 +578,52 @@ int listGetSize(List *list)
   return list->length;
 }
 
+/* Sort a list using quicksort. If reverse is 0, the list is sorted lowest to highest. If it's 1, it's sirted highest to lowest. 
+Does not work with CUSTOMTYPE */
+int listSort(List *list, int reverse)
+{
+#ifdef CUSTOMTYPE
+  return -1;
+#endif
+
+  if (reverse != 0 && reverse != 1)
+    return -1;
+
+  int sorted;
+  Iterator *it;
+  Node *current, *next;
+
+  sorted = 0;
+  while (sorted == 0)
+  {
+    sorted = 1;
+    it = iteratorCreate(list, 0);
+    // evaluate end condition
+    while (!iteratorEnded(it) && it->index < list->length - 1)
+    {
+      current = it->current;
+      next = it->next;
+
+#ifdef STRINGLIST
+      int comparison = reverse ? current->data[0] <next->data[0]) : current->data[0] > next->data[0]);
+      if (comparison)
+#else
+      int comparison = reverse ? current->data < next->data : current->data > next->data;
+      if (comparison)
+#endif
+      {
+        sorted = 0;
+        _listSwapNodes(current, next);
+      }
+
+      iteratorNext(it);
+    }
+    iteratorDelete(it);
+  }
+
+  return 0;
+}
+
 /* Returns an iterator for the list. If index == 0, the iterator starts at the head of the list.
 If index == -1, it starts at the end of the list. Otherwise, it starts at the corresponding index of the list */
 Iterator *iteratorCreate(List *list, int index)
@@ -552,29 +631,50 @@ Iterator *iteratorCreate(List *list, int index)
   Iterator *new = NULL;
   new = (Iterator *)malloc(sizeof(Iterator));
 
+  // modulo index to list length
   if (index > list->length - 1)
     index = list->length - 1;
 
   if (index == 0)
   {
+    // point to first item
     new->current = list->head;
     new->next = list->head->next;
     new->previous = NULL;
   }
   else if (index == -1)
   {
+    // point to last item
     new->current = list->tail;
     new->previous = list->tail->previous;
     new->next = NULL;
   }
   else
   {
+    // find a node
     Node *node;
     node = _findNodeByIndex(list, index);
     new->current = node;
   }
 
+  // set current index
+  new->index = index;
+
   return new;
+}
+
+/* Shuffles a list using Fisher–Yates shuffle algorithm. */
+int listShuffle(List *list)
+{
+  srand(time(NULL));
+
+  for (int i = list->length - 1; i > 0; i--)
+  {
+    int j = rand() % (i + 1);
+    listSwap(list, i, j);
+  }
+
+  return 0;
 }
 
 /* Delete an iterator. */
@@ -610,6 +710,7 @@ int iteratorNext(Iterator *it)
     it->current = it->next;
     it->previous = it->current->previous;
     it->next = it->current->next;
+    it->index++;
     return 0;
   }
 
@@ -624,6 +725,7 @@ int iteratorPrevious(Iterator *it)
     it->current = it->previous;
     it->previous = it->current->previous;
     it->next = it->current->next;
+    it->index--;
     return 0;
   }
 

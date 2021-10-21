@@ -1,7 +1,7 @@
 /* 
   Better Lists - Lorenzo Rossi - 2021
   GitHub repo: https://github.com/lorossi/better-lists
-  Version 1.0.0
+  Version 1.1.0
   Simple linked list library made because I wanted to kill some time.
   By default, the data stored inside the list is int.
   define CHARLIST, STRINGLIST, FLOATLIST, DOUBLELIST, respectively to store chars, strings, floats and double.
@@ -17,7 +17,8 @@ typedef CUSTOMTYPE Data;
 #elif defined(CHARLIST)
 typedef char Data;
 #elif defined(STRINGLIST)
-typedef char *Data;
+#define STRINGSIZE 1000
+typedef char *Data[STRINGSIZE];
 #elif defined(FLOATLIST)
 typedef float Data;
 #elif defined(DOUBLELIST)
@@ -28,6 +29,8 @@ typedef int Data;
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 typedef struct node
 {
@@ -36,18 +39,19 @@ typedef struct node
   struct node *next;
 } Node;
 
-typedef struct
+typedef struct list
 {
   Node *head;
   Node *tail;
   int length;
 } List;
 
-typedef struct
+typedef struct iterator
 {
   struct node *previous;
   struct node *next;
   struct node *current;
+  int index;
 } Iterator;
 
 // List related functions
@@ -67,11 +71,14 @@ int listRemoveItemByValue(List *list, Data *oldvalue);
 int listCountRemove(List *list, Data *oldvalue, int remove_count);
 int listPop(List *list, Data *last);
 int listUnshift(List *list, Data *destination);
+int listSwap(List *list, int first_index, int second_index);
 int dataInList(List *list, Data *data);
 int listToArray(List *list, Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
 int listGetSize(List *list);
+int listSort(List *list, int reverse);
+int listShuffle(List *list);
 
 // Iterator related functions
 Iterator *iteratorCreate(List *list, int start);
