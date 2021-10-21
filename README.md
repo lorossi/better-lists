@@ -112,7 +112,7 @@ deleteList(l)
 ### Replacing items in a list
 
 ``` C
-List l;
+List *l;
 Data d, old, new;
 // list creation and population not in this example
 // replace item at index 6
@@ -135,7 +135,7 @@ listCountReplace(l, &old, &new, -1);
 ### Getting items from the list
 
 ``` C
-List l;
+List *l;
 Data d;
 // list creation and population not in this example
 // get item at index 3
@@ -149,7 +149,7 @@ listGetLastItem(l, &d);
 ### Removing items from the list
 
 ``` C
-List l;
+List *l;
 Data d;
 // list creation and population not in this example
 // remove first item and place it in d
@@ -166,10 +166,36 @@ listCountRemove(l, 5);
 listCountRemove(l, -1);
 ```
 
+### Swap items
+
+``` C
+List *l;
+Data d;
+// list creation and population not in this example
+listSwap(l, 0, 2); // swaps item in position 0 and 2
+```
+
+### Sorting list
+
+``` C
+List *l;
+// list creation and population not in this example
+listSort(l, 0); // sorts lowest to highest
+listSort(l, 1); // sorts highest to lowest
+```
+
+### Shuffle list
+
+``` C
+List *l;
+// list creation and population not in this example
+listShuffle(l);
+```
+
 ### Check if an item is in list
 
 ``` C
-List l;
+List *l;
 Data d;
 // list creation and population not in this example
 d = 5;
@@ -180,7 +206,7 @@ if (dataInList(l, &d) == 1)
 ### Printing list
 
 ``` C
-List l;
+List *l;
 char end;
 // list creation and population not in this example
 end = "\n";
@@ -193,7 +219,7 @@ printListReverse(l, end);
 ### Converting list into array
 
 ``` C
-List l;
+List *l;
 Data arr[listGetSize(l)];
 // list creation and population not in this example
 listToArray(l, a);
@@ -202,7 +228,7 @@ listToArray(l, a);
 ### Using iterators
 
 ``` C
-List l;
+List *l;
 Data d;
 Iterator it;
 // forward iteration
