@@ -6,7 +6,7 @@
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
-const int LIST_TEST_SIZE = 1e6;
+const int LIST_TEST_SIZE = 10000;
 
 void printGreen(char *s)
 {
@@ -37,12 +37,22 @@ void quickPopulate(List *l)
   }
 }
 
+void quickPopulateReverse(List *l)
+{
+  for (int i = 0; i < LIST_TEST_SIZE; i++)
+  {
+    Data d = (Data)LIST_TEST_SIZE - i - 1;
+    listAppend(l, &d);
+  }
+}
+
 int main()
 {
   // variable declaration
   Data d, t;
   List *l;
   Iterator *it;
+  int count;
   srand(time(NULL));
 
   // tests the empty list
@@ -119,8 +129,8 @@ int main()
   l = listCreate();
   quickPopulate(l);
   d = 999;
-  listAddItem(l, &d, 100);
-  assert(listGetItem(l, &t, 100) != -1);
+  listAddItem(l, &d, LIST_TEST_SIZE + 1);
+  assert(listGetItem(l, &t, LIST_TEST_SIZE) != -1);
   assert(t == d);
   listDelete(l);
 
@@ -133,6 +143,27 @@ int main()
   assert(d == 5);
   // try getting a non existent item
   assert(listGetItem(l, &d, 10) == -1);
+  listDelete(l);
+
+  // swap items in a list
+  l = listCreate();
+  for (int i = 0; i < 10; i++)
+  {
+    d = i;
+    listAppend(l, &d);
+  }
+
+  assert(listGetFirstItem(l, &d) > 0);
+  assert(d == 0);
+  assert(listGetLastItem(l, &d) > 0);
+  assert(d == 9);
+
+  assert(listSwap(l, 0, 9) != -1);
+  assert(listGetFirstItem(l, &d) > 0);
+  assert(d == 9);
+  assert(listGetLastItem(l, &d) > 0);
+  assert(d == 0);
+
   listDelete(l);
 
   printGreen("Passed.");
@@ -170,7 +201,7 @@ int main()
   // remove and item
   assert(listRemoveItem(l, &d, LIST_TEST_SIZE / 2) != -1);
   assert(listGetSize(l) == LIST_TEST_SIZE - 1);
-  d = 10;
+  d = LIST_TEST_SIZE / 4;
   // remove some items by value
   assert(listCountRemove(l, &d, -1) != 0);
   assert(listGetSize(l) == LIST_TEST_SIZE - 2);
@@ -233,7 +264,7 @@ int main()
 
   l = listCreate();
   quickPopulate(l);
-  int count = 0;
+  count = 0;
   // test forward iteration
   for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
   {
@@ -277,6 +308,67 @@ int main()
     iteratorDelete(it);
   }
 
+  listDelete(l);
+
+  printGreen("Passed.");
+
+  printYellow("Testing sorting...");
+
+  // test sorting
+  l = listCreate();
+  quickPopulateReverse(l);
+  assert(listSort(l, 0) != -1);
+  count = 0;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == count);
+    count++;
+  }
+  iteratorDelete(it);
+  listDelete(l);
+
+  // test reverse sorting
+  l = listCreate();
+  quickPopulate(l);
+  assert(listSort(l, 1) != -1);
+  count = LIST_TEST_SIZE - 1;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == count);
+    count--;
+  }
+  iteratorDelete(it);
+  listDelete(l);
+
+  // test random shuffling
+  l = listCreate();
+  quickPopulate(l);
+  count = 0;
+  int in_place = 0;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    if (d == count)
+      in_place++;
+    count++;
+  }
+  assert(in_place < listGetSize(l));
+  listDelete(l);
+
+  // test sorting
+  l = listCreate();
+  quickPopulateReverse(l);
+  assert(listSort(l, 0) != -1);
+  count = 0;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    assert(iteratorGetData(it, &d) != -1);
+    assert(d == count);
+    count++;
+  }
+  iteratorDelete(it);
   listDelete(l);
 
   printGreen("Passed.");
