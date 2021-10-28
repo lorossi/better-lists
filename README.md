@@ -6,6 +6,8 @@ I made this mostly because I was bored, but I went on because I took this as a c
 
 Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the `tests.c` file I have implemented a simple test suite using the `assert.h` library. It's not pretty, but it works.
 
+[Check the documentation here!](https://lorossi.github.io/better-lists/html/)
+
 ## Data types
 
 By default, lists store integers. In order to store different types of data, the final user must define, before importing, the constants:
