@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_list_8c" xml:lang="en-US">
+<title>src/list.c File Reference</title>
+<indexterm><primary>src/list.c</primary></indexterm>
+<programlisting>#include &quot;list.h&quot;
+</programlisting>Include dependency graph for list.c:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="list_8c__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_list_8c_1afbc53da015d52d48a9e28b64e1e994f5"/><link linkend="_structnode">Node</link> * <emphasis role="strong">_nodeCreate</emphasis> (<link linkend="_structnode">Node</link> *previous, <link linkend="_structnode">Node</link> *next, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a3e8ba90fa912883bd530b47cde5ad216"/>void <emphasis role="strong">_nodeDelete</emphasis> (<link linkend="_structnode">Node</link> *<link linkend="_structnode">node</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1addeb21ad8533b41aaafad9973eb7a481"/><link linkend="_structnode">Node</link> * <emphasis role="strong">_findNodeByIndex</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ab16635864c9869ddb3341bbd5dea36c3"/><link linkend="_structnode">Node</link> * <emphasis role="strong">_findNodeByValue</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1aff80ef5f2f694eeb3ea7dfe059e243bf"/>int <emphasis role="strong">_findNodeIndexByValue</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a0a9ae6fd29dc900652ea041dcc23d73f"/>void <emphasis role="strong">_nodePrint</emphasis> (<link linkend="_structnode">Node</link> *<link linkend="_structnode">node</link>, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a59ed66eb080647d1d9447f07e1bec179"/>int <emphasis role="strong">_nodeGetData</emphasis> (<link linkend="_structnode">Node</link> *<link linkend="_structnode">node</link>, Data *destination)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a34cc11a7d73816d01fd68aa64500cbff"/>int <emphasis role="strong">_nodeSetData</emphasis> (<link linkend="_structnode">Node</link> *<link linkend="_structnode">node</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a14929c7bbdecc70d61d6124729122427"/>int <emphasis role="strong">_listGetNode</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, <link linkend="_structnode">Node</link> *destination, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a3630be6d84422df1e7608ce13bce52e3"/>int <emphasis role="strong">_listGetNodeByValue</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, <link linkend="_structnode">Node</link> *destination, Data *value)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a37665bcd6f25d4b6db52e7f1d24854f4"/>void <emphasis role="strong">_listSwapNodes</emphasis> (<link linkend="_structnode">Node</link> *n1, <link linkend="_structnode">Node</link> *n2)</para>
+</listitem>
+            <listitem><para><link linkend="_structlist">List</link> * <link linkend="_list_8c_1ac9382691bb8c711e981a01673b34febb">listCreate</link> ()</para>
+
+<para>Creates and returns a list. </para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ae6a2c0c8fc082c331eb6f9fef0df119d"/>void <emphasis role="strong">listDelete</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a8a44966a352ebd6bbafffdb0c0d0775f"/>int <emphasis role="strong">listGetItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *destination, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a129ce2a4ba8730f36bfb31d530a2f891"/>int <emphasis role="strong">listGetFirstItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *destination)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1abc58ae30e58403b23986744c9a7db1f6"/>int <emphasis role="strong">listGetLastItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *destination)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a918e3874eebecce3cb516aa8da3bfcb9"/>int <emphasis role="strong">listAppend</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a7b76412e3efe1d3403ad96571dafec9f"/>int <emphasis role="strong">listPrepend</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1af34085959610df9080e69abb32d3d8de"/>int <emphasis role="strong">listRemoveItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *destination, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a88d73822cbfe6d893d110e63184d96a1"/>int <emphasis role="strong">listRemoveItemByValue</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *oldvalue)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a8d3bd42c87ac11237eba45c0e5608cdb"/>int <emphasis role="strong">listPop</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *last)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a4f9d4e670b03897fe27a2d36c8194ad0"/>int <emphasis role="strong">listUnshift</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *first)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a291aff181cfcb20a4f8dbf94c9e7d06e"/>int <emphasis role="strong">listSwap</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, int first_index, int second_index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ac3147fe2fcdebcb87c7817b2b6b9267b"/>int <emphasis role="strong">listReplaceItemByValue</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *oldvalue, Data *newvalue)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ae18117c896013c2b9857304190cd4b68"/>int <emphasis role="strong">listReplaceItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *newvalue, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ab3c35da6c32278489aa3c96570ca1f62"/>int <emphasis role="strong">listCountReplace</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *oldvalue, Data *newvalue, int replace_count)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1aa860525d791efccf5a20238a4302c6d8"/>int <emphasis role="strong">listCountRemove</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data, int remove_count)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a7fd6d5d69881680e205665e57c645112"/>int <emphasis role="strong">listAddItem</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data, int position)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a9964d9b6db29cc0790c11faa94782ab1"/>int <emphasis role="strong">dataInList</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *data)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ac646d4d267499d2be3e65e6a174e1a1f"/>int <emphasis role="strong">listToArray</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, Data *array)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1acf1e5ee3276de056c1defce70e222099"/>void <emphasis role="strong">printList</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, char *end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1acddb3a1844ad330ea6da816e20320efe"/>void <emphasis role="strong">printListReverse</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, char *end)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a39206e789a23b4591f5c3e77cbdde4e8"/>int <emphasis role="strong">listGetSize</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a5292761e3bccf28dd87b0a53ddea92a1"/>int <emphasis role="strong">listSort</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, int reverse)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a68a99acce18945da6c236d2b0a0e1bb4"/><link linkend="_structiterator">Iterator</link> * <emphasis role="strong">iteratorCreate</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>, int index)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1aaf0fdf148d913473d1978b690d90a6a7"/>int <emphasis role="strong">listShuffle</emphasis> (<link linkend="_structlist">List</link> *<link linkend="_structlist">list</link>)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a37cd7e07b1a9369cc62d1e01afdac239"/>void <emphasis role="strong">iteratorDelete</emphasis> (<link linkend="_structiterator">Iterator</link> *it)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a8d1ef40a5d50f8bfbfdef2c286c2894b"/>int <emphasis role="strong">iteratorEnded</emphasis> (<link linkend="_structiterator">Iterator</link> *it)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1a28b930883b77e968e2e2d559d1ad5b5a"/>int <emphasis role="strong">iteratorStarted</emphasis> (<link linkend="_structiterator">Iterator</link> *it)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ad14cffd7fcf062235193a51fb0bc9b0f"/>int <emphasis role="strong">iteratorNext</emphasis> (<link linkend="_structiterator">Iterator</link> *it)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ac49954a579a1fbb0379349fe77a87f2e"/>int <emphasis role="strong">iteratorPrevious</emphasis> (<link linkend="_structiterator">Iterator</link> *it)</para>
+</listitem>
+            <listitem><para><anchor xml:id="_list_8c_1ad3fef6f5ebef0c0329410899cf54eec0"/>int <emphasis role="strong">iteratorGetData</emphasis> (<link linkend="_structiterator">Iterator</link> *it, Data *destination)</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Function Documentation</title>
+<anchor xml:id="_list_8c_1ac9382691bb8c711e981a01673b34febb"/>    <section>
+    <title>listCreate()</title>
+<indexterm><primary>listCreate</primary><secondary>list.c</secondary></indexterm>
+<indexterm><primary>list.c</primary><secondary>listCreate</secondary></indexterm>
+<para><computeroutput><link linkend="_structlist">List</link>* listCreate ( )</computeroutput></para><para>
+
+<para>Creates and returns a list. </para>
+</para>
+
+<para><formalpara><title>Returns</title>
+
+<para>List* The new (empty) list </para>
+</formalpara>
+</para>
+<para>
+Definition at line 268 of file list.c.</para>
+</section>
+</section>
+</section>

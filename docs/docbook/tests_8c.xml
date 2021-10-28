@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_tests_8c" xml:lang="en-US">
+<title>src/tests.c File Reference</title>
+<indexterm><primary>src/tests.c</primary></indexterm>
+<programlisting>#include &lt;assert.h&gt;
+#include &lt;time.h&gt;
+#include &lt;stdlib.h&gt;
+#include &quot;list.h&quot;
+</programlisting>Include dependency graph for tests.c:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="tests_8c__incl.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Functions    </title>
+        <itemizedlist>
+            <listitem><para>void <link linkend="_tests_8c_1a9aabb2608879cae3654caa4bfe9f0554">printGreen</link> (char *s)</para>
+</listitem>
+            <listitem><para>void <link linkend="_tests_8c_1a89b576205b6b0262ccc628851ede1c4c">printYellow</link> (char *s)</para>
+</listitem>
+            <listitem><para>void <link linkend="_tests_8c_1a590adfbbe4a09ca5a391698401d9f365">printRed</link> (char *s)</para>
+</listitem>
+            <listitem><para>void <link linkend="_tests_8c_1aa234d39c3931b1ab022a5ae6a7ef5983">printSuccess</link> (char *s)</para>
+</listitem>
+            <listitem><para>void <link linkend="_tests_8c_1af8dc764b00593225d1bed990c51fcb5e">quickPopulate</link> (<link linkend="_list_8h_1aa89b8bc105d9a09d4e7c06e8b34078a7">List</link> *l)</para>
+</listitem>
+            <listitem><para>void <link linkend="_tests_8c_1a5b509e9987da19c40f8bb0196a1f504f">quickPopulateReverse</link> (<link linkend="_list_8h_1aa89b8bc105d9a09d4e7c06e8b34078a7">List</link> *l)</para>
+</listitem>
+            <listitem><para>int <link linkend="_tests_8c_1ae66f6b31b5ad750f1fe042a706a4e3d4">main</link> ()</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<simplesect>
+    <title>Variables    </title>
+        <itemizedlist>
+            <listitem><para>const int <link linkend="_tests_8c_1ab5ebdce9090d30de68619aca0365d4e1">LIST_TEST_SIZE</link> = 10000</para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Function Documentation</title>
+<anchor xml:id="_tests_8c_1ae66f6b31b5ad750f1fe042a706a4e3d4"/>    <section>
+    <title>main()</title>
+<indexterm><primary>main</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>main</secondary></indexterm>
+<para><computeroutput>int main ( )</computeroutput></para><para>
+Definition at line 49 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1a9aabb2608879cae3654caa4bfe9f0554"/>    <section>
+    <title>printGreen()</title>
+<indexterm><primary>printGreen</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>printGreen</secondary></indexterm>
+<para><computeroutput>void printGreen (char * s)</computeroutput></para><para>
+Definition at line 11 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1a590adfbbe4a09ca5a391698401d9f365"/>    <section>
+    <title>printRed()</title>
+<indexterm><primary>printRed</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>printRed</secondary></indexterm>
+<para><computeroutput>void printRed (char * s)</computeroutput></para><para>
+Definition at line 21 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1aa234d39c3931b1ab022a5ae6a7ef5983"/>    <section>
+    <title>printSuccess()</title>
+<indexterm><primary>printSuccess</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>printSuccess</secondary></indexterm>
+<para><computeroutput>void printSuccess (char * s)</computeroutput></para><para>
+Definition at line 26 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1a89b576205b6b0262ccc628851ede1c4c"/>    <section>
+    <title>printYellow()</title>
+<indexterm><primary>printYellow</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>printYellow</secondary></indexterm>
+<para><computeroutput>void printYellow (char * s)</computeroutput></para><para>
+Definition at line 16 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1af8dc764b00593225d1bed990c51fcb5e"/>    <section>
+    <title>quickPopulate()</title>
+<indexterm><primary>quickPopulate</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>quickPopulate</secondary></indexterm>
+<para><computeroutput>void quickPopulate (<link linkend="_list_8h_1aa89b8bc105d9a09d4e7c06e8b34078a7">List</link> * l)</computeroutput></para><para>
+Definition at line 31 of file tests.c.</para>
+    </section><anchor xml:id="_tests_8c_1a5b509e9987da19c40f8bb0196a1f504f"/>    <section>
+    <title>quickPopulateReverse()</title>
+<indexterm><primary>quickPopulateReverse</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>quickPopulateReverse</secondary></indexterm>
+<para><computeroutput>void quickPopulateReverse (<link linkend="_list_8h_1aa89b8bc105d9a09d4e7c06e8b34078a7">List</link> * l)</computeroutput></para><para>
+Definition at line 40 of file tests.c.</para>
+</section>
+</section>
+<section>
+<title>Variable Documentation</title>
+<anchor xml:id="_tests_8c_1ab5ebdce9090d30de68619aca0365d4e1"/>    <section>
+    <title>LIST_TEST_SIZE</title>
+<indexterm><primary>LIST_TEST_SIZE</primary><secondary>tests.c</secondary></indexterm>
+<indexterm><primary>tests.c</primary><secondary>LIST_TEST_SIZE</secondary></indexterm>
+<para><computeroutput>const int LIST_TEST_SIZE = 10000</computeroutput></para><para>
+Definition at line 9 of file tests.c.</para>
+</section>
+</section>
+</section>

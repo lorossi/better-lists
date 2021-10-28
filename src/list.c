@@ -1,34 +1,46 @@
 #include "list.h"
 
-/* Private function. Create a node with link to previous and next node. */
+/**
+ * @internal
+ * @brief Internal function. Creates a node with link to previous and next node.
+ * 
+ * @param previous Pointer to previous node, can be NULL.
+ * @param next Pointer to next node, can be NULL.
+ * @param data Data to be put in the new node.
+ * @return Node* the new node, already linked.
+ */
 Node *_nodeCreate(Node *previous, Node *next, Data *data)
 {
   Node *new = NULL;
   new = (Node *)malloc(sizeof(Node));
 
-  if (previous != NULL)
-    new->previous = previous;
-  else
-    new->previous = NULL;
-
-  if (next != NULL)
-    new->next = next;
-  else
-    new->next = NULL;
-
+  new->previous = previous; // can be NULL
+  new->next = next;         // can be NULL
   new->data = *data;
 
   return new;
 }
 
-/* Private function. Delete a a node. */
+/**
+ * @internal
+ * @brief Internal function. Deletes a node.
+ * 
+ * @param node Pointer to the node to be deleted.
+ */
 void _nodeDelete(Node *node)
 {
   free(node);
   return;
 }
 
-/* Private function. Find node in a list by its index. */
+/**
+ * @internal
+ * @brief Internal function. Finds a node by its index.
+ * 
+ * @param list List containing the node to look for.
+ * @param index Index of the node.
+ * @return Node* 
+ */
 Node *_findNodeByIndex(List *list, int index)
 {
   if (index >= listGetSize(list))
@@ -37,20 +49,22 @@ Node *_findNodeByIndex(List *list, int index)
   Node *current;
   int count, increment;
 
-  // if the node is closer to then end than to the start, go backwards
   if (index > listGetSize(list) / 2)
   {
+    // if the node is closer to then end than to the start, go backwards from the tail
     current = list->tail;
     count = listGetSize(list) - 1;
     increment = -1;
   }
   else
   {
+    // otherwise, go forward from the head
     current = list->head;
     count = 0;
     increment = 1;
   }
 
+  // loop over the list
   while (current != NULL)
   {
     if (index == count)
@@ -58,6 +72,7 @@ Node *_findNodeByIndex(List *list, int index)
 
     count += increment;
 
+    // increment according to direction
     if (increment == 1)
       current = current->next;
     else
@@ -67,7 +82,14 @@ Node *_findNodeByIndex(List *list, int index)
   return NULL;
 }
 
-/* Private function. Find node in a list by its value. */
+/**
+ * @internal
+ * @brief Internal function. Finds a node in a list by its value.
+ * 
+ * @param list List containing the node to look for.
+ * @param data Value of the node.
+ * @return Node* 
+ */
 Node *_findNodeByValue(List *list, Data *data)
 {
   Node *current = list->head;
@@ -83,7 +105,14 @@ Node *_findNodeByValue(List *list, Data *data)
   return NULL;
 }
 
-/* Private function. Find node index in a list by its value. */
+/**
+ * @internal 
+ * @brief Finds a node index in a list by its value.
+ * 
+ * @param list List containing the node to look for.
+ * @param data Pointer containing value of the node.
+ * @return int Index of the nome.
+ */
 int _findNodeIndexByValue(List *list, Data *data)
 {
   Node *current = list->head;
@@ -101,7 +130,13 @@ int _findNodeIndexByValue(List *list, Data *data)
   return -1;
 }
 
-/* Private function. Print the value of the node. */
+/**
+ * @internal
+ * @brief Prints the value of the node.
+ * 
+ * @param node Node to be printed.
+ * @param index Index of the node.
+ */
 void _nodePrint(Node *node, int index)
 {
 #ifdef CUSTOMLIST
@@ -119,8 +154,14 @@ void _nodePrint(Node *node, int index)
 #endif
 }
 
-/* Private function. Get the data in an item. Returns -1 if an error is encountered or the size of the data in case of success.
-If destination is NULL, no values is read. */
+/**
+ * @internal
+ * @brief Gets the data in an item.
+ * 
+ * @param node Node from which the data will be taken.
+ * @param destination Pointer to the variable where data will be saved. If it's NULL, no value is read.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int _nodeGetData(Node *node, Data *destination)
 {
   if (node != NULL)
@@ -135,7 +176,14 @@ int _nodeGetData(Node *node, Data *destination)
   return -1;
 }
 
-/* Private function. Set the data in an item. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @internal
+ * @brief Sets the data in an item.
+ * 
+ * @param node Node in which the data will be written.
+ * @param data Pointer to the source variable. If it's NULL, no value is written.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int _nodeSetData(Node *node, Data *data)
 {
   if (node != NULL)
@@ -147,7 +195,15 @@ int _nodeSetData(Node *node, Data *data)
   return -1;
 }
 
-/* Private function. Retrieve a node from a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @internal
+ * @brief Retrieves a node from a list by its index.
+ * 
+ * @param list List containing the node to look for.
+ * @param destination Pointer to the variable where data will be saved.
+ * @param index Index of the node in the list.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int _listGetNode(List *list, Node *destination, int index)
 {
   Node *node;
@@ -162,7 +218,14 @@ int _listGetNode(List *list, Node *destination, int index)
   return -1;
 }
 
-/* Private function. Retrieve a node from a list by its value. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @internal
+ * @brief Retrieves a node from a list by its value.
+ * 
+ * @param list List containing the node to look for.
+ * @param destination Pointer to the variable where data will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int _listGetNodeByValue(List *list, Node *destination, Data *value)
 {
   Node *node;
@@ -177,7 +240,13 @@ int _listGetNodeByValue(List *list, Node *destination, Data *value)
   return -1;
 }
 
-/* Private function. Swap two nodes. */
+/**
+ * @internal
+ * @brief Swaps two nodes.
+ * 
+ * @param n1 Pointer to the first node to be swapped.
+ * @param n2 Pointer to the second node to be swapped.
+ */
 void _listSwapNodes(Node *n1, Node *n2)
 {
 
@@ -195,7 +264,11 @@ void _listSwapNodes(Node *n1, Node *n2)
 #endif
 }
 
-/* Create and return a list. */
+/**
+ * @brief Creates and returns a list.
+ * 
+ * @return List* The new (empty) list.
+ */
 List *listCreate()
 {
   List *list = malloc(sizeof(List));
@@ -205,7 +278,11 @@ List *listCreate()
   return list;
 }
 
-/* Delete a list and all of its nodes. */
+/**
+ * @brief Deletes a list and all of its nodes.
+ * 
+ * @param list The list to be deleted.
+ */
 void listDelete(List *list)
 {
   Node *current = list->head;
@@ -225,7 +302,14 @@ void listDelete(List *list)
   return;
 }
 
-/* Retrieve an item in a list by its index. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @brief Retrieves an item in a list by its index.
+ * 
+ * @param list List containing the data to look for.
+ * @param destination Pointer to the variable where data will be saved.
+ * @param index -1 if an error is encountered; size of the items otherwise.
+ * @return int 
+ */
 int listGetItem(List *list, Data *destination, int index)
 {
   Node *node = _findNodeByIndex(list, index);
@@ -238,8 +322,13 @@ int listGetItem(List *list, Data *destination, int index)
   return -1;
 }
 
-/* Get the first item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
-If parameter destination is NULL, nothing is loaded. */
+/**
+ * @brief Gets the first item in a list.
+ * 
+ * @param list List containing the data to look for.
+ * @param destination Pointer to the variable where data will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listGetFirstItem(List *list, Data *destination)
 {
   if (list->head != NULL)
@@ -253,8 +342,13 @@ int listGetFirstItem(List *list, Data *destination)
   return -1;
 }
 
-/* Get the last item in a list. Returns -1 if an error is encountered or the size of the data in case of success.
-If parameter destination is NULL, nothing is loaded. */
+/**
+ * @brief Gets the last item in a list.
+ * 
+ * @param list List containing the data to look for.
+ * @param destination Pointer to the variable where data will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listGetLastItem(List *list, Data *destination)
 {
   if (list->tail != NULL)
@@ -268,22 +362,23 @@ int listGetLastItem(List *list, Data *destination)
   return -1;
 }
 
-/* Append an item to the list. */
+/**
+ * @brief Appends an item to the list.
+ * 
+ * @param list List where the items will be appended.
+ * @param data Data to append.
+ * @return int New length of the list.
+ */
 int listAppend(List *list, Data *data)
 {
-  list->length++;
-
   if (list->head == NULL)
   {
     // no head, create one
     Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
-
-    return 0;
   }
-
-  if (list->tail == NULL)
+  else if (list->tail == NULL)
   {
     // no tail, create one
     // there's only one item in the list, the head
@@ -291,35 +386,36 @@ int listAppend(List *list, Data *data)
     // update list and tail
     list->head->next = tail;
     list->tail = tail;
-
-    return 1;
+  }
+  else
+  { // head and tail exist, change tail
+    // update the formerly last node
+    Node *new_tail = _nodeCreate(list->tail, NULL, data);
+    list->tail->next = new_tail;
+    list->tail = new_tail;
   }
 
-  // head and tail exist, change tail
-  // update the formerly last node
-  Node *new_tail = _nodeCreate(list->tail, NULL, data);
-  list->tail->next = new_tail;
-  list->tail = new_tail;
-
-  return list->length - 1;
+  list->length++;
+  return list->length;
 }
 
-/* Add an item in front of a list. Returns position. */
+/**
+ * @brief Adds an item in front of the list.
+ * 
+ * @param list List where the items will be appended.
+ * @param data Data to prepend.
+ * @return int New length of the list.
+ */
 int listPrepend(List *list, Data *data)
 {
-  list->length++;
-
   if (list->head == NULL)
   {
     // no head, create one
     Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
-
-    return 0;
   }
-
-  if (list->tail == NULL)
+  else if (list->tail == NULL)
   {
     // no tail, create one
     // there's only one item in the list, the head
@@ -331,20 +427,28 @@ int listPrepend(List *list, Data *data)
     list->tail->previous = head;
     // set new head
     list->head = head;
-    return 0;
+  }
+  else
+  {
+    // head and tail exist, change head
+    // update the formerly first node
+    Node *new_head = _nodeCreate(NULL, list->head, data);
+    list->head->previous = new_head;
+    list->head = new_head;
   }
 
-  // head and tail exist, change head
-  // update the formerly first node
-  Node *new_head = _nodeCreate(NULL, list->head, data);
-  list->head->previous = new_head;
-  list->head = new_head;
-
-  return 0;
+  list->length++;
+  return list->length;
 }
 
-/* Remove an item from the list according to its index. Returns -1 if an error is encountered or the size of the data in case of success.
-If destination is NULL, no values is read. */
+/**
+ * @brief Removes an item from the list according to its index.
+ * 
+ * @param list List from where the data will be removed.
+ * @param destination Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @param index Index of the items that will be removed.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listRemoveItem(List *list, Data *destination, int index)
 {
   Node *current = _findNodeByIndex(list, index);
@@ -373,7 +477,13 @@ int listRemoveItem(List *list, Data *destination, int index)
   return sizeof(*destination);
 }
 
-/* Remove an item from the list according to its value. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @brief Removes an item from the list according to its value.
+ * 
+ * @param list List from where the data will be removed.
+ * @param oldvalue Value of the items that will be removed.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listRemoveItemByValue(List *list, Data *oldvalue)
 {
   int index;
@@ -385,7 +495,13 @@ int listRemoveItemByValue(List *list, Data *oldvalue)
   return listRemoveItem(list, NULL, index);
 }
 
-/* Pop the list, removing its last item. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @brief Pops the list, removing its last item.
+ * 
+ * @param list List that will be popped.
+ * @param last Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listPop(List *list, Data *last)
 {
   if (listRemoveItem(list, last, list->length - 1) != -1)
@@ -394,7 +510,13 @@ int listPop(List *list, Data *last)
   return -1;
 }
 
-/* Unshift the list, removing its first item. Returns -1 if an error is encountered or the size of the data in case of success. */
+/**
+ * @brief Unshifts the list, removing its first item.
+ * 
+ * @param list List where the items will be added.
+ * @param first Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int listUnshift(List *list, Data *first)
 {
   if (listRemoveItem(list, first, 0) != -1)
@@ -403,7 +525,14 @@ int listUnshift(List *list, Data *first)
   return -1;
 }
 
-/* Switch two items in a list according to their index. Returns -1 if an error is encountered. */
+/**
+ * @brief Swaps two items in a list according to their index.
+ * 
+ * @param list List where the items will be swapped.
+ * @param first_index Index of the first item.
+ * @param second_index Index of the second item.
+ * @return int 0 if successfull, -1 of an error is encountered.
+ */
 int listSwap(List *list, int first_index, int second_index)
 {
   // check if the indexes are in bound
@@ -418,7 +547,14 @@ int listSwap(List *list, int first_index, int second_index)
   return 0;
 }
 
-/* Replace the data in an item according to its value. Returns its index if found, -1 in case of an error. */
+/**
+ * @brief Replaces the data in an item according to its value.
+ * 
+ * @param list List where the items will be replaced.
+ * @param oldvalue Old value of the items.
+ * @param newvalue New value of the items.
+ * @return int Index of the item if found, -1 in case of an error.
+ */
 int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue)
 {
   int index;
@@ -430,7 +566,14 @@ int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue)
   return listReplaceItem(list, newvalue, index);
 }
 
-/* Replace the data in an item according to its index. Returns its size if found, -1 in case of an error. */
+/**
+ * @brief Replaces the data in an item according to its index.
+ * 
+ * @param list List where the items will be replaced.
+ * @param newvalue New value of the items.
+ * @param index Index of the old items.
+ * @return int Size of the new item if found; -1 otherwise.
+ */
 int listReplaceItem(List *list, Data *newvalue, int index)
 {
   Node *node;
@@ -442,8 +585,15 @@ int listReplaceItem(List *list, Data *newvalue, int index)
   return _nodeSetData(node, newvalue);
 }
 
-/* Replces all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
-replace all occurencies. */
+/**
+ * @brief Replaces all occurrences of a certain value from the list.
+ * 
+ * @param list List where the items will be replaced.
+ * @param oldvalue Old value of the items.
+ * @param newvalue New value of the items.
+ * @param replace_count Number of times the items shall be replaced. If -1, all matching items will be replaced.
+ * @return int Number of replaced items.
+ */
 int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_count)
 {
   int count = 0;
@@ -460,8 +610,14 @@ int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_cou
   return count;
 }
 
-/* Remove all occurrences of a certain value from the list. Return number of removed items. If remove count is -1,
-removes all occurencies. */
+/**
+ * @brief Removes all occurrences of a certain value from the list.
+ * 
+ * @param list List where the items will be removed.
+ * @param data Value of the items that will be removed.
+ * @param remove_count Number of times the items shall be replaced. If -1, all matching items will be removed.
+ * @return int Number of removed items.
+ */
 int listCountRemove(List *list, Data *data, int remove_count)
 {
   int count = 0;
@@ -478,39 +634,59 @@ int listCountRemove(List *list, Data *data, int remove_count)
   return count;
 }
 
-/* Add item to the list. Return its position. */
-int listAddItem(List *list, Data *data, int position)
+/**
+ * @brief Adds item to the list.
+ * 
+ * @param list List where the items will be added.
+ * @param data Value of the items that will be removed.
+ * @param index Position of the new item.
+ * @return int Length of the list.
+ */
+int listAddItem(List *list, Data *data, int index)
 {
-  if (position > list->length - 1)
+  if (index == 0)
+  {
+    // add head
+    return listPrepend(list, data);
+  }
+
+  if (index > list->length - 1)
   {
     // add tail
-    listAppend(list, data);
-    return list->length - 2;
+    return listAppend(list, data);
   }
 
-  if (position == 0)
-  {
-    listPrepend(list, data);
-    return 0;
-  }
-
-  Node *previous = _findNodeByIndex(list, position - 1);
-  Node *next = _findNodeByIndex(list, position);
+  // add new node
+  Node *previous = _findNodeByIndex(list, index - 1);
+  Node *next = _findNodeByIndex(list, index);
   Node *new = _nodeCreate(previous, next, data);
   previous->next = new;
   next->previous = new;
   list->length++;
 
-  return position;
+  return list->length;
 }
 
-/* Check if data is in list. If found, returns its position. If not found, returns -1 */
+/* . If found, returns its position. If not found, returns -1 */
+/**
+ * @brief Checks if item is in list.
+ * 
+ * @param list List where the items will be searched.
+ * @param data Value of the item that will be searched.
+ * @return int Position of the item if found; -1 otherwise.
+ */
 int dataInList(List *list, Data *data)
 {
   return _findNodeIndexByValue(list, data);
 }
 
-/* Make an array out of the list. Returns the size of the array */
+/**
+ * @brief Makes an array out of the list.
+ * 
+ * @param list List that will be converted.
+ * @param array Pointer to the array where the items will be put.
+ * @return int The size of the array.
+ */
 int listToArray(List *list, Data *array)
 {
   int length;
@@ -531,7 +707,12 @@ int listToArray(List *list, Data *array)
   return length;
 }
 
-/* Print the list in a readable manner */
+/**
+ * @brief Prints the list in a readable manner.
+ * 
+ * @param list List that will be printed.
+ * @param end End of line separator.
+ */
 void printList(List *list, char *end)
 {
 
@@ -549,7 +730,12 @@ void printList(List *list, char *end)
   printf("%s", end);
 }
 
-/* Print the list in a readable manner, in reverse */
+/**
+ * @brief Prints the list in a readable manner, in reverse.
+ * 
+ * @param list List that will be printed.
+ * @param end End of line separator.
+ */
 void printListReverse(List *list, char *end)
 {
   Node *current;
@@ -572,14 +758,24 @@ void printListReverse(List *list, char *end)
   printf("%s", end);
 }
 
-/* Return the length of the list */
+/**
+ * @brief Returns the length of the list.
+ * 
+ * @param list List whose the size will be returned.
+ * @return int Length of the list.
+ */
 int listGetSize(List *list)
 {
   return list->length;
 }
 
-/* Sort a list using quicksort. If reverse is 0, the list is sorted lowest to highest. If it's 1, it's sirted highest to lowest. 
-Does not work with CUSTOMTYPE */
+/**
+ * @brief Sorts a list using quicksort. Does not work with CUSTOMTYPE.
+ * 
+ * @param list List that will be sorted.
+ * @param reverse Order of the sorting. If is 0, the list is sorted lowest to highest. If 1, it's sirted highest to lowest.
+ * @return int 0 in case of success; -1 otherwise.
+ */
 int listSort(List *list, int reverse)
 {
 #ifdef CUSTOMTYPE
@@ -624,8 +820,29 @@ int listSort(List *list, int reverse)
   return 0;
 }
 
-/* Returns an iterator for the list. If index == 0, the iterator starts at the head of the list.
-If index == -1, it starts at the end of the list. Otherwise, it starts at the corresponding index of the list */
+/**
+ * @brief Shuffles a list using Fisher-Yates algorithm.
+ * 
+ * @param list List that will be shuffled.
+ */
+void listShuffle(List *list)
+{
+  srand(time(NULL));
+
+  for (int i = list->length - 1; i > 0; i--)
+  {
+    int j = rand() % (i + 1);
+    listSwap(list, i, j);
+  }
+}
+
+/**
+ * @brief Creates an iterator for the list.
+ * 
+ * @param list List from where the iterator will be extracted.
+ * @param index Starting index of the iterator. If 0, starts at the head of the list. If -1, starts at its end.
+ * @return Iterator* The new iterator.
+ */
 Iterator *iteratorCreate(List *list, int index)
 {
   Iterator *new = NULL;
@@ -663,28 +880,23 @@ Iterator *iteratorCreate(List *list, int index)
   return new;
 }
 
-/* Shuffles a list using Fisher–Yates shuffle algorithm. */
-int listShuffle(List *list)
-{
-  srand(time(NULL));
-
-  for (int i = list->length - 1; i > 0; i--)
-  {
-    int j = rand() % (i + 1);
-    listSwap(list, i, j);
-  }
-
-  return 0;
-}
-
-/* Delete an iterator. */
+/**
+ * @brief Deletes an iterator.
+ * 
+ * @param it Iterator that will be deleted.
+ */
 void iteratorDelete(Iterator *it)
 {
   free(it);
   return;
 }
 
-/* Tells if the iterator has reached the end */
+/**
+ * @brief Checks if the iterator has reached the end.
+ * 
+ * @param it Iterator to check.
+ * @return int 1 if true, 0 if false.
+ */
 int iteratorEnded(Iterator *it)
 {
   if (it->next == NULL)
@@ -693,7 +905,12 @@ int iteratorEnded(Iterator *it)
   return 0;
 }
 
-/* Tells if the iterator has reached the start */
+/**
+ * @brief Checks if the iterator has reached the start.
+ *
+ * @param it Iterator to check.
+ * @return int 1 if true, 0 if false.
+ */
 int iteratorStarted(Iterator *it)
 {
   if (it->previous == NULL)
@@ -702,7 +919,12 @@ int iteratorStarted(Iterator *it)
   return 0;
 }
 
-/* Moves the iterator forward by an item. Returns -1 if the list ended. */
+/**
+ * @brief Moves the iterator forward by an item.
+ * 
+ * @param it Iterator to move.
+ * @return int 0 if it moved successfully, -1 if the list is ended.
+ */
 int iteratorNext(Iterator *it)
 {
   if (it->next != NULL)
@@ -717,7 +939,12 @@ int iteratorNext(Iterator *it)
   return -1;
 }
 
-/* Moves the iterator backward by an item. Returns -1 if the list ended. */
+/**
+ * @brief Moves the iterator backward by an item.
+ * 
+ * @param it Iterator to move.
+ * @return int 0 if it moved successfully, -1 if the list is ended.
+ */
 int iteratorPrevious(Iterator *it)
 {
   if (it->previous != NULL)
@@ -732,7 +959,13 @@ int iteratorPrevious(Iterator *it)
   return -1;
 }
 
-/* Loads the current value of the iterator. Returns -1 in case of error, the size of destination in case of success. */
+/**
+ * @brief Loads the current value of the iterator.
+ * 
+ * @param it Iterator to get the value of.
+ * @param destination Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
 int iteratorGetData(Iterator *it, Data *destination)
 {
   return _nodeGetData(it->current, destination);

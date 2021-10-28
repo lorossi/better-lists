@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_structiterator" xml:lang="en-US">
+<title>iterator Struct Reference</title>
+<indexterm><primary>iterator</primary></indexterm>
+Collaboration diagram for iterator:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="structiterator__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Data Fields    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_structiterator_1a107e97df39ae84ec6964158013acf90a"/>struct <link linkend="_structnode">node</link> * <emphasis role="strong">previous</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structiterator_1a38cc4df50734c1513b14c33334925600"/>struct <link linkend="_structnode">node</link> * <emphasis role="strong">next</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structiterator_1abf74267b09fa539542df0bf7956396b0"/>struct <link linkend="_structnode">node</link> * <emphasis role="strong">current</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structiterator_1ab2690142af31c1a4f9db940ed729b62c"/>int <emphasis role="strong">index</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+<para>
+Definition at line 53 of file list.h.</para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+src/<link linkend="_list_8h">list.h</link></section>
+</section>

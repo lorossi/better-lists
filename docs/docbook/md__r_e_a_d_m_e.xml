@@ -1,0 +1,267 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_md__r_e_a_d_m_e" xml:lang="en-US">
+
+<para>A simple implementation of doubly linked lists in C.</para>
+
+<para>I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (it was my first year!), I couldn&apos;t get linked lists to work. It&apos;s a very satisfying goal to reach, about 5 years (and a degree) later.</para>
+
+<para>Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the <computeroutput>tests.c</computeroutput> file I have implemented a simple test suite using the <computeroutput>assert.h</computeroutput> library. It&apos;s not pretty, but it works.</para>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md3">
+<title>Data types</title>
+
+<para>By default, lists store integers. In order to store different types of data, the final user must define, before importing, the constants:</para>
+
+<para><itemizedlist>
+<listitem>
+<para><computeroutput>CHARLIST</computeroutput> to store <computeroutput>char</computeroutput> inside the lists</para>
+</listitem><listitem>
+<para><computeroutput>STRINGLIST</computeroutput> to store <computeroutput>char*</computeroutput> inside the lists</para>
+</listitem><listitem>
+<para><computeroutput>FLOATLIST</computeroutput> to store <computeroutput>float</computeroutput> inside the lists</para>
+</listitem><listitem>
+<para><computeroutput>DOUBLE</computeroutput> to store <computeroutput>double</computeroutput> inside the lists</para>
+</listitem></itemizedlist>
+</para>
+
+<para>Furthermore, it the user wants to store another type of data, the constant <computeroutput>CUSTOMTYPE</computeroutput> must be defined along the type that will be stored into the list.</para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md4">
+<title>Iterators</title>
+
+<para>While navigating a linked list by getting the item at i-th position, all the nodes from the head to the i-th element must be navigated through. In order to save some computation time and speed, I have introduced the <emphasis>iterators</emphasis>. They keep track of the current, previous and next node in the list, thus allowing the programmer to make efficient iterations over lists. Check the examples to learn how to use them.</para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md5">
+<title>Functions</title>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md6">
+<title>Lists related</title>
+
+<para><literallayout><computeroutput>List&#32;*listCreate();
+void&#32;listDelete(List&#32;*list);
+int&#32;listGetItem(List&#32;*list,&#32;Data&#32;*destination,&#32;int&#32;index);
+int&#32;listGetFirstItem(List&#32;*list,&#32;Data&#32;*destination);
+int&#32;listGetLastItem(List&#32;*list,&#32;Data&#32;*destination);
+int&#32;listAddItem(List&#32;*list,&#32;Data&#32;*data,&#32;int&#32;position);
+int&#32;listAppend(List&#32;*list,&#32;Data&#32;*data);
+int&#32;listPrepend(List&#32;*list,&#32;Data&#32;*data);
+int&#32;listReplaceItem(List&#32;*list,&#32;Data&#32;*newvalue,&#32;int&#32;index);
+int&#32;listReplaceItemByValue(List&#32;*list,&#32;Data&#32;*oldvalue,&#32;Data&#32;*newvalue);
+int&#32;listCountReplace(List&#32;*list,&#32;Data&#32;*oldvalue,&#32;Data&#32;*newvalue,&#32;int&#32;replace_count);
+int&#32;listRemoveItem(List&#32;*list,&#32;Data&#32;*destination,&#32;int&#32;index);
+int&#32;listRemoveItemByValue(List&#32;*list,&#32;Data&#32;*oldvalue);
+int&#32;listCountRemove(List&#32;*list,&#32;Data&#32;*oldvalue,&#32;int&#32;remove_count);
+int&#32;listPop(List&#32;*list,&#32;Data&#32;*last);
+int&#32;listUnshift(List&#32;*list,&#32;Data&#32;*destination);
+int&#32;dataInList(List&#32;*list,&#32;Data&#32;*data);
+int&#32;listToArray(List&#32;*list,&#32;Data&#32;*array);
+void&#32;printList(List&#32;*list,&#32;char&#32;*end);
+void&#32;printListReverse(List&#32;*list,&#32;char&#32;*end);
+int&#32;listGetSize(List&#32;*list);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md7">
+<title>Iterators related</title>
+
+<para><literallayout><computeroutput>Iterator&#32;*iteratorCreate(List&#32;*list,&#32;int&#32;start);
+void&#32;iteratorDelete(Iterator&#32;*it);
+int&#32;iteratorEnded(Iterator&#32;*it);
+int&#32;iteratorStarted(Iterator&#32;*it);
+int&#32;iteratorNext(Iterator&#32;*it);
+int&#32;iteratorPrevious(Iterator&#32;*it);
+int&#32;iteratorGetData(Iterator&#32;*it,&#32;Data&#32;*destination);
+</computeroutput></literallayout></para>
+</section>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md8">
+<title>Example</title>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md9">
+<title>List creation</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+//&#32;memory&#32;is&#32;allocated
+l&#32;=&#32;createList();
+//&#32;IMPORTANT,&#32;always&#32;delete&#32;lists&#32;when&#32;not&#32;needed&#32;any&#32;more
+deleteList(l);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md10">
+<title>Getting list size</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+int&#32;n;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+n&#32;=&#32;listGetSize(l);
+printf(&quot;List&#32;is&#32;%i&#32;items&#32;long\n&quot;,&#32;n);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md11">
+<title>Adding data to a list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+l&#32;=&#32;createList();
+
+//&#32;appending&#32;to&#32;list
+for&#32;(int&#32;i&#32;=&#32;0;&#32;i&#32;&lt;&#32;20;&#32;i++)
+{
+&#32;&#32;d&#32;=&#32;i;
+&#32;&#32;listAppend(l,&#32;&amp;d);
+}
+//&#32;prepending&#32;to&#32;list
+for&#32;(int&#32;i&#32;=&#32;0;&#32;i&#32;&lt;&#32;20;&#32;i++)
+{
+&#32;&#32;d&#32;=&#32;20&#32;-&#32;i&#32;-&#32;1;
+&#32;&#32;listPrepend(l,&#32;&amp;d);
+}
+//&#32;add&#32;99&#32;at&#32;position&#32;4
+d&#32;=&#32;99;
+listAddItem(l,&#32;&amp;d,&#32;4);
+//&#32;always&#32;delete&#32;the&#32;list&#32;to&#32;free&#32;the&#32;space
+deleteList(l)
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md12">
+<title>Replacing items in a list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d,&#32;old,&#32;new;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+//&#32;replace&#32;item&#32;at&#32;index&#32;6
+d&#32;=&#32;40;
+listReplaceItem(l,&#32;&amp;d,&#32;6);
+//&#32;replace&#32;the&#32;first&#32;item&#32;with&#32;value&#32;37&#32;in&#32;the&#32;list&#32;with&#32;8
+old&#32;=&#32;37;
+new&#32;=&#32;8;
+listReplaceItemByValue(l,&#32;&amp;old,&#32;&amp;new);
+//&#32;replace&#32;the&#32;first&#32;3&#32;instances&#32;of&#32;8&#32;with&#32;9;
+old&#32;=&#32;8;
+new&#32;=&#32;9;
+listCountReplace(l,&#32;&amp;old,&#32;&amp;new,&#32;3);
+//&#32;replace&#32;all&#32;the&#32;instances&#32;of&#32;9&#32;with&#32;10
+old&#32;=&#32;9;
+new&#32;=&#32;10;
+listCountReplace(l,&#32;&amp;old,&#32;&amp;new,&#32;-1);&#32;
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md13">
+<title>Getting items from the list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+//&#32;get&#32;item&#32;at&#32;index&#32;3
+listGetItem(l,&#32;&amp;d,&#32;3);
+//&#32;now&#32;d&#32;contains&#32;the&#32;item&#32;in&#32;position&#32;3&#32;of&#32;the&#32;list
+//&#32;to&#32;get&#32;the&#32;first&#32;and&#32;last&#32;item,&#32;use&#32;the&#32;proper&#32;function&#32;to&#32;save&#32;time
+listGetFirstItem(l,&#32;&amp;d);
+listGetLastItem(l,&#32;&amp;d);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md14">
+<title>Removing items from the list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+//&#32;remove&#32;first&#32;item&#32;and&#32;place&#32;it&#32;in&#32;d
+listUnshift(l,&#32;&amp;d);&#32;
+//&#32;remove&#32;last&#32;item&#32;without&#32;saving&#32;it
+listPop(l,&#32;NULL);
+//&#32;remove&#32;item&#32;at&#32;position&#32;11
+listRemoveItem(l,&#32;11);
+//&#32;remove&#32;the&#32;first&#32;occurrence&#32;of&#32;4&#32;from&#32;list
+listRemoveItemByValue(l,&#32;4);
+//&#32;remove&#32;the&#32;first&#32;5&#32;occurrences&#32;of&#32;77&#32;from&#32;list
+listCountRemove(l,&#32;5);
+//&#32;remove&#32;all&#32;occurrences&#32;of&#32;1&#32;from&#32;list
+listCountRemove(l,&#32;-1);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md15">
+<title>Swap items</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+listSwap(l,&#32;0,&#32;2);&#32;//&#32;swaps&#32;item&#32;in&#32;position&#32;0&#32;and&#32;2
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md16">
+<title>Sorting list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+listSort(l,&#32;0);&#32;//&#32;sorts&#32;lowest&#32;to&#32;highest
+listSort(l,&#32;1);&#32;//&#32;sorts&#32;highest&#32;to&#32;lowest
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md17">
+<title>Shuffle list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+listShuffle(l);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md18">
+<title>Check if an item is in list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+d&#32;=&#32;5;
+if&#32;(dataInList(l,&#32;&amp;d)&#32;==&#32;1)
+&#32;&#32;printf(&quot;%i&#32;in&#32;List\n&quot;);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md19">
+<title>Printing list</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+char&#32;end;
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+end&#32;=&#32;&quot;\n&quot;;
+//&#32;print&#32;the&#32;list&#32;from&#32;start&#32;to&#32;end
+printList(l,&#32;end);
+//&#32;print&#32;the&#32;list&#32;backwards
+printListReverse(l,&#32;end);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md20">
+<title>Converting list into array</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;arr[listGetSize(l)];
+//&#32;list&#32;creation&#32;and&#32;population&#32;not&#32;in&#32;this&#32;example
+listToArray(l,&#32;a);
+</computeroutput></literallayout></para>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md21">
+<title>Using iterators</title>
+
+<para><literallayout><computeroutput>List&#32;*l;
+Data&#32;d;
+Iterator&#32;it;
+//&#32;forward&#32;iteration
+for&#32;(it&#32;=&#32;iteratorCreate(l,&#32;0);&#32;!iteratorEnded(it);&#32;iteratorNext(it))
+{
+&#32;&#32;iteratorGetData(it,&#32;&amp;d);
+&#32;&#32;printf(&quot;Next&#32;item:&#32;%i\n&quot;,&#32;d);
+}
+//&#32;always&#32;delete&#32;the&#32;iterator&#32;to&#32;free&#32;the&#32;allocated&#32;space
+iteratorDelete(it);
+//&#32;backward&#32;iteration
+for&#32;(it&#32;=&#32;iteratorCreate(l,&#32;-1);&#32;!iteratorStarted(it);&#32;iteratorPrevious(it))
+{
+&#32;&#32;iteratorGetData(it,&#32;&amp;d);
+&#32;&#32;printf(&quot;Next&#32;item:&#32;%i\n&quot;,&#32;d);
+}
+iteratorDelete(it);
+</computeroutput></literallayout></para>
+</section>
+</section>
+<section xml:id="_md__r_e_a_d_m_e_1autotoc_md22">
+<title>License</title>
+
+<para>This project is distributed under Attribution 4.0 International (CC BY 4.0) license. </para>
+</section>
+</section>

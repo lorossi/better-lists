@@ -78,7 +78,7 @@ int main()
   {
     d = i;
     // append to list, check size
-    assert(listAppend(l, &d) == i);
+    assert(listAppend(l, &d) == i + 1);
     assert(listGetSize(l) == i + 1);
     // check if item was correctly added
     assert(listGetItem(l, &t, i) == sizeof(t));
@@ -101,7 +101,7 @@ int main()
   {
     Data d = i;
     // append data to list
-    assert(listPrepend(l, &d) == 0);
+    assert(listPrepend(l, &d) == i + 1);
     assert(listGetSize(l) == i + 1);
     Data t;
     // check if appended data is inserted correctly

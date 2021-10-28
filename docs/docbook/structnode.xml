@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_structnode" xml:lang="en-US">
+<title>node Struct Reference</title>
+<indexterm><primary>node</primary></indexterm>
+Collaboration diagram for node:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="structnode__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Data Fields    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_structnode_1a760d01e575916fa5cbe75618da4922ee"/>Data <emphasis role="strong">data</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structnode_1abf777f4eb2cf7f2f68812be81cd761f8"/>struct <link linkend="_structnode">node</link> * <emphasis role="strong">previous</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structnode_1aa3e8aa83f864292b5a01210f4453fcc0"/>struct <link linkend="_structnode">node</link> * <emphasis role="strong">next</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+<para>
+Definition at line 39 of file list.h.</para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+src/<link linkend="_list_8h">list.h</link></section>
+</section>

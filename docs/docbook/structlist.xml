@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="_structlist" xml:lang="en-US">
+<title>list Struct Reference</title>
+<indexterm><primary>list</primary></indexterm>
+Collaboration diagram for list:<para>
+    <informalfigure>
+        <mediaobject>
+            <imageobject>
+                <imagedata width="50%" align="center" valign="middle" scalefit="0" fileref="structlist__coll__graph.png"></imagedata>
+            </imageobject>
+        </mediaobject>
+    </informalfigure>
+</para>
+<simplesect>
+    <title>Data Fields    </title>
+        <itemizedlist>
+            <listitem><para><anchor xml:id="_structlist_1a408f45b77d3842fc0851dd17ebea3e76"/><link linkend="_structnode">Node</link> * <emphasis role="strong">head</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structlist_1a729bbd96686a255b8fc29b0912616f1b"/><link linkend="_structnode">Node</link> * <emphasis role="strong">tail</emphasis></para>
+</listitem>
+            <listitem><para><anchor xml:id="_structlist_1a26fae59927b62854e7b46a5e422f4f3f"/>int <emphasis role="strong">length</emphasis></para>
+</listitem>
+        </itemizedlist>
+</simplesect>
+<section>
+<title>Detailed Description</title>
+<para>
+Definition at line 46 of file list.h.</para>
+<para>
+The documentation for this struct was generated from the following file:</para>
+src/<link linkend="_list_8h">list.h</link></section>
+</section>
