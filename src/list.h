@@ -11,7 +11,7 @@
  * define CHARLIST, STRINGLIST, FLOATLIST, DOUBLELIST, respectively to store chars, strings, floats and double.
  * if you want to use some custom data (struct, for example) define CUSTOMTYPE as the type you want to store.
  * Some functions (like printList) won't work.
-*/
+ */
 
 #ifdef CUSTOMTYPE
 typedef CUSTOMTYPE Data;
