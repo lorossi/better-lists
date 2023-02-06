@@ -7,31 +7,32 @@
  * @date 26/10/2021
  * @version 1.1.0
  * @brief Simple linked list library made because I wanted to kill some time.
- * By default, the data stored inside the list is int.
- * define CHARLIST, STRINGLIST, FLOATLIST, DOUBLELIST, respectively to store chars, strings, floats and double.
- * if you want to use some custom data (struct, for example) define CUSTOMTYPE as the type you want to store.
- * Some functions (like printList) won't work.
  */
-
-#ifdef CUSTOMTYPE
-typedef CUSTOMTYPE Data;
-#elif defined(CHARLIST)
-typedef char Data;
-#elif defined(STRINGLIST)
-#define STRINGSIZE 1000
-typedef char *Data[STRINGSIZE];
-#elif defined(FLOATLIST)
-typedef float Data;
-#elif defined(DOUBLELIST)
-typedef double Data;
-#else
-typedef int Data;
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+union Data
+{
+  int i;
+  char c;
+  float f;
+  double d;
+  char *s;
+  void *p;
+};
+
+typedef enum
+{
+  INTEGER,
+  CHAR,
+  FLOAT,
+  DOUBLE,
+  STRING,
+  POINTER,
+} list_type;
 
 /**
  * @internal
@@ -39,7 +40,7 @@ typedef int Data;
  */
 typedef struct node
 {
-  Data data;             /**< Data contained in node. Its type can be set by defining the constants CUSTOMTYPE, CHARLIST, STRINGLIST, FLOATLIST, DOUBLELIST before importing the header. */
+  union Data data;       /**< Data contained in node. */
   struct node *previous; /**< Pointer to previous node */
   struct node *next;     /**< Pointer to next node */
 } Node;
@@ -50,9 +51,10 @@ typedef struct node
  */
 typedef struct list
 {
-  Node *head; /**< Pointer to first node */
-  Node *tail; /**< Pointer to last node */
-  int length; /**< Number of nodes in list */
+  Node *head;     /**< Pointer to first node */
+  Node *tail;     /**< Pointer to last node */
+  int length;     /**< Number of nodes in list */
+  list_type type; /**< Type of data contained in node. */
 } List;
 
 /**
@@ -67,29 +69,28 @@ typedef struct iterator
   int index;
 } Iterator;
 
-List *listCreate();
+List *listCreate(list_type type);
 void listDelete(List *list);
-int listGetItem(List *list, Data *destination, int index);
-int listGetFirstItem(List *list, Data *destination);
-int listGetLastItem(List *list, Data *destination);
-int listAddItem(List *list, Data *data, int index);
-int listAppend(List *list, Data *data);
-int listPrepend(List *list, Data *data);
-int listReplaceItem(List *list, Data *newvalue, int index);
-int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue);
-int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_count);
-int listRemoveItem(List *list, Data *destination, int index);
-int listRemoveItemByValue(List *list, Data *oldvalue);
-int listCountRemove(List *list, Data *oldvalue, int remove_count);
-int listPop(List *list, Data *last);
-int listUnshift(List *list, Data *destination);
+int listGetItem(List *list, union Data *destination, int index);
+int listGetFirstItem(List *list, union Data *destination);
+int listGetLastItem(List *list, union Data *destination);
+int listAddItem(List *list, union Data *destination, int index);
+int listPush(List *list, union Data *data);
+int listPrepend(List *list, union Data *data);
+int listReplaceItem(List *list, union Data *new_value, int index);
+int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_value);
+int listCountReplace(List *list, union Data *old_value, union Data *new_value, int replace_count);
+int listCountItem(List *list, union Data *value);
+int listRemoveItem(List *list, union Data *data, int index);
+int listRemoveItemByValue(List *list, union Data *old_value);
+int listCountRemove(List *list, union Data *old_value, int remove_count);
+int listPop(List *list, union Data *last);
+int listShift(List *list, union Data *destination);
 int listSwap(List *list, int first_index, int second_index);
-int dataInList(List *list, Data *data);
-int listToArray(List *list, Data *array);
-void printList(List *list, char *end);
-void printListReverse(List *list, char *end);
+int dataInList(List *list, union Data *destination);
+int listToArray(List *list, union Data *array);
 int listGetSize(List *list);
-int listSort(List *list, int reverse);
+int listSort(List *list, int reverse); // TODO create function to sort list using a comparator
 void listShuffle(List *list);
 
 // Iterator related functions
@@ -99,6 +100,8 @@ int iteratorEnded(Iterator *it);
 int iteratorStarted(Iterator *it);
 int iteratorNext(Iterator *it);
 int iteratorPrevious(Iterator *it);
-Data iteratorGetData(Iterator *it, Data *destination);
+int iteratorGetData(Iterator *it, union Data *destination);
+int iteratorSetData(Iterator *it, union Data *new_value);
+int iteratorGetIndex(Iterator *it);
 
 #endif
