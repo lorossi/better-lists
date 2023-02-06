@@ -11,22 +11,22 @@ While navigating a linked list by getting the item at i-th position, all the nod
 ``` C
 List *listCreate();
 void listDelete(List *list);
-int listGetItem(List *list, Data *destination, int index);
-int listGetFirstItem(List *list, Data *destination);
-int listGetLastItem(List *list, Data *destination);
-int listAddItem(List *list, Data *data, int position);
-int listAppend(List *list, Data *data);
-int listPrepend(List *list, Data *data);
-int listReplaceItem(List *list, Data *newvalue, int index);
-int listReplaceItemByValue(List *list, Data *oldvalue, Data *newvalue);
-int listCountReplace(List *list, Data *oldvalue, Data *newvalue, int replace_count);
-int listRemoveItem(List *list, Data *destination, int index);
-int listRemoveItemByValue(List *list, Data *oldvalue);
-int listCountRemove(List *list, Data *oldvalue, int remove_count);
-int listPop(List *list, Data *last);
-int listUnshift(List *list, Data *destination);
-int dataInList(List *list, Data *data);
-int listToArray(List *list, Data *array);
+int listGetItem(List *list, union Data *destination, int index);
+int listGetFirstItem(List *list, union Data *destination);
+int listGetLastItem(List *list, union Data *destination);
+int listAddItem(List *list, union Data *destination, int position);
+int listAppend(List *list, union Data *destination);
+int listPrepend(List *list, union Data *destination);
+int listReplaceItem(List *list, union Data *new_value, int index);
+int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_value);
+int listCountReplace(List *list, union Data *old_value, union Data *new_value, int replace_count);
+int listRemoveItem(List *list, union Data *destination, int index);
+int listRemoveItemByValue(List *list, union Data *old_value);
+int listCountRemove(List *list, union Data *old_value, int remove_count);
+int listPop(List *list, union Data *last);
+int listShift(List *list, union Data *destination);
+int dataInList(List *list, union Data *destination);
+int listToArray(List *list, union Data *array);
 void printList(List *list, char *end);
 void printListReverse(List *list, char *end);
 int listGetSize(List *list);
@@ -41,7 +41,7 @@ int iteratorEnded(Iterator *it);
 int iteratorStarted(Iterator *it);
 int iteratorNext(Iterator *it);
 int iteratorPrevious(Iterator *it);
-int iteratorGetData(Iterator *it, Data *destination);
+int iteratorGetData(Iterator *it, union Data *destination);
 ```
 
 ## Example
@@ -136,7 +136,7 @@ List *l;
 Data d;
 // list creation and population not in this example
 // remove first item and place it in d
-listUnshift(l, &d); 
+listShift(l, &d); 
 // remove last item without saving it
 listPop(l, NULL);
 // remove item at position 11
