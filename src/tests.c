@@ -6,26 +6,119 @@
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
 
-const int LIST_TEST_SIZE = 10;
+// helper functions
+void printGreen(char *s);
+void printYellow(char *s);
+void printRed(char *s);
+void printSuccess(char *s);
+void quickPopulate(List *l);
+void quickPopulateReverse(List *l);
+
+// tests functions
+void test_empty_list();
+void test_populate_list();
+void test_populate_type(list_type type);
+void test_append_prepend();
+void test_replace();
+void test_replace_by_value();
+void test_remove();
+void test_pop_push();
+void test_swap();
+void test_to_array();
+void test_iterator();
+void test_iterator_get_set();
+void test_sort();
+void test_sort_reverse();
+void test_shuffle();
+
+const int LIST_TEST_SIZE = 10000;
+
+int main()
+{
+  // variable declaration
+  srand(time(NULL));
+
+  // tests the empty list
+  printYellow("Testing empty list...");
+  // create list and try to get items
+  test_empty_list();
+  printGreen("Passed.");
+
+  // test list population
+  printYellow("Testing list population...");
+  test_populate_list();
+  test_populate_type(INTEGER);
+  test_populate_type(FLOAT);
+  test_populate_type(CHAR);
+  test_populate_type(DOUBLE);
+  printGreen("Passed.");
+
+  // test list append and prepend
+  printYellow("Testing list append and prepend...");
+  test_append_prepend();
+  printGreen("Passed.");
+
+  // test list replace
+  printYellow("Testing list replace...");
+  test_replace();
+  test_replace_by_value();
+  printGreen("Passed.");
+
+  // test list remove
+  printYellow("Testing list remove...");
+  test_remove();
+  test_pop_push();
+  printGreen("Passed.");
+
+  // test list swap
+  printYellow("Testing list swap...");
+  test_swap();
+  printGreen("Passed.");
+
+  // test list to array
+  printYellow("Testing list to array...");
+  test_to_array();
+  printGreen("Passed.");
+
+  // test list iterator
+  printYellow("Testing list iterator...");
+  test_iterator();
+  printGreen("Passed.");
+
+  // test sort
+  printYellow("Testing list sort...");
+  test_sort();
+  test_sort_reverse();
+  test_shuffle();
+  printGreen("Passed.");
+
+  // if we got here, all assert work correctly
+  // YAY!
+  printSuccess("ALL TESTS PASSED");
+}
 
 void printGreen(char *s)
 {
   printf("\x1b[92;1m%s\x1b[0m\n", s);
+  fflush(stdout);
 }
 
 void printYellow(char *s)
 {
   printf("\x1b[93;1m%s\x1b[0m ", s);
+  fflush(stdout);
 }
 
 void printRed(char *s)
 {
   printf("\x1b[91;1m%s\x1b[0m\n", s);
+  fflush(stdout);
 }
 
 void printSuccess(char *s)
 {
   printf("\x1b[92;1;5m%s\x1b[0m\n", s);
+  fflush(stdout);
 }
 
 void quickPopulate(List *l)
@@ -413,122 +506,67 @@ void test_iterator_get_set()
   listDelete(l);
 }
 
-int main()
+void test_sort()
 {
-  // variable declaration
-  srand(time(NULL));
+  List *l = listCreate(INTEGER);
+  quickPopulateReverse(l);
+  assert(listSort(l, 0) == 0);
 
-  // tests the empty list
-  printYellow("Testing empty list...");
-  // create list and try to get items
-  test_empty_list();
-  printGreen("Passed.");
+  Iterator *it;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    union Data data;
+    iteratorGetData(it, &data);
+    assert(data.i == iteratorGetIndex(it));
+  }
+  iteratorDelete(it);
+  listDelete(l);
+}
 
-  // test list population
-  printYellow("Testing list population...");
-  test_populate_list();
-  test_populate_type(INTEGER);
-  test_populate_type(FLOAT);
-  test_populate_type(CHAR);
-  test_populate_type(DOUBLE);
-  printGreen("Passed.");
+void test_sort_reverse()
+{
+  List *l = listCreate(INTEGER);
+  quickPopulate(l);
+  assert(listSort(l, 1) == 0);
 
-  // test list append and prepend
-  printYellow("Testing list append and prepend...");
-  test_append_prepend();
-  printGreen("Passed.");
+  Iterator *it;
+  for (it = iteratorCreate(l, -1); !iteratorEnded(it); iteratorNext(it))
+  {
+    union Data data;
+    iteratorGetData(it, &data);
+    assert(data.i == LIST_TEST_SIZE - iteratorGetIndex(it));
+  }
+  iteratorDelete(it);
+  listDelete(l);
+}
 
-  // test list replace
-  printYellow("Testing list replace...");
-  test_replace();
-  test_replace_by_value();
-  printGreen("Passed.");
+void test_shuffle()
+{
+  List *l = listCreate(INTEGER);
+  quickPopulate(l);
+  assert(listShuffle(l) == 0);
 
-  // test list remove
-  printYellow("Testing list remove...");
-  test_remove();
-  test_pop_push();
-  printGreen("Passed.");
+  Iterator *it;
+  int count = 0;
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    union Data data;
+    iteratorGetData(it, &data);
+    if (data.i != iteratorGetIndex(it))
+      count++;
+  }
+  iteratorDelete(it);
+  assert(count > 0);
 
-  // test list swap
-  printYellow("Testing list swap...");
-  test_swap();
-  printGreen("Passed.");
+  // now sort the list back
+  assert(listSort(l, 0) == 0);
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
+  {
+    union Data data;
+    iteratorGetData(it, &data);
+    assert(data.i == iteratorGetIndex(it));
+  }
+  iteratorDelete(it);
 
-  // test list to array
-  printYellow("Testing list to array...");
-  test_to_array();
-  printGreen("Passed.");
-
-  // test list iterator
-  printYellow("Testing list iterator...");
-  test_iterator();
-  printGreen("Passed.");
-
-  // printGreen("Passed.");
-
-  // printYellow("Testing sorting...");
-
-  // // test sorting
-  // l = listCreate();
-  // quickPopulateReverse(l);
-  // assert(listSort(l, 0) != -1);
-  // count = 0;
-  // for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  // {
-  //   assert(iteratorGetData(it, &d) != -1);
-  //   assert(d == count);
-  //   count++;
-  // }
-  // iteratorDelete(it);
-  // listDelete(l);
-
-  // // test reverse sorting
-  // l = listCreate();
-  // quickPopulate(l);
-  // assert(listSort(l, 1) != -1);
-  // count = LIST_TEST_SIZE - 1;
-  // for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  // {
-  //   assert(iteratorGetData(it, &d) != -1);
-  //   assert(d == count);
-  //   count--;
-  // }
-  // iteratorDelete(it);
-  // listDelete(l);
-
-  // // test random shuffling
-  // l = listCreate();
-  // quickPopulate(l);
-  // count = 0;
-  // int in_place = 0;
-  // for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  // {
-  //   assert(iteratorGetData(it, &d) != -1);
-  //   if (d == count)
-  //     in_place++;
-  //   count++;
-  // }
-  // assert(in_place < listGetSize(l));
-  // listDelete(l);
-
-  // // test sorting
-  // l = listCreate();
-  // quickPopulateReverse(l);
-  // assert(listSort(l, 0) != -1);
-  // count = 0;
-  // for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  // {
-  //   assert(iteratorGetData(it, &d) != -1);
-  //   assert(d == count);
-  //   count++;
-  // }
-  // iteratorDelete(it);
-  // listDelete(l);
-
-  // printGreen("Passed.");
-
-  // if we got here, all assert work correctly
-  // YAY!
-  printSuccess("ALL TESTS PASSED");
+  listDelete(l);
 }
