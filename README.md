@@ -225,6 +225,63 @@ listGetFirstItem(l, &data);
 listGetLastItem(l, &data);
 ```
 
+### Getting items from list - alternative
+
+Items can be retrieved from a list via the functions:
+
+- `listGetInt`: get an integer from the list at a specific index
+- `listGetChar`: get a char from the list at a specific index
+- `listGetFloat`: get a float from the list at a specific index
+- `listGetDouble`: get a double from the list at a specific index
+- `listGetString`: get a string from the list at a specific index
+- `listGetPointer`: get a pointer from the list at a specific index
+
+With all these functions, the value is returned directly, without the need to pass a `union Data` variable.
+
+```C
+// create a list
+List *l = listCreate(INTEGER);
+// get an integer from the list at a specific index
+int i_data = listGetInt(l, 1);
+// delete the list
+listDelete(l);
+
+// create a list
+l = listCreate(CHAR);
+// get a char from the list at a specific index
+char c_data = listGetChar(l, 1);
+// delete the list
+listDelete(l);
+
+// create a list
+l = listCreate(FLOAT);
+// get a float from the list at a specific index
+float f_data = listGetFloat(l, 1);
+// delete the list
+listDelete(l);
+
+// create a list
+l = listCreate(DOUBLE);
+// get a double from the list at a specific index
+double d_data = listGetDouble(l, 1);
+// delete the list
+listDelete(l);
+
+// create a list
+l = listCreate(STRING);
+// get a string from the list at a specific index
+char *s_data = listGetString(l, 1);
+// delete the list
+listDelete(l);
+
+// create a list
+l = listCreate(POINTER);
+// get a pointer from the list at a specific index
+void *p_data = listGetPointer(l, 1);
+// delete the list
+listDelete(l);
+```
+
 ### Replacing items in list
 
 Items can be replaced in a list via the functions:

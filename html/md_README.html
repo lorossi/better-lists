@@ -93,19 +93,389 @@ $(document).ready(function(){initNavTree('md_README.html',''); initResizable(); 
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>A simple implementation of doubly linked lists in C.</p>
-<p>I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (it was my first year!), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years (and a degree) later.</p>
+<p>I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (<em>it was my first year!)</em>, I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.</p>
 <p>Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the <code>tests.c</code> file I have implemented a simple test suite using the <code>assert.h</code> library. It's not pretty, but it works.</p>
-<p><a href="https://lorossi.github.io/better-lists/html/">Check the documentation here</a> or <a class="el" href="md_EXAMPLES.html">take a look at some examples here</a>.</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
-Data types</h1>
-<p>By default, lists store integers. In order to store different types of data, the final user must define, before importing, the constants:</p>
+<p><a href="https://lorossi.github.io/better-lists/html/">Check the documentation here</a> or scroll a little bit below to see some examples in action.</p>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Functions in library</h1>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Lists related</h2>
+<div class="fragment"><div class="line">List *listCreate(list_type type);</div>
+<div class="line"><span class="keywordtype">void</span> listDelete(List *list);</div>
+<div class="line"><span class="keywordtype">int</span> listGetItem(List *list, <span class="keyword">union</span> Data *destination, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">int</span> listGetFirstItem(List *list, <span class="keyword">union</span> Data *destination);</div>
+<div class="line"><span class="keywordtype">int</span> listGetLastItem(List *list, <span class="keyword">union</span> Data *destination);</div>
+<div class="line"><span class="keywordtype">int</span> listAddItem(List *list, <span class="keyword">union</span> Data *destination, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">int</span> listPush(List *list, <span class="keyword">union</span> Data *data);</div>
+<div class="line"><span class="keywordtype">int</span> listPrepend(List *list, <span class="keyword">union</span> Data *data);</div>
+<div class="line"><span class="keywordtype">int</span> listReplaceItem(List *list, <span class="keyword">union</span> Data *new_value, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">int</span> listReplaceItemByValue(List *list, <span class="keyword">union</span> Data *old_value, <span class="keyword">union</span> Data *new_value);</div>
+<div class="line"><span class="keywordtype">int</span> listCountReplace(List *list, <span class="keyword">union</span> Data *old_value, <span class="keyword">union</span> Data *new_value, <span class="keywordtype">int</span> replace_count);</div>
+<div class="line"><span class="keywordtype">int</span> listCountItem(List *list, <span class="keyword">union</span> Data *value);</div>
+<div class="line"><span class="keywordtype">int</span> listRemoveItem(List *list, <span class="keyword">union</span> Data *data, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">int</span> listRemoveItemByValue(List *list, <span class="keyword">union</span> Data *old_value);</div>
+<div class="line"><span class="keywordtype">int</span> listCountRemove(List *list, <span class="keyword">union</span> Data *old_value, <span class="keywordtype">int</span> remove_count);</div>
+<div class="line"><span class="keywordtype">int</span> listPop(List *list, <span class="keyword">union</span> Data *last);</div>
+<div class="line"><span class="keywordtype">int</span> listShift(List *list, <span class="keyword">union</span> Data *destination);</div>
+<div class="line"><span class="keywordtype">int</span> listSwap(List *list, <span class="keywordtype">int</span> first_index, <span class="keywordtype">int</span> second_index);</div>
+<div class="line"><span class="keywordtype">int</span> dataInList(List *list, <span class="keyword">union</span> Data *destination);</div>
+<div class="line"><span class="keywordtype">int</span> listToArray(List *list, <span class="keyword">union</span> Data *array);</div>
+<div class="line"><span class="keywordtype">int</span> listGetSize(List *list);</div>
+<div class="line"><span class="keywordtype">int</span> listSort(List *list, <span class="keywordtype">int</span> reverse);</div>
+<div class="line"><span class="keywordtype">int</span> listShuffle(List *list);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md3"></a>
+Iterator related</h2>
+<div class="fragment"><div class="line"><span class="comment">// Iterator related functions</span></div>
+<div class="line">Iterator *iteratorCreate(List *list, <span class="keywordtype">int</span> start);</div>
+<div class="line"><span class="keywordtype">void</span> iteratorDelete(Iterator *it);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorEnded(Iterator *it);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorStarted(Iterator *it);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorNext(Iterator *it);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorPrevious(Iterator *it);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorGetNode(Iterator *it, Node *destination);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorGetData(Iterator *it, <span class="keyword">union</span> Data *destination);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorSetData(Iterator *it, <span class="keyword">union</span> Data *new_value);</div>
+<div class="line"><span class="keywordtype">int</span> iteratorGetIndex(Iterator *it);</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
+Data structures in library</h1>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Union data</h2>
+<div class="fragment"><div class="line"><span class="keyword">union </span>Data</div>
+<div class="line">{</div>
+<div class="line">  <span class="keywordtype">int</span> i;</div>
+<div class="line">  <span class="keywordtype">char</span> c;</div>
+<div class="line">  <span class="keywordtype">float</span> f;</div>
+<div class="line">  <span class="keywordtype">double</span> d;</div>
+<div class="line">  <span class="keywordtype">char</span> *s;</div>
+<div class="line">  <span class="keywordtype">void</span> *p;</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>The <code>union Data</code> represents contained in each node of the list. It can contain an integer, a char, a float, a double, a string or a void pointer.</p>
+<p>To access the value associated to a <code>Data union</code>, simply access the field associated to the desired type.</p>
+<div class="fragment"><div class="line"><span class="comment">// define a generic union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// get an integer </span></div>
+<div class="line"><span class="keywordtype">int</span> i_data = data.i;</div>
+<div class="line"><span class="comment">// get a char</span></div>
+<div class="line"><span class="keywordtype">char</span> c_data = data.c;</div>
+<div class="line"><span class="comment">// get a float</span></div>
+<div class="line"><span class="keywordtype">float</span> f_data = data.f;</div>
+<div class="line"><span class="comment">// get a double</span></div>
+<div class="line"><span class="keywordtype">double</span> d_data = data.d;</div>
+<div class="line"><span class="comment">// get a string</span></div>
+<div class="line"><span class="keywordtype">char</span> *s_data = data.s;</div>
+<div class="line"><span class="comment">// get a void pointer</span></div>
+<div class="line"><span class="keywordtype">void</span> *p_data = data.p;</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
+List types</h2>
+<div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span></div>
+<div class="line">{</div>
+<div class="line">  INTEGER,</div>
+<div class="line">  CHAR,</div>
+<div class="line">  FLOAT,</div>
+<div class="line">  DOUBLE,</div>
+<div class="line">  STRING,</div>
+<div class="line">  POINTER,</div>
+<div class="line">} list_type;</div>
+</div><!-- fragment --><p>The <code>list_type</code> enum represents the type of the list. It can be an integer list, a char list, a float list, a double list, a string list or a pointer list.</p>
+<p>The <code>list_type</code> is passed in the <code>listCreate</code> function to create a list of the desired type.</p>
+<h2><a class="anchor" id="autotoc_md7"></a>
+Nodes</h2>
+<div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>node</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">union </span>Data data;       </div>
+<div class="line">  <span class="keyword">struct </span>node *previous; </div>
+<div class="line">  <span class="keyword">struct </span>node *next;     </div>
+<div class="line">} Node;</div>
+</div><!-- fragment --><p>The <code>Node</code> struct represents a node of the list. It contains a <code>union Data</code> field, a pointer to the previous node and a pointer to the next node.</p>
+<h2><a class="anchor" id="autotoc_md8"></a>
+List</h2>
+<div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>list</div>
+<div class="line">{</div>
+<div class="line">  Node *head;     </div>
+<div class="line">  Node *tail;     </div>
+<div class="line">  <span class="keywordtype">int</span> length;     </div>
+<div class="line">  list_type type; </div>
+<div class="line">} List;</div>
+</div><!-- fragment --><p>The <code>List</code> struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list and the type of the list.</p>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Iterator</h2>
+<div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>iterator</div>
+<div class="line">{</div>
+<div class="line">  <span class="keyword">struct </span>node *previous; </div>
+<div class="line">  <span class="keyword">struct </span>node *next;     </div>
+<div class="line">  <span class="keyword">struct </span>node *current;  </div>
+<div class="line">  <span class="keywordtype">int</span> index;</div>
+<div class="line">} Iterator;</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
+Examples</h1>
+<h2><a class="anchor" id="autotoc_md11"></a>
+List creation</h2>
+<p>While creating a list, you have to specify the type of the list. The type can be an integer list, a char list, a float list, a double list, a string list or a pointer list (as explained in List types).</p>
+<div class="fragment"><div class="line"><span class="comment">// create int list</span></div>
+<div class="line">List *int_list = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create char list</span></div>
+<div class="line">List *char_list = listCreate(CHAR);</div>
+<div class="line"><span class="comment">// create float list</span></div>
+<div class="line">List *float_list = listCreate(FLOAT);</div>
+<div class="line"><span class="comment">// create double list</span></div>
+<div class="line">List *double_list = listCreate(DOUBLE);</div>
+<div class="line"><span class="comment">// create string list</span></div>
+<div class="line">List *string_list = listCreate(STRING);</div>
+<div class="line"><span class="comment">// create pointer list</span></div>
+<div class="line">List *pointer_list = listCreate(POINTER);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md12"></a>
+List deletion</h2>
+<p>When you are done with a list, you have to delete it to free the memory calling the <code>listDelete</code> function.</p>
+<div class="fragment"><div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">/* ... */</span></div>
+<div class="line">listDelete(l);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
+Adding items to list</h2>
+<p>Items can be added to a list via the functions:</p>
 <ul>
-<li><code>CHARLIST</code> to store <code>char</code> inside the lists</li>
-<li><code>STRINGLIST</code> to store <code>char*</code> inside the lists</li>
-<li><code>FLOATLIST</code> to store <code>float</code> inside the lists</li>
-<li><code>DOUBLE</code> to store <code>double</code> inside the lists</li>
+<li><code>listPush</code>: add an item to the end of the list</li>
+<li><code>listPrepend</code>: add an item to the beginning of the list</li>
+<li><code>listAddItem</code>: add an item to the list at a specific index</li>
 </ul>
-<p>Furthermore, it the user wants to store another type of data, the constant <code>CUSTOMTYPE</code> must be defined along the type that will be stored into the list. </p>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// add an item to the end of the list</span></div>
+<div class="line">data.i = 1;</div>
+<div class="line">listPush(l, &amp;data);</div>
+<div class="line"><span class="comment">// add an item to the beginning of the list</span></div>
+<div class="line">data.i = 2;</div>
+<div class="line">listPrepend(l, &amp;data);</div>
+<div class="line"><span class="comment">// add an item to the list at a specific index</span></div>
+<div class="line">data.i = 3;</div>
+<div class="line">listAddItem(l, &amp;data, 1);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md14"></a>
+Getting items from list</h2>
+<p>Items can be retrieved from a list via the functions:</p>
+<ul>
+<li><code>listGetItem</code>: get an item from the list at a specific index</li>
+<li><code>listGetFirstItem</code>: get the first item from the list</li>
+<li><code>listGetLastItem</code>: get the last item from the list</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// get an item from the list at a specific index</span></div>
+<div class="line">listGetItem(l, &amp;data, 1);</div>
+<div class="line"><span class="comment">// get the first item from the list</span></div>
+<div class="line">listGetFirstItem(l, &amp;data);</div>
+<div class="line"><span class="comment">// get the last item from the list</span></div>
+<div class="line">listGetLastItem(l, &amp;data);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
+Getting items from list - alternative</h2>
+<p>Items can be retrieved from a list via the functions:</p>
+<ul>
+<li><code>listGetInt</code>: get an integer from the list at a specific index</li>
+<li><code>listGetChar</code>: get a char from the list at a specific index</li>
+<li><code>listGetFloat</code>: get a float from the list at a specific index</li>
+<li><code>listGetDouble</code>: get a double from the list at a specific index</li>
+<li><code>listGetString</code>: get a string from the list at a specific index</li>
+<li><code>listGetPointer</code>: get a pointer from the list at a specific index</li>
+</ul>
+<p>With all these functions, the value is returned directly, without the need to pass a <code>union Data</code> variable.</p>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// get an integer from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">int</span> i_data = listGetInt(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// create a list</span></div>
+<div class="line">l = listCreate(CHAR);</div>
+<div class="line"><span class="comment">// get a char from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">char</span> c_data = listGetChar(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// create a list</span></div>
+<div class="line">l = listCreate(FLOAT);</div>
+<div class="line"><span class="comment">// get a float from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">float</span> f_data = listGetFloat(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// create a list</span></div>
+<div class="line">l = listCreate(DOUBLE);</div>
+<div class="line"><span class="comment">// get a double from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">double</span> d_data = listGetDouble(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// create a list</span></div>
+<div class="line">l = listCreate(STRING);</div>
+<div class="line"><span class="comment">// get a string from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">char</span> *s_data = listGetString(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// create a list</span></div>
+<div class="line">l = listCreate(POINTER);</div>
+<div class="line"><span class="comment">// get a pointer from the list at a specific index</span></div>
+<div class="line"><span class="keywordtype">void</span> *p_data = listGetPointer(l, 1);</div>
+<div class="line"><span class="comment">// delete the list</span></div>
+<div class="line">listDelete(l);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
+Replacing items in list</h2>
+<p>Items can be replaced in a list via the functions:</p>
+<ul>
+<li><code>listReplaceItem</code>: replace an item in the list at a specific index</li>
+<li><code>listReplaceItemByValue</code>: replace an item in the list by value</li>
+<li><code>listCountReplace</code>: replace a number of items in the list by value</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data new_data, old_data;</div>
+<div class="line"><span class="comment">// maximum number of items to replace</span></div>
+<div class="line"><span class="keywordtype">int</span> max_count = 5;</div>
+<div class="line"><span class="comment">// replace an item in the list at a specific index</span></div>
+<div class="line">new_data.i = 1;</div>
+<div class="line">listReplaceItem(l, &amp;new_data, 1);</div>
+<div class="line"><span class="comment">// replace an item in the list by value</span></div>
+<div class="line">new_data.i = 2;</div>
+<div class="line">old_data.i = 1;</div>
+<div class="line">listReplaceItemByValue(l, &amp;old_data, &amp;new_data);</div>
+<div class="line"><span class="comment">// replace a number of items in the list by value</span></div>
+<div class="line">new_data.i = 3;</div>
+<div class="line">old_data.i = 2;</div>
+<div class="line">listCountReplace(l, &amp;old_data, &amp;new_data, max_count);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md17"></a>
+Removing items from list</h2>
+<p>Items can be removed from a list via the functions:</p>
+<ul>
+<li><code>listRemoveItem</code>: remove an item from the list at a specific index</li>
+<li><code>listRemoveItemByValue</code>: remove an item from the list by value</li>
+<li><code>listCountRemove</code>: remove a number of items from the list by value</li>
+<li><code>listPop</code>: remove the last item from the list</li>
+<li><code>listShift</code>: remove the first item from the list</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// maximum number of items to remove</span></div>
+<div class="line"><span class="keywordtype">int</span> max_count = 5;</div>
+<div class="line"><span class="comment">// remove an item from the list at a specific index</span></div>
+<div class="line">listRemoveItem(l, 1);</div>
+<div class="line"><span class="comment">// remove an item from the list by value</span></div>
+<div class="line">data.i = 1;</div>
+<div class="line">listRemoveItemByValue(l, &amp;data);</div>
+<div class="line"><span class="comment">// remove a number of items from the list by value</span></div>
+<div class="line">data.i = 2;</div>
+<div class="line">listCountRemove(l, &amp;data, max_count);</div>
+<div class="line"><span class="comment">// remove the last item from the list</span></div>
+<div class="line">listPop(l);</div>
+<div class="line"><span class="comment">// remove the first item from the list</span></div>
+<div class="line">listShift(l);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md18"></a>
+Support functions</h2>
+<p>The library provides some support functions:</p>
+<ul>
+<li><code>listGetSize</code>: get the length of the list</li>
+<li><code>listCountItem</code>: count the number of items in the list</li>
+<li><code>listSwap</code>: swap two items in the list</li>
+<li><code>dataInList</code>: check if an item is in the list</li>
+<li><code>listSort</code>: sort the list</li>
+<li><code>listShuffle</code>: shuffle the list</li>
+<li><code>printList</code>: print the list</li>
+<li><code>listToArray</code>: convert the list to an array</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// get the length of the list</span></div>
+<div class="line"><span class="keywordtype">int</span> size = listGetSize(l);</div>
+<div class="line"><span class="comment">// count the number of items in the list</span></div>
+<div class="line"><span class="keywordtype">int</span> count = listCountItem(l, &amp;data);</div>
+<div class="line"><span class="comment">// swap two items in the list</span></div>
+<div class="line">listSwap(l, 1, 2);</div>
+<div class="line"><span class="comment">// check if an item is in the list</span></div>
+<div class="line"><span class="keywordtype">int</span> in_list = dataInList(l, &amp;data);</div>
+<div class="line"><span class="comment">// sort the list</span></div>
+<div class="line">listSort(l, 0);</div>
+<div class="line"><span class="comment">// sort the list in reverse order</span></div>
+<div class="line">listSort(l, 1);</div>
+<div class="line"><span class="comment">// shuffle the list</span></div>
+<div class="line">listShuffle(l);</div>
+<div class="line"><span class="comment">// print the list, each item on a new line</span></div>
+<div class="line">printList(l, <span class="stringliteral">&quot;\n&quot;</span>);</div>
+<div class="line"><span class="comment">// print the list, each item separated by a space</span></div>
+<div class="line">printList(l, <span class="stringliteral">&quot; &quot;</span>);</div>
+<div class="line"><span class="comment">// convert the list to an array</span></div>
+<div class="line"><span class="keywordtype">int</span> *array = listToArray(l);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md19"></a>
+Iterating over list</h2>
+<p>The library provides a structure to iterate over a list (<code>Iterator</code> struct) and a set of functions to use it:</p>
+<ul>
+<li><code>IteratorCreate</code>: create an iterator</li>
+<li><code>IteratorDelete</code>: delete an iterator</li>
+<li><code>IteratorNext</code>: move the iterator to the next item</li>
+<li><code>IteratorPrevious</code>: move the iterator to the previous item</li>
+<li><code>IteratorGetNode</code>: get the node pointed by the iterator</li>
+<li><code>IteratorGetData</code>: get the data pointed by the iterator</li>
+<li><code>IteratorSetData</code>: set the data pointed by the iterator</li>
+<li><code>IteratorGetIndex</code>: get the index of the node pointed by the iterator</li>
+</ul>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">// create a union Data</span></div>
+<div class="line"><span class="keyword">union </span>Data data;</div>
+<div class="line"><span class="comment">// create an iterator</span></div>
+<div class="line">Iterator *it = IteratorCreate(l);</div>
+<div class="line"><span class="comment">// move the iterator to the next item</span></div>
+<div class="line">IteratorNext(it);</div>
+<div class="line"><span class="comment">// move the iterator to the previous item</span></div>
+<div class="line">IteratorPrevious(it);</div>
+<div class="line"><span class="comment">// get the node pointed by the iterator</span></div>
+<div class="line">Node *node = IteratorGetNode(it);</div>
+<div class="line"><span class="comment">// get the data pointed by the iterator</span></div>
+<div class="line">IteratorGetData(it, &amp;data);</div>
+<div class="line"><span class="comment">// set the data pointed by the iterator</span></div>
+<div class="line">data.i = 1;</div>
+<div class="line">IteratorSetData(it, &amp;data);</div>
+<div class="line"><span class="comment">// get the index of the node pointed by the iterator</span></div>
+<div class="line"><span class="keywordtype">int</span> index = IteratorGetIndex(it);</div>
+<div class="line"><span class="comment">// delete the iterator</span></div>
+<div class="line">IteratorDelete(it);</div>
+</div><!-- fragment --><p>The list can be iterated over using the following code:</p>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">/* fill the list */</span></div>
+<div class="line"><span class="comment">// declare an iterator</span></div>
+<div class="line">Iterator *it;</div>
+<div class="line"><span class="comment">// start the loop</span></div>
+<div class="line"><span class="keywordflow">for</span> (it = IteratorCreate(l, 0); !iteratorEnded(it); IteratorNext(it)) {</div>
+<div class="line">    <span class="comment">// get the data pointed by the iterator</span></div>
+<div class="line">    IteratorGetData(it, &amp;data);</div>
+<div class="line">    <span class="comment">/* do something with the data */</span></div>
+<div class="line">}</div>
+<div class="line"><span class="comment">// delete the iterator</span></div>
+<div class="line">IteratorDelete(it);</div>
+</div><!-- fragment --><p>The list can be iterated over in reverse order using the following code:</p>
+<div class="fragment"><div class="line"><span class="comment">// create a list</span></div>
+<div class="line">List *l = listCreate(INTEGER);</div>
+<div class="line"><span class="comment">/* fill the list */</span></div>
+<div class="line"><span class="comment">// declare an iterator</span></div>
+<div class="line">Iterator *it;</div>
+<div class="line"><span class="comment">// start the loop</span></div>
+<div class="line"><span class="keywordflow">for</span> (it = IteratorCreate(l, -1); !iteratorStarted(it); IteratorPrevious(it)) {</div>
+<div class="line">    <span class="comment">// get the data pointed by the iterator</span></div>
+<div class="line">    IteratorGetData(it, &amp;data);</div>
+<div class="line">    <span class="comment">/* do something with the data */</span></div>
+<div class="line">}</div>
+<div class="line"><span class="comment">// delete the iterator</span></div>
+<div class="line">IteratorDelete(it);</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md20"></a>
+License</h1>
+<p>This project is licensed under the MIT License - see the <a class="el" href="md_LICENSE.html">LICENSE</a> file for details. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

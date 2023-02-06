@@ -94,6 +94,14 @@ int listSort(List *list, int reverse);
 int listShuffle(List *list);
 void printList(List *list, char *end);
 
+// Helper functions
+int listGetInt(List *list, int index);
+char listGetChar(List *list, int index);
+float listGetFloat(List *list, int index);
+double listGetDouble(List *list, int index);
+char *listGetString(List *list, int index);
+void *listGetPointer(List *list, int index);
+
 // Iterator related functions
 Iterator *iteratorCreate(List *list, int start);
 void iteratorDelete(Iterator *it);

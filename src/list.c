@@ -839,6 +839,90 @@ void printList(List *list, char *end)
 }
 
 /**
+ * @brief Get an integer from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return int
+ */
+int listGetInt(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.i;
+}
+
+/**
+ * @brief Get a char from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return char
+ */
+char listGetChar(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.c;
+}
+
+/**
+ * @brief Get a float from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return float
+ */
+float listGetFloat(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.f;
+}
+
+/**
+ * @brief Get a double from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return double
+ */
+double listGetDouble(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.d;
+}
+
+/**
+ * @brief Get a string from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return char*
+ */
+char *listGetString(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.s;
+}
+
+/**
+ * @brief Get a pointer from the list.
+ *
+ * @param list List where the item will be searched.
+ * @param index Position of the item.
+ * @return void*
+ */
+void *listGetPointer(List *list, int index)
+{
+  union Data data;
+  _nodeGetData(_findNodeByIndex(list, index), &data);
+  return data.p;
+}
+
+/**
  * @brief Prints the list in a readable manner, in reverse.
  *
  * @param list List that will be printed.

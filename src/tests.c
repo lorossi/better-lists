@@ -30,6 +30,7 @@ void test_iterator_get_set();
 void test_sort();
 void test_sort_reverse();
 void test_shuffle();
+void test_helper_get();
 
 const int LIST_TEST_SIZE = 10000;
 
@@ -568,5 +569,38 @@ void test_shuffle()
   }
   iteratorDelete(it);
 
+  listDelete(l);
+}
+
+void test_helper_get()
+{
+  List *l = listCreate(INTEGER);
+  quickPopulate(l);
+  assert(listGetInt(l, 0) == 0);
+  listDelete(l);
+
+  l = listCreate(FLOAT);
+  listPush(l, &(union Data){.f = 1.0});
+  assert(listGetFloat(l, 0) == 1.0);
+  listDelete(l);
+
+  l = listCreate(DOUBLE);
+  listPush(l, &(union Data){.d = 1.0});
+  assert(listDouble(l, 0) == 1.0);
+  listDelete(l);
+
+  l = listCreate(CHAR);
+  listPush(l, &(union Data){.c = 'a'});
+  assert(listGetChar(l, 0) == 'a');
+  listDelete(l);
+
+  l = listCreate(STRING);
+  listPush(l, &(union Data){.s = "test"});
+  assert(strcmp(listGetString(l, 0), "test") == 0);
+  listDelete(l);
+
+  l = listCreate(POINTER);
+  listPush(l, &(union Data){.p = (void *)0xdeadbeef});
+  assert(listGetPointer(l, 0) == (void *)0xdeadbeef);
   listDelete(l);
 }
