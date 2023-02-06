@@ -123,7 +123,15 @@ Lists related</h2>
 <div class="line"><span class="keywordtype">int</span> listGetSize(List *list);</div>
 <div class="line"><span class="keywordtype">int</span> listSort(List *list, <span class="keywordtype">int</span> reverse);</div>
 <div class="line"><span class="keywordtype">int</span> listShuffle(List *list);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md3"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md3"></a>
+Helper functions</h3>
+<div class="fragment"><div class="line"><span class="keywordtype">int</span> listGetInt(List *list, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">char</span> listGetChar(List *list, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">float</span> listGetFloat(List *list, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">double</span> listGetDouble(List *list, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">char</span> *listGetString(List *list, <span class="keywordtype">int</span> index);</div>
+<div class="line"><span class="keywordtype">void</span> *listGetPointer(List *list, <span class="keywordtype">int</span> index);</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md4"></a>
 Iterator related</h2>
 <div class="fragment"><div class="line"><span class="comment">// Iterator related functions</span></div>
 <div class="line">Iterator *iteratorCreate(List *list, <span class="keywordtype">int</span> start);</div>
@@ -136,9 +144,9 @@ Iterator related</h2>
 <div class="line"><span class="keywordtype">int</span> iteratorGetData(Iterator *it, <span class="keyword">union</span> Data *destination);</div>
 <div class="line"><span class="keywordtype">int</span> iteratorSetData(Iterator *it, <span class="keyword">union</span> Data *new_value);</div>
 <div class="line"><span class="keywordtype">int</span> iteratorGetIndex(Iterator *it);</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md4"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md5"></a>
 Data structures in library</h1>
-<h2><a class="anchor" id="autotoc_md5"></a>
+<h2><a class="anchor" id="autotoc_md6"></a>
 Union data</h2>
 <div class="fragment"><div class="line"><span class="keyword">union </span>Data</div>
 <div class="line">{</div>
@@ -165,7 +173,7 @@ Union data</h2>
 <div class="line"><span class="keywordtype">char</span> *s_data = data.s;</div>
 <div class="line"><span class="comment">// get a void pointer</span></div>
 <div class="line"><span class="keywordtype">void</span> *p_data = data.p;</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md7"></a>
 List types</h2>
 <div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span></div>
 <div class="line">{</div>
@@ -178,7 +186,7 @@ List types</h2>
 <div class="line">} list_type;</div>
 </div><!-- fragment --><p>The <code>list_type</code> enum represents the type of the list. It can be an integer list, a char list, a float list, a double list, a string list or a pointer list.</p>
 <p>The <code>list_type</code> is passed in the <code>listCreate</code> function to create a list of the desired type.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md8"></a>
 Nodes</h2>
 <div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>node</div>
 <div class="line">{</div>
@@ -187,7 +195,7 @@ Nodes</h2>
 <div class="line">  <span class="keyword">struct </span>node *next;     </div>
 <div class="line">} Node;</div>
 </div><!-- fragment --><p>The <code>Node</code> struct represents a node of the list. It contains a <code>union Data</code> field, a pointer to the previous node and a pointer to the next node.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 List</h2>
 <div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>list</div>
 <div class="line">{</div>
@@ -197,7 +205,7 @@ List</h2>
 <div class="line">  list_type type; </div>
 <div class="line">} List;</div>
 </div><!-- fragment --><p>The <code>List</code> struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list and the type of the list.</p>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Iterator</h2>
 <div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>iterator</div>
 <div class="line">{</div>
@@ -206,9 +214,9 @@ Iterator</h2>
 <div class="line">  <span class="keyword">struct </span>node *current;  </div>
 <div class="line">  <span class="keywordtype">int</span> index;</div>
 <div class="line">} Iterator;</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md10"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md11"></a>
 Examples</h1>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md12"></a>
 List creation</h2>
 <p>While creating a list, you have to specify the type of the list. The type can be an integer list, a char list, a float list, a double list, a string list or a pointer list (as explained in List types).</p>
 <div class="fragment"><div class="line"><span class="comment">// create int list</span></div>
@@ -223,13 +231,13 @@ List creation</h2>
 <div class="line">List *string_list = listCreate(STRING);</div>
 <div class="line"><span class="comment">// create pointer list</span></div>
 <div class="line">List *pointer_list = listCreate(POINTER);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md12"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
 List deletion</h2>
 <p>When you are done with a list, you have to delete it to free the memory calling the <code>listDelete</code> function.</p>
 <div class="fragment"><div class="line">List *l = listCreate(INTEGER);</div>
 <div class="line"><span class="comment">/* ... */</span></div>
 <div class="line">listDelete(l);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md13"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md14"></a>
 Adding items to list</h2>
 <p>Items can be added to a list via the functions:</p>
 <ul>
@@ -250,7 +258,7 @@ Adding items to list</h2>
 <div class="line"><span class="comment">// add an item to the list at a specific index</span></div>
 <div class="line">data.i = 3;</div>
 <div class="line">listAddItem(l, &amp;data, 1);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md14"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
 Getting items from list</h2>
 <p>Items can be retrieved from a list via the functions:</p>
 <ul>
@@ -268,7 +276,7 @@ Getting items from list</h2>
 <div class="line">listGetFirstItem(l, &amp;data);</div>
 <div class="line"><span class="comment">// get the last item from the list</span></div>
 <div class="line">listGetLastItem(l, &amp;data);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
 Getting items from list - alternative</h2>
 <p>Items can be retrieved from a list via the functions:</p>
 <ul>
@@ -321,7 +329,7 @@ Getting items from list - alternative</h2>
 <div class="line"><span class="keywordtype">void</span> *p_data = listGetPointer(l, 1);</div>
 <div class="line"><span class="comment">// delete the list</span></div>
 <div class="line">listDelete(l);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md17"></a>
 Replacing items in list</h2>
 <p>Items can be replaced in a list via the functions:</p>
 <ul>
@@ -346,7 +354,7 @@ Replacing items in list</h2>
 <div class="line">new_data.i = 3;</div>
 <div class="line">old_data.i = 2;</div>
 <div class="line">listCountReplace(l, &amp;old_data, &amp;new_data, max_count);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md17"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md18"></a>
 Removing items from list</h2>
 <p>Items can be removed from a list via the functions:</p>
 <ul>
@@ -374,7 +382,7 @@ Removing items from list</h2>
 <div class="line">listPop(l);</div>
 <div class="line"><span class="comment">// remove the first item from the list</span></div>
 <div class="line">listShift(l);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md18"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md19"></a>
 Support functions</h2>
 <p>The library provides some support functions:</p>
 <ul>
@@ -411,7 +419,7 @@ Support functions</h2>
 <div class="line">printList(l, <span class="stringliteral">&quot; &quot;</span>);</div>
 <div class="line"><span class="comment">// convert the list to an array</span></div>
 <div class="line"><span class="keywordtype">int</span> *array = listToArray(l);</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md19"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md20"></a>
 Iterating over list</h2>
 <p>The library provides a structure to iterate over a list (<code>Iterator</code> struct) and a set of functions to use it:</p>
 <ul>
@@ -473,7 +481,7 @@ Iterating over list</h2>
 <div class="line">}</div>
 <div class="line"><span class="comment">// delete the iterator</span></div>
 <div class="line">IteratorDelete(it);</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md20"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md21"></a>
 License</h1>
 <p>This project is licensed under the MIT License - see the <a class="el" href="md_LICENSE.html">LICENSE</a> file for details. </p>
 </div></div><!-- contents -->

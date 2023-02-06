@@ -28,28 +28,30 @@ var NAVTREE =
     [ "LICENSE", "md_LICENSE.html", null ],
     [ "Better Lists", "md_README.html", [
       [ "Functions in library", "md_README.html#autotoc_md1", [
-        [ "Lists related", "md_README.html#autotoc_md2", null ],
-        [ "Iterator related", "md_README.html#autotoc_md3", null ]
+        [ "Lists related", "md_README.html#autotoc_md2", [
+          [ "Helper functions", "md_README.html#autotoc_md3", null ]
+        ] ],
+        [ "Iterator related", "md_README.html#autotoc_md4", null ]
       ] ],
-      [ "Data structures in library", "md_README.html#autotoc_md4", [
-        [ "Union data", "md_README.html#autotoc_md5", null ],
-        [ "List types", "md_README.html#autotoc_md6", null ],
-        [ "Nodes", "md_README.html#autotoc_md7", null ],
-        [ "List", "md_README.html#autotoc_md8", null ],
-        [ "Iterator", "md_README.html#autotoc_md9", null ]
+      [ "Data structures in library", "md_README.html#autotoc_md5", [
+        [ "Union data", "md_README.html#autotoc_md6", null ],
+        [ "List types", "md_README.html#autotoc_md7", null ],
+        [ "Nodes", "md_README.html#autotoc_md8", null ],
+        [ "List", "md_README.html#autotoc_md9", null ],
+        [ "Iterator", "md_README.html#autotoc_md10", null ]
       ] ],
-      [ "Examples", "md_README.html#autotoc_md10", [
-        [ "List creation", "md_README.html#autotoc_md11", null ],
-        [ "List deletion", "md_README.html#autotoc_md12", null ],
-        [ "Adding items to list", "md_README.html#autotoc_md13", null ],
-        [ "Getting items from list", "md_README.html#autotoc_md14", null ],
-        [ "Getting items from list - alternative", "md_README.html#autotoc_md15", null ],
-        [ "Replacing items in list", "md_README.html#autotoc_md16", null ],
-        [ "Removing items from list", "md_README.html#autotoc_md17", null ],
-        [ "Support functions", "md_README.html#autotoc_md18", null ],
-        [ "Iterating over list", "md_README.html#autotoc_md19", null ]
+      [ "Examples", "md_README.html#autotoc_md11", [
+        [ "List creation", "md_README.html#autotoc_md12", null ],
+        [ "List deletion", "md_README.html#autotoc_md13", null ],
+        [ "Adding items to list", "md_README.html#autotoc_md14", null ],
+        [ "Getting items from list", "md_README.html#autotoc_md15", null ],
+        [ "Getting items from list - alternative", "md_README.html#autotoc_md16", null ],
+        [ "Replacing items in list", "md_README.html#autotoc_md17", null ],
+        [ "Removing items from list", "md_README.html#autotoc_md18", null ],
+        [ "Support functions", "md_README.html#autotoc_md19", null ],
+        [ "Iterating over list", "md_README.html#autotoc_md20", null ]
       ] ],
-      [ "License", "md_README.html#autotoc_md20", null ]
+      [ "License", "md_README.html#autotoc_md21", null ]
     ] ]
   ] ]
 ];
