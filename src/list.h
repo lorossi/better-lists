@@ -92,6 +92,7 @@ int listToArray(List *list, union Data *array);
 int listGetSize(List *list);
 int listSort(List *list, int reverse);
 int listShuffle(List *list);
+void printList(List *list, char *end);
 
 // Iterator related functions
 Iterator *iteratorCreate(List *list, int start);
