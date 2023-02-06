@@ -93,6 +93,11 @@ int main()
   test_shuffle();
   printGreen("Passed.");
 
+  // test helper get
+  printYellow("Testing list helper get...");
+  test_helper_get();
+  printGreen("Passed.");
+
   // if we got here, all assert work correctly
   // YAY!
   printSuccess("ALL TESTS PASSED");
@@ -586,7 +591,7 @@ void test_helper_get()
 
   l = listCreate(DOUBLE);
   listPush(l, &(union Data){.d = 1.0});
-  assert(listDouble(l, 0) == 1.0);
+  assert(listGetDouble(l, 0) == 1.0);
   listDelete(l);
 
   l = listCreate(CHAR);
