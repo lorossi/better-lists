@@ -52,6 +52,15 @@ int _compareDouble(double a, double b)
     return 0;
 }
 
+/**
+ * @internal
+ * @brief Internal function. Compares two nodes.
+ *
+ * @param n1 First node.
+ * @param n2 Second node.
+ *
+ * @return int 1 if n1 > n2, -1 if n1 < n2, 0 if n1 == n2.
+ */
 int _nodeCompare(Node *n1, Node *n2, list_type type)
 {
   switch (type)
@@ -79,6 +88,49 @@ int _nodeCompare(Node *n1, Node *n2, list_type type)
   return 0;
 }
 
+/**
+ * @internal
+ * @brief Internal function. Compares a node and a value.
+ *
+ * @param d1 Value.
+ * @param n2 Node.
+ *
+ * @return int 1 if d1 > n2, -1 if d1 < n2, 0 if d1 == n2.
+ */
+int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
+{
+  switch (type)
+  {
+  case INTEGER:
+    return _compareDouble(d1->i, n2->data.i);
+    break;
+  case FLOAT:
+    return _compareDouble(d1->f, n2->data.f);
+    break;
+  case DOUBLE:
+    return _compareDouble(d1->d, n2->data.d);
+    break;
+  case CHAR:
+    return _compareDouble(d1->c, n2->data.c);
+    break;
+  case STRING:
+    return strcmp(d1->s, n2->data.s) == 0;
+    break;
+
+  default:
+    break;
+  }
+
+  return 0;
+}
+
+/**
+ * @internal
+ * @brief Internal function. Prints a node.
+ *
+ * @param node Node to be printed.
+ * @param type Type of the node.
+ */
 void _nodePrint(Node *node, list_type type)
 {
   switch (type)
@@ -167,19 +219,15 @@ Node *_findNodeByIndex(List *list, int index)
 Node *_findNodeByValue(List *list, union Data *data)
 {
   Node *current = list->head;
-  Node *to_find = _nodeCreate(NULL, NULL, data);
 
   while (current != NULL)
   {
-    if (_nodeCompare(current, to_find, list->type) == 0)
-    {
-      free(to_find);
+    if (_nodeValueCompare(data, current, list->type) == 0)
       return current;
-    }
+
     current = current->next;
   }
 
-  free(to_find);
   return NULL;
 }
 
@@ -194,22 +242,17 @@ Node *_findNodeByValue(List *list, union Data *data)
 int _findNodeIndexByValue(List *list, union Data *data)
 {
   Node *current = list->head;
-  Node *to_find = _nodeCreate(NULL, NULL, data);
   int index = 0;
 
   while (current != NULL)
   {
-    if (_nodeCompare(current, to_find, list->type) == 0)
-    {
-      free(to_find);
+    if (_nodeValueCompare(data, current, list->type) == 0)
       return index;
-    }
 
     current = current->next;
     index++;
   }
 
-  free(to_find);
   return -1;
 }
 
@@ -361,6 +404,7 @@ void listDelete(List *list)
 int listGetItem(List *list, union Data *destination, int index)
 {
   Node *node = _findNodeByIndex(list, index);
+
   if (node == NULL)
     return -1;
 
@@ -493,20 +537,15 @@ int listCountItem(List *list, union Data *value)
 {
   int count = 0;
   Node *current = list->head;
-  Node *to_find = _nodeCreate(NULL, NULL, value);
 
   while (current != NULL)
   {
-    if (_nodeCompare(current, to_find, list->type) == 0)
-    {
-      free(to_find);
+    if (_nodeValueCompare(value, current, list->type) == 0)
       count++;
-    }
 
     current = current->next;
   }
 
-  free(to_find);
   return count;
 }
 
@@ -794,6 +833,7 @@ void printList(List *list, char *end)
   {
     iteratorGetNode(it, current);
     _nodePrint(current, list->type);
+    printf("%s", end);
     iteratorNext(it);
   }
 }
@@ -815,6 +855,7 @@ void printListReverse(List *list, char *end)
   {
     iteratorGetNode(it, current);
     _nodePrint(current, list->type);
+    printf("%s", end);
     iteratorPrevious(it);
   }
 }
@@ -831,7 +872,8 @@ int listGetSize(List *list)
 }
 
 /**
- * @brief Sorts a list using merge sort.
+ * @brief Sorts a list using merge sort. Just because I write it, it means that the sorting algorithm is correct.
+ * Don't trust your eyes: this is merge sort indeed. I'm not a liar.
  *
  *
  * @param list List that will be sorted.
