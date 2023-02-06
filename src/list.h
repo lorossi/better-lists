@@ -90,8 +90,8 @@ int listSwap(List *list, int first_index, int second_index);
 int dataInList(List *list, union Data *destination);
 int listToArray(List *list, union Data *array);
 int listGetSize(List *list);
-int listSort(List *list, int reverse); // TODO create function to sort list using a comparator
-void listShuffle(List *list);
+int listSort(List *list, int reverse);
+int listShuffle(List *list);
 
 // Iterator related functions
 Iterator *iteratorCreate(List *list, int start);
@@ -100,6 +100,7 @@ int iteratorEnded(Iterator *it);
 int iteratorStarted(Iterator *it);
 int iteratorNext(Iterator *it);
 int iteratorPrevious(Iterator *it);
+int iteratorGetNode(Iterator *it, Node *destination);
 int iteratorGetData(Iterator *it, union Data *destination);
 int iteratorSetData(Iterator *it, union Data *new_value);
 int iteratorGetIndex(Iterator *it);

@@ -79,6 +79,34 @@ int _nodeCompare(Node *n1, Node *n2, list_type type)
   return 0;
 }
 
+void _nodePrint(Node *node, list_type type)
+{
+  switch (type)
+  {
+  case INTEGER:
+    printf("%d", node->data.i);
+    break;
+  case FLOAT:
+    printf("%f", node->data.f);
+    break;
+  case DOUBLE:
+    printf("%lf", node->data.d);
+    break;
+  case CHAR:
+    printf("%c", node->data.c);
+    break;
+  case STRING:
+    printf("%s", node->data.s);
+    break;
+  case POINTER:
+    printf("%p", node->data.p);
+    break;
+
+  default:
+    break;
+  }
+}
+
 /**
  * @internal
  * @brief Internal function. Finds a node by its index.
@@ -144,11 +172,14 @@ Node *_findNodeByValue(List *list, union Data *data)
   while (current != NULL)
   {
     if (_nodeCompare(current, to_find, list->type) == 0)
+    {
+      free(to_find);
       return current;
-
+    }
     current = current->next;
   }
 
+  free(to_find);
   return NULL;
 }
 
@@ -169,12 +200,16 @@ int _findNodeIndexByValue(List *list, union Data *data)
   while (current != NULL)
   {
     if (_nodeCompare(current, to_find, list->type) == 0)
+    {
+      free(to_find);
       return index;
+    }
 
     current = current->next;
     index++;
   }
 
+  free(to_find);
   return -1;
 }
 
@@ -463,11 +498,15 @@ int listCountItem(List *list, union Data *value)
   while (current != NULL)
   {
     if (_nodeCompare(current, to_find, list->type) == 0)
+    {
+      free(to_find);
       count++;
+    }
 
     current = current->next;
   }
 
+  free(to_find);
   return count;
 }
 
@@ -746,7 +785,17 @@ int listToArray(List *list, union Data *array)
  */
 void printList(List *list, char *end)
 {
-  // TODO: print list in a readable manner
+  Iterator *it;
+  it = iteratorCreate(list, 0);
+  Node *current;
+  current = _nodeCreate(NULL, NULL, NULL);
+
+  while (!iteratorEnded(it))
+  {
+    iteratorGetNode(it, current);
+    _nodePrint(current, list->type);
+    iteratorNext(it);
+  }
 }
 
 /**
@@ -757,7 +806,17 @@ void printList(List *list, char *end)
  */
 void printListReverse(List *list, char *end)
 {
-  // TODO: print list in a readable manner, in reverse
+  Iterator *it;
+  it = iteratorCreate(list, -1);
+  Node *current;
+  current = _nodeCreate(NULL, NULL, NULL);
+
+  while (!iteratorStarted(it))
+  {
+    iteratorGetNode(it, current);
+    _nodePrint(current, list->type);
+    iteratorPrevious(it);
+  }
 }
 
 /**
@@ -772,7 +831,7 @@ int listGetSize(List *list)
 }
 
 /**
- * @brief Sorts a list using bubble sort.
+ * @brief Sorts a list using merge sort.
  *
  *
  * @param list List that will be sorted.
@@ -818,8 +877,9 @@ int listSort(List *list, int reverse)
  * @brief Shuffles a list using Fisher-Yates algorithm.
  *
  * @param list List that will be shuffled.
+ * @return int 0 in case of success; -1 otherwise.
  */
-void listShuffle(List *list)
+int listShuffle(List *list)
 {
   srand(time(NULL));
 
@@ -828,6 +888,8 @@ void listShuffle(List *list)
     int j = rand() % (i + 1);
     listSwap(list, i, j);
   }
+
+  return 0;
 }
 
 /**
@@ -904,7 +966,7 @@ int iteratorEnded(Iterator *it)
  */
 int iteratorStarted(Iterator *it)
 {
-  return it->index == 0 ? 1 : 0;
+  return it->previous == NULL ? 1 : 0;
 }
 
 /**
@@ -945,6 +1007,22 @@ int iteratorPrevious(Iterator *it)
   }
 
   return -1;
+}
+
+/**
+ * @brief Get the node currently pointed by the iterator.
+ *
+ * @param it Iterator
+ * @param destination Pointer to the variable where the node will be saved. If NULL, nothing will be saved.
+ * @return int -1 if an error is encountered; size of the items otherwise.
+ */
+int iteratorGetNode(Iterator *it, Node *destination)
+{
+  if (destination == NULL)
+    return -1;
+
+  destination = it->current;
+  return sizeof(destination);
 }
 
 /**
