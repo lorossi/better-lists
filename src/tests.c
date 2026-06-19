@@ -22,6 +22,7 @@ void test_append_prepend();
 void test_replace();
 void test_replace_by_value();
 void test_remove();
+void test_destructor();
 void test_pop_push();
 void test_swap();
 void test_to_array();
@@ -69,6 +70,11 @@ int main()
   printYellow("Testing list remove...");
   test_remove();
   test_pop_push();
+  printGreen("Passed.");
+
+  // test pointer destructor
+  printYellow("Testing pointer list destructor...");
+  test_destructor();
   printGreen("Passed.");
 
   // test list swap
@@ -367,6 +373,49 @@ void test_remove()
   }
 
   listDelete(l);
+}
+
+static int destructor_calls = 0;
+void counting_destructor(void *p)
+{
+  destructor_calls++;
+  free(p);
+}
+
+void test_destructor()
+{
+  List *l = listCreate(POINTER);
+  listSetDestructor(l, counting_destructor);
+
+  // listRemoveItem and listReplaceItem should invoke the destructor
+  for (int i = 0; i < 10; i++)
+  {
+    union Data data;
+    data.p = malloc(sizeof(int));
+    listPush(l, &data);
+  }
+  destructor_calls = 0;
+
+  // discarding a removed item invokes the destructor
+  assert(listRemoveItem(l, NULL, 0) != -1);
+  assert(destructor_calls == 1);
+
+  // taking ownership via destination does not invoke the destructor
+  union Data removed;
+  assert(listRemoveItem(l, &removed, 0) != -1);
+  assert(destructor_calls == 1);
+  free(removed.p);
+
+  // replacing an item invokes the destructor on the old value
+  union Data new_data;
+  new_data.p = malloc(sizeof(int));
+  assert(listReplaceItem(l, &new_data, 0) != -1);
+  assert(destructor_calls == 2);
+
+  // deleting the list invokes the destructor on all remaining items
+  int remaining = listGetSize(l);
+  listDelete(l);
+  assert(destructor_calls == 2 + remaining);
 }
 
 void test_pop_push()
