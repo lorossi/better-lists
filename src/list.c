@@ -366,7 +366,33 @@ List *listCreate(list_type type)
   list->head = NULL;
   list->tail = NULL;
   list->length = 0;
+  list->destructor = NULL;
   return list;
+}
+
+/**
+ * @brief Sets the destructor called on data.p when a POINTER-type node is removed, replaced or the list is deleted.
+ * Has no effect on lists of any other type, since their data is stored inline rather than owned via a pointer.
+ *
+ * @param list List on which the destructor will be set.
+ * @param destructor Function called with the node's data.p. Pass NULL to disable (default).
+ */
+void listSetDestructor(List *list, void (*destructor)(void *p))
+{
+  list->destructor = destructor;
+}
+
+/**
+ * @internal
+ * @brief Internal function. Calls the list's destructor on a node's data.p, if the list is of type POINTER and a destructor is set.
+ *
+ * @param list List the node belongs to.
+ * @param node Node whose data.p will be passed to the destructor.
+ */
+void _nodeDestroyData(List *list, Node *node)
+{
+  if (list->type == POINTER && list->destructor != NULL)
+    list->destructor(node->data.p);
 }
 
 /**
@@ -381,6 +407,7 @@ void listDelete(List *list)
   while (current != NULL)
   {
     Node *next = current->next;
+    _nodeDestroyData(list, current);
     _nodeDelete(current);
     current = next;
   }
@@ -578,6 +605,8 @@ int listRemoveItem(List *list, union Data *destination, int index)
 
   if (destination != NULL)
     *destination = current->data;
+  else
+    _nodeDestroyData(list, current);
 
   int size = sizeof(current->data);
   _nodeDelete(current);
@@ -691,6 +720,7 @@ int listReplaceItem(List *list, union Data *new_value, int index)
   if (node == NULL)
     return -1;
 
+  _nodeDestroyData(list, node);
   return _nodeSetData(node, new_value);
 }
 

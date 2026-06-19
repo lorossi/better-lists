@@ -51,10 +51,11 @@ typedef struct node
  */
 typedef struct list
 {
-  Node *head;     /**< Pointer to first node */
-  Node *tail;     /**< Pointer to last node */
-  int length;     /**< Number of nodes in list */
-  list_type type; /**< Type of data contained in node. */
+  Node *head;               /**< Pointer to first node */
+  Node *tail;               /**< Pointer to last node */
+  int length;               /**< Number of nodes in list */
+  list_type type;           /**< Type of data contained in node. */
+  void (*destructor)(void *p); /**< Optional destructor called on data.p when a POINTER-type node is removed or replaced. */
 } List;
 
 /**
@@ -71,6 +72,7 @@ typedef struct iterator
 
 List *listCreate(list_type type);
 void listDelete(List *list);
+void listSetDestructor(List *list, void (*destructor)(void *p));
 int listGetItem(List *list, union Data *destination, int index);
 int listGetFirstItem(List *list, union Data *destination);
 int listGetLastItem(List *list, union Data *destination);
