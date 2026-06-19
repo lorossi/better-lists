@@ -11,6 +11,10 @@ static int saved_stdout_fd = -1;
 static FILE *capture_file = NULL;
 
 void captureStdoutStart(void) {
+  TEST_ASSERT_EQUAL_INT_MESSAGE(-1, saved_stdout_fd,
+                               "stdout capture already active");
+  TEST_ASSERT_NULL_MESSAGE(capture_file, "stdout capture already active");
+
   fflush(stdout);
   capture_file = tmpfile();
   TEST_ASSERT_NOT_NULL_MESSAGE(capture_file, "failed to create temp file");
