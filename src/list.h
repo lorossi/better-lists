@@ -5,17 +5,13 @@
  * @file list.h
  * @author Lorenzo Rossi - https://github.com/lorossi/better-lists
  * @date 26/10/2021
- * @version 1.1.0
+ * @version 1.2.0
  * @brief Simple linked list library made because I wanted to kill some time.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <stdint.h>
 
-union Data
-{
+union Data {
   int i;
   char c;
   float f;
@@ -24,8 +20,7 @@ union Data
   void *p;
 };
 
-typedef enum
-{
+typedef enum {
   INTEGER,
   CHAR,
   FLOAT,
@@ -36,10 +31,10 @@ typedef enum
 
 /**
  * @internal
- * @brief This structure defines a base node. It contains links to previous and next node, as well as saved data.
+ * @brief This structure defines a base node. It contains links to previous and
+ * next node, as well as saved data.
  */
-typedef struct node
-{
+typedef struct node {
   union Data data;       /**< Data contained in node. */
   struct node *previous; /**< Pointer to previous node */
   struct node *next;     /**< Pointer to next node */
@@ -47,22 +42,30 @@ typedef struct node
 
 /**
  * @internal
- * @brief This structure defines a base list. It contains pointers to first and last item, as well as its length.
+ * @brief This structure defines a base list. It contains pointers to first and
+ * last item, as well as its length.
  */
-typedef struct list
-{
-  Node *head;     /**< Pointer to first node */
-  Node *tail;     /**< Pointer to last node */
-  int length;     /**< Number of nodes in list */
-  list_type type; /**< Type of data contained in node. */
+typedef struct list {
+  Node *head;                  /**< Pointer to first node */
+  Node *tail;                  /**< Pointer to last node */
+  int length;                  /**< Number of nodes in list */
+  list_type type;              /**< Type of data contained in node. */
+  void (*destructor)(void *p); /**< Optional destructor called on a node's
+                                   owned pointer (data.p for POINTER lists,
+                                   data.s for STRING lists) when it is removed,
+                                   replaced, or when the list is deleted. */
+  int (*comparator)(void *p1, void *p2); /**< Optional comparator for POINTER
+                                  lists, used instead of comparing raw
+                                  addresses. Must return 1 if p1 > p2, -1 if
+                                  p1 < p2, 0 if p1 == p2. */
 } List;
 
 /**
  * @internal
- * @brief This structure defines an iterator. It contains pointers to first, current and next items.
+ * @brief This structure defines an iterator. It contains pointers to first,
+ * current and next items.
  */
-typedef struct iterator
-{
+typedef struct iterator {
   struct node *previous; /**< Pointer to previous node */
   struct node *next;     /**< Pointer to next node */
   struct node *current;  /**< Pointer to current node */
@@ -71,6 +74,8 @@ typedef struct iterator
 
 List *listCreate(list_type type);
 void listDelete(List *list);
+void listSetDestructor(List *list, void (*destructor)(void *p));
+void listSetComparator(List *list, int (*comparator)(void *p1, void *p2));
 int listGetItem(List *list, union Data *destination, int index);
 int listGetFirstItem(List *list, union Data *destination);
 int listGetLastItem(List *list, union Data *destination);
@@ -78,8 +83,10 @@ int listAddItem(List *list, union Data *destination, int index);
 int listPush(List *list, union Data *data);
 int listPrepend(List *list, union Data *data);
 int listReplaceItem(List *list, union Data *new_value, int index);
-int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_value);
-int listCountReplace(List *list, union Data *old_value, union Data *new_value, int replace_count);
+int listReplaceItemByValue(List *list, union Data *old_value,
+                           union Data *new_value);
+int listCountReplace(List *list, union Data *old_value, union Data *new_value,
+                     int replace_count);
 int listCountItem(List *list, union Data *value);
 int listRemoveItem(List *list, union Data *data, int index);
 int listRemoveItemByValue(List *list, union Data *old_value);
@@ -93,6 +100,7 @@ int listGetSize(List *list);
 int listSort(List *list, int reverse);
 int listShuffle(List *list);
 void printList(List *list, char *end);
+void printListReverse(List *list, char *end);
 
 // Helper functions
 int listGetInt(List *list, int index);

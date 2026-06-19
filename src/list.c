@@ -1,4 +1,7 @@
 #include "list.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * @internal
@@ -9,8 +12,7 @@
  * @param data Data to be put in the new node.
  * @return Node* the new node, already linked.
  */
-Node *_nodeCreate(Node *previous, Node *next, union Data *data)
-{
+static Node *_nodeCreate(Node *previous, Node *next, union Data *data) {
   Node *new = NULL;
   new = (Node *)malloc(sizeof(Node));
 
@@ -27,8 +29,7 @@ Node *_nodeCreate(Node *previous, Node *next, union Data *data)
  *
  * @param node Pointer to the node to be deleted.
  */
-void _nodeDelete(Node *node)
-{
+static void _nodeDelete(Node *node) {
   free(node);
   return;
 }
@@ -42,8 +43,7 @@ void _nodeDelete(Node *node)
  *
  * @return int 1 if a > b, -1 if a < b, 0 if a == b.
  */
-int _compareDouble(double a, double b)
-{
+static int _compareNumber(double a, double b) {
   if (a > b)
     return 1;
   else if (a < b)
@@ -54,39 +54,13 @@ int _compareDouble(double a, double b)
 
 /**
  * @internal
- * @brief Internal function. Compares two nodes.
+ * @brief Compares two strings.
  *
- * @param n1 First node.
- * @param n2 Second node.
- *
- * @return int 1 if n1 > n2, -1 if n1 < n2, 0 if n1 == n2.
+ * @param s1 First string.
+ * @param s2 Second string.
+ * @return int 1 if s1 > s2, -1 if s1 < s2, 0 if s1 == s2.
  */
-int _nodeCompare(Node *n1, Node *n2, list_type type)
-{
-  switch (type)
-  {
-  case INTEGER:
-    return _compareDouble(n1->data.i, n2->data.i);
-    break;
-  case FLOAT:
-    return _compareDouble(n1->data.f, n2->data.f);
-    break;
-  case DOUBLE:
-    return _compareDouble(n1->data.d, n2->data.d);
-    break;
-  case CHAR:
-    return _compareDouble(n1->data.c, n2->data.c);
-    break;
-  case STRING:
-    return strcmp(n1->data.s, n2->data.s) == 0;
-    break;
-
-  default:
-    break;
-  }
-
-  return 0;
-}
+static int _compareString(char *s1, char *s2) { return strcmp(s1, s2); }
 
 /**
  * @internal
@@ -94,28 +68,35 @@ int _nodeCompare(Node *n1, Node *n2, list_type type)
  *
  * @param d1 Value.
  * @param n2 Node.
+ * @param list List the value and node belong to. Its type determines how
+ * the comparison is performed; for POINTER lists, its comparator is used if
+ * set, otherwise raw addresses are compared.
  *
  * @return int 1 if d1 > n2, -1 if d1 < n2, 0 if d1 == n2.
  */
-int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
-{
-  switch (type)
-  {
+static int _nodeValueCompare(union Data *d1, Node *n2, List *list) {
+  if (list->comparator != NULL)
+    return list->comparator(d1->p, n2->data.p);
+
+  switch (list->type) {
   case INTEGER:
-    return _compareDouble(d1->i, n2->data.i);
-    break;
+    return _compareNumber(d1->i, n2->data.i);
+
   case FLOAT:
-    return _compareDouble(d1->f, n2->data.f);
-    break;
+    return _compareNumber(d1->f, n2->data.f);
+
   case DOUBLE:
-    return _compareDouble(d1->d, n2->data.d);
-    break;
+    return _compareNumber(d1->d, n2->data.d);
+
   case CHAR:
-    return _compareDouble(d1->c, n2->data.c);
-    break;
+    return _compareNumber(d1->c, n2->data.c);
+
   case STRING:
-    return strcmp(d1->s, n2->data.s) == 0;
-    break;
+    return _compareString(d1->s, n2->data.s);
+
+  case POINTER:
+    return _compareNumber((double)(intptr_t)d1->p,
+                          (double)(intptr_t)n2->data.p);
 
   default:
     break;
@@ -131,10 +112,8 @@ int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
  * @param node Node to be printed.
  * @param type Type of the node.
  */
-void _nodePrint(Node *node, list_type type)
-{
-  switch (type)
-  {
+static void _nodePrint(Node *node, list_type type) {
+  switch (type) {
   case INTEGER:
     printf("%d", node->data.i);
     break;
@@ -167,23 +146,20 @@ void _nodePrint(Node *node, list_type type)
  * @param index Index of the node.
  * @return Node*
  */
-Node *_findNodeByIndex(List *list, int index)
-{
+static Node *_findNodeByIndex(List *list, int index) {
   if (index >= listGetSize(list))
     return NULL;
 
   Node *current;
   int count, increment;
 
-  if (index > listGetSize(list) / 2)
-  {
-    // if the node is closer to then end than to the start, go backwards from the tail
+  if (index > listGetSize(list) / 2) {
+    // if the node is closer to then end than to the start, go backwards from
+    // the tail
     current = list->tail;
     count = listGetSize(list) - 1;
     increment = -1;
-  }
-  else
-  {
+  } else {
     // otherwise, go forward from the head
     current = list->head;
     count = 0;
@@ -191,8 +167,7 @@ Node *_findNodeByIndex(List *list, int index)
   }
 
   // loop over the list
-  while (current != NULL)
-  {
+  while (current != NULL) {
     if (index == count)
       return current;
 
@@ -210,43 +185,18 @@ Node *_findNodeByIndex(List *list, int index)
 
 /**
  * @internal
- * @brief Internal function. Finds a node in a list by its value.
- *
- * @param list List containing the node to look for.
- * @param data Value of the node.
- * @return Node*
- */
-Node *_findNodeByValue(List *list, union Data *data)
-{
-  Node *current = list->head;
-
-  while (current != NULL)
-  {
-    if (_nodeValueCompare(data, current, list->type) == 0)
-      return current;
-
-    current = current->next;
-  }
-
-  return NULL;
-}
-
-/**
- * @internal
  * @brief Finds a node index in a list by its value.
  *
  * @param list List containing the node to look for.
  * @param data Pointer containing value of the node.
- * @return int Index of the nome.
+ * @return int Index of the node.
  */
-int _findNodeIndexByValue(List *list, union Data *data)
-{
+static int _findNodeIndexByValue(List *list, union Data *data) {
   Node *current = list->head;
   int index = 0;
 
-  while (current != NULL)
-  {
-    if (_nodeValueCompare(data, current, list->type) == 0)
+  while (current != NULL) {
+    if (_nodeValueCompare(data, current, list) == 0)
       return index;
 
     current = current->next;
@@ -261,18 +211,16 @@ int _findNodeIndexByValue(List *list, union Data *data)
  * @brief Gets the data in an item.
  *
  * @param node Node from which the data will be taken.
- * @param destination Pointer to the variable where data will be saved. If it's NULL, no value is read.
+ * @param destination Pointer to the variable where data will be saved. If it's
+ * NULL, no value is read.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _nodeGetData(Node *node, union Data *destination)
-{
-  if (node != NULL && destination != NULL)
-  {
-    *destination = node->data;
-    return sizeof(*destination);
-  }
+static int _nodeGetData(Node *node, union Data *destination) {
+  if (node == NULL || destination == NULL)
+    return -1;
 
-  return -1;
+  *destination = node->data;
+  return sizeof(*destination);
 }
 
 /**
@@ -280,63 +228,16 @@ int _nodeGetData(Node *node, union Data *destination)
  * @brief Sets the data in an item.
  *
  * @param node Node in which the data will be written.
- * @param data Pointer to the source variable. If it's NULL, no value is written.
+ * @param data Pointer to the source variable. If it's NULL, no value is
+ * written.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _nodeSetData(Node *node, union Data *data)
-{
-  if (node != NULL)
-  {
-    node->data = *data;
-    return sizeof(*data);
-  }
+static int _nodeSetData(Node *node, union Data *data) {
+  if (node == NULL || data == NULL)
+    return -1;
 
-  return -1;
-}
-
-/**
- * @internal
- * @brief Retrieves a node from a list by its index.
- *
- * @param list List containing the node to look for.
- * @param destination Pointer to the variable where data will be saved.
- * @param index Index of the node in the list.
- * @return int -1 if an error is encountered; size of the items otherwise.
- */
-int _listGetNode(List *list, Node *destination, int index)
-{
-  Node *node;
-  node = _findNodeByIndex(list, index);
-
-  if (node != NULL)
-  {
-    destination = node;
-    return sizeof(*node);
-  }
-
-  return -1;
-}
-
-/**
- * @internal
- * @brief Retrieves a node from a list by its value.
- *
- * @param list List containing the node to look for.
- * @param destination Pointer to the variable where data will be saved.
- * @return int -1 if an error is encountered; size of the items otherwise.
- */
-int _listGetNodeByValue(List *list, Node *destination, union Data *value)
-{
-  Node *node;
-  node = _findNodeByValue(list, value);
-
-  if (node != NULL)
-  {
-    destination = node;
-    return sizeof(*node);
-  }
-
-  return -1;
+  node->data = *data;
+  return sizeof(*data);
 }
 
 /**
@@ -346,8 +247,7 @@ int _listGetNodeByValue(List *list, Node *destination, union Data *value)
  * @param n1 Pointer to the first node to be swapped.
  * @param n2 Pointer to the second node to be swapped.
  */
-void _listSwapNodes(Node *n1, Node *n2)
-{
+static void _listSwapNodes(Node *n1, Node *n2) {
   union Data temp;
   temp = n1->data;
   n1->data = n2->data;
@@ -359,14 +259,62 @@ void _listSwapNodes(Node *n1, Node *n2)
  *
  * @return List* The new (empty) list.
  */
-List *listCreate(list_type type)
-{
+List *listCreate(list_type type) {
   List *list = malloc(sizeof(List));
   list->type = type;
   list->head = NULL;
   list->tail = NULL;
   list->length = 0;
+  list->destructor = NULL;
+  list->comparator = NULL;
   return list;
+}
+
+/**
+ * @brief Sets the destructor called on a node's owned pointer (data.p for
+ * POINTER lists, data.s for STRING lists) when it is removed, replaced or
+ * the list is deleted. Has no effect on lists of any other type, since their
+ * data is stored inline rather than owned via a pointer.
+ *
+ * @param list List on which the destructor will be set.
+ * @param destructor Function called with the node's owned pointer. Pass
+ * NULL to disable (default).
+ */
+void listSetDestructor(List *list, void (*destructor)(void *p)) {
+  list->destructor = destructor;
+}
+
+/**
+ * @brief Sets the comparator used to order and match items in a POINTER
+ * list. Has no effect on lists of any other type, since they are compared by
+ * value rather than by their pointed-to data.
+ *
+ * @param list List on which the comparator will be set.
+ * @param comparator Function returning 1 if p1 > p2, -1 if p1 < p2, 0 if
+ * p1 == p2. Pass NULL to compare raw addresses instead (default).
+ */
+void listSetComparator(List *list, int (*comparator)(void *p1, void *p2)) {
+  list->comparator = comparator;
+}
+
+/**
+ * @internal
+ * @brief Internal function. Calls the list's destructor on a node's owned
+ * pointer (data.p for POINTER lists, data.s for STRING lists), if a
+ * destructor is set. Has no effect for other types, since their data is
+ * stored inline rather than owned via a pointer.
+ *
+ * @param list List the node belongs to.
+ * @param node Node whose owned pointer will be passed to the destructor.
+ */
+void _nodeDestroyData(List *list, Node *node) {
+  if (list->destructor == NULL)
+    return;
+
+  if (list->type == POINTER)
+    list->destructor(node->data.p);
+  else if (list->type == STRING)
+    list->destructor(node->data.s);
 }
 
 /**
@@ -374,13 +322,12 @@ List *listCreate(list_type type)
  *
  * @param list The list to be deleted.
  */
-void listDelete(List *list)
-{
+void listDelete(List *list) {
   Node *current = list->head;
 
-  while (current != NULL)
-  {
+  while (current != NULL) {
     Node *next = current->next;
+    _nodeDestroyData(list, current);
     _nodeDelete(current);
     current = next;
   }
@@ -401,10 +348,8 @@ void listDelete(List *list)
  * @param index -1 if an error is encountered; size of the items otherwise.
  * @return int
  */
-int listGetItem(List *list, union Data *destination, int index)
-{
+int listGetItem(List *list, union Data *destination, int index) {
   Node *node = _findNodeByIndex(list, index);
-
   if (node == NULL)
     return -1;
 
@@ -421,10 +366,8 @@ int listGetItem(List *list, union Data *destination, int index)
  * @param destination Pointer to the variable where data will be saved.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int listGetFirstItem(List *list, union Data *destination)
-{
-  if (list->head != NULL)
-  {
+int listGetFirstItem(List *list, union Data *destination) {
+  if (list->head != NULL) {
     if (destination != NULL)
       *destination = list->head->data;
 
@@ -441,10 +384,8 @@ int listGetFirstItem(List *list, union Data *destination)
  * @param destination Pointer to the variable where data will be saved.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int listGetLastItem(List *list, union Data *destination)
-{
-  if (list->tail != NULL)
-  {
+int listGetLastItem(List *list, union Data *destination) {
+  if (list->tail != NULL) {
     if (destination != NULL)
       *destination = list->tail->data;
 
@@ -461,26 +402,20 @@ int listGetLastItem(List *list, union Data *destination)
  * @param data Data to append.
  * @return int New length of the list.
  */
-int listPush(List *list, union Data *data)
-{
-  if (list->head == NULL)
-  {
+int listPush(List *list, union Data *data) {
+  if (list->head == NULL) {
     // no head, create one
     Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
-  }
-  else if (list->tail == NULL)
-  {
+  } else if (list->tail == NULL) {
     // no tail, create one
     // there's only one item in the list, the head
     Node *tail = _nodeCreate(list->head, NULL, data);
     // update list and tail
     list->head->next = tail;
     list->tail = tail;
-  }
-  else
-  { // head and tail exist, change tail
+  } else { // head and tail exist, change tail
     // update the formerly last node
     Node *new_tail = _nodeCreate(list->tail, NULL, data);
     list->tail->next = new_tail;
@@ -498,17 +433,13 @@ int listPush(List *list, union Data *data)
  * @param data Data to prepend.
  * @return int New length of the list.
  */
-int listPrepend(List *list, union Data *data)
-{
-  if (list->head == NULL)
-  {
+int listPrepend(List *list, union Data *data) {
+  if (list->head == NULL) {
     // no head, create one
     Node *head = _nodeCreate(NULL, NULL, data);
     // update list
     list->head = head;
-  }
-  else if (list->tail == NULL)
-  {
+  } else if (list->tail == NULL) {
     // no tail, create one
     // there's only one item in the list, the head
     // update list
@@ -519,9 +450,7 @@ int listPrepend(List *list, union Data *data)
     list->tail->previous = head;
     // set new head
     list->head = head;
-  }
-  else
-  {
+  } else {
     // head and tail exist, change head
     // update the formerly first node
     Node *new_head = _nodeCreate(NULL, list->head, data);
@@ -533,14 +462,12 @@ int listPrepend(List *list, union Data *data)
   return list->length;
 }
 
-int listCountItem(List *list, union Data *value)
-{
+int listCountItem(List *list, union Data *value) {
   int count = 0;
   Node *current = list->head;
 
-  while (current != NULL)
-  {
-    if (_nodeValueCompare(value, current, list->type) == 0)
+  while (current != NULL) {
+    if (_nodeValueCompare(value, current, list) == 0)
       count++;
 
     current = current->next;
@@ -553,12 +480,12 @@ int listCountItem(List *list, union Data *value)
  * @brief Removes an item from the list according to its index.
  *
  * @param list List from where the data will be removed.
- * @param destination Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @param destination Pointer to the variable where the data will be saved. If
+ * NULL, nothing will be saved.
  * @param index Index of the items that will be removed.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int listRemoveItem(List *list, union Data *destination, int index)
-{
+int listRemoveItem(List *list, union Data *destination, int index) {
   Node *current = _findNodeByIndex(list, index);
 
   if (current == NULL)
@@ -578,6 +505,8 @@ int listRemoveItem(List *list, union Data *destination, int index)
 
   if (destination != NULL)
     *destination = current->data;
+  else
+    _nodeDestroyData(list, current);
 
   int size = sizeof(current->data);
   _nodeDelete(current);
@@ -593,8 +522,7 @@ int listRemoveItem(List *list, union Data *destination, int index)
  * @param old_value Value of the items that will be removed.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int listRemoveItemByValue(List *list, union Data *old_value)
-{
+int listRemoveItemByValue(List *list, union Data *old_value) {
   int index;
   index = _findNodeIndexByValue(list, old_value);
 
@@ -608,11 +536,11 @@ int listRemoveItemByValue(List *list, union Data *old_value)
  * @brief Pops the list, removing its last item.
  *
  * @param list List that will be popped.
- * @param last Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @param last Pointer to the variable where the data will be saved. If NULL,
+ * nothing will be saved.
  * @return the new length of the list or -1 if an error is encountered.
  */
-int listPop(List *list, union Data *last)
-{
+int listPop(List *list, union Data *last) {
   if (listRemoveItem(list, last, list->length - 1) != -1)
     return list->length;
 
@@ -623,11 +551,11 @@ int listPop(List *list, union Data *last)
  * @brief Shifts the list, removing its first item.
  *
  * @param list List where the items will be added.
- * @param first Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @param first Pointer to the variable where the data will be saved. If NULL,
+ * nothing will be saved.
  * @return int the new length of the list or -1 if an error is encountered.
  */
-int listShift(List *list, union Data *first)
-{
+int listShift(List *list, union Data *first) {
   if (listRemoveItem(list, first, 0) != -1)
     return list->length;
 
@@ -642,8 +570,7 @@ int listShift(List *list, union Data *first)
  * @param second_index Index of the second item.
  * @return int 0 if successful, -1 of an error is encountered.
  */
-int listSwap(List *list, int first_index, int second_index)
-{
+int listSwap(List *list, int first_index, int second_index) {
   // check if the indexes are in bound
   if (first_index > list->length || second_index > list->length)
     return -1;
@@ -664,8 +591,8 @@ int listSwap(List *list, int first_index, int second_index)
  * @param new_value New value of the items.
  * @return int Index of the item if found, -1 in case of an error.
  */
-int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_value)
-{
+int listReplaceItemByValue(List *list, union Data *old_value,
+                           union Data *new_value) {
   int index;
   index = _findNodeIndexByValue(list, old_value);
 
@@ -683,14 +610,14 @@ int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_va
  * @param index Index of the old items.
  * @return int Size of the new item if found; -1 otherwise.
  */
-int listReplaceItem(List *list, union Data *new_value, int index)
-{
+int listReplaceItem(List *list, union Data *new_value, int index) {
   Node *node;
   node = _findNodeByIndex(list, index);
 
   if (node == NULL)
     return -1;
 
+  _nodeDestroyData(list, node);
   return _nodeSetData(node, new_value);
 }
 
@@ -700,15 +627,15 @@ int listReplaceItem(List *list, union Data *new_value, int index)
  * @param list List where the items will be replaced.
  * @param old_value Old value of the items.
  * @param new_value New value of the items.
- * @param replace_count Number of times the items shall be replaced. If -1, all matching items will be replaced.
+ * @param replace_count Number of times the items shall be replaced. If -1, all
+ * matching items will be replaced.
  * @return int Number of replaced items.
  */
-int listCountReplace(List *list, union Data *old_value, union Data *new_value, int replace_count)
-{
+int listCountReplace(List *list, union Data *old_value, union Data *new_value,
+                     int replace_count) {
   int count = 0;
 
-  while (count < replace_count || replace_count == -1)
-  {
+  while (count < replace_count || replace_count == -1) {
 
     if (listReplaceItemByValue(list, old_value, new_value) == -1)
       break;
@@ -724,15 +651,14 @@ int listCountReplace(List *list, union Data *old_value, union Data *new_value, i
  *
  * @param list List where the items will be removed.
  * @param data Value of the items that will be removed.
- * @param remove_count Number of times the items shall be replaced. If -1, all matching items will be removed.
+ * @param remove_count Number of times the items shall be replaced. If -1, all
+ * matching items will be removed.
  * @return int Number of removed items.
  */
-int listCountRemove(List *list, union Data *data, int remove_count)
-{
+int listCountRemove(List *list, union Data *data, int remove_count) {
   int count = 0;
 
-  while (count < remove_count || remove_count == -1)
-  {
+  while (count < remove_count || remove_count == -1) {
 
     if (listRemoveItemByValue(list, data) == -1)
       break;
@@ -751,16 +677,13 @@ int listCountRemove(List *list, union Data *data, int remove_count)
  * @param index Position of the new item.
  * @return int Length of the list.
  */
-int listAddItem(List *list, union Data *data, int index)
-{
-  if (index == 0)
-  {
+int listAddItem(List *list, union Data *data, int index) {
+  if (index == 0) {
     // add head
     return listPrepend(list, data);
   }
 
-  if (index > list->length - 1)
-  {
+  if (index > list->length - 1) {
     // add tail
     return listPush(list, data);
   }
@@ -784,8 +707,7 @@ int listAddItem(List *list, union Data *data, int index)
  * @param data Value of the item that will be searched.
  * @return int Position of the item if found; -1 otherwise.
  */
-int dataInList(List *list, union Data *data)
-{
+int dataInList(List *list, union Data *data) {
   return _findNodeIndexByValue(list, data);
 }
 
@@ -796,19 +718,14 @@ int dataInList(List *list, union Data *data)
  * @param array Pointer to the array where the items will be put.
  * @return int The size of the array.
  */
-int listToArray(List *list, union Data *array)
-{
+int listToArray(List *list, union Data *array) {
   int length;
   Node *current;
 
   length = listGetSize(list);
   current = list->head;
 
-  for (int i = 0; i < length; i++)
-  {
-    if (current == NULL)
-      return i;
-
+  for (int i = 0; i < length; i++) {
     _nodeGetData(current, &array[i]);
     current = current->next;
   }
@@ -822,20 +739,19 @@ int listToArray(List *list, union Data *array)
  * @param list List that will be printed.
  * @param end End of line separator.
  */
-void printList(List *list, char *end)
-{
+void printList(List *list, char *end) {
   Iterator *it;
   it = iteratorCreate(list, 0);
-  Node *current;
-  current = _nodeCreate(NULL, NULL, NULL);
+  Node current;
 
-  while (!iteratorEnded(it))
-  {
-    iteratorGetNode(it, current);
-    _nodePrint(current, list->type);
+  while (!iteratorEnded(it)) {
+    iteratorGetNode(it, &current);
+    _nodePrint(&current, list->type);
     printf("%s", end);
     iteratorNext(it);
   }
+
+  iteratorDelete(it);
 }
 
 /**
@@ -845,8 +761,7 @@ void printList(List *list, char *end)
  * @param index Position of the item.
  * @return int
  */
-int listGetInt(List *list, int index)
-{
+int listGetInt(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.i;
@@ -859,8 +774,7 @@ int listGetInt(List *list, int index)
  * @param index Position of the item.
  * @return char
  */
-char listGetChar(List *list, int index)
-{
+char listGetChar(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.c;
@@ -873,8 +787,7 @@ char listGetChar(List *list, int index)
  * @param index Position of the item.
  * @return float
  */
-float listGetFloat(List *list, int index)
-{
+float listGetFloat(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.f;
@@ -887,8 +800,7 @@ float listGetFloat(List *list, int index)
  * @param index Position of the item.
  * @return double
  */
-double listGetDouble(List *list, int index)
-{
+double listGetDouble(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.d;
@@ -901,8 +813,7 @@ double listGetDouble(List *list, int index)
  * @param index Position of the item.
  * @return char*
  */
-char *listGetString(List *list, int index)
-{
+char *listGetString(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.s;
@@ -915,8 +826,7 @@ char *listGetString(List *list, int index)
  * @param index Position of the item.
  * @return void*
  */
-void *listGetPointer(List *list, int index)
-{
+void *listGetPointer(List *list, int index) {
   union Data data;
   _nodeGetData(_findNodeByIndex(list, index), &data);
   return data.p;
@@ -928,20 +838,19 @@ void *listGetPointer(List *list, int index)
  * @param list List that will be printed.
  * @param end End of line separator.
  */
-void printListReverse(List *list, char *end)
-{
+void printListReverse(List *list, char *end) {
   Iterator *it;
   it = iteratorCreate(list, -1);
-  Node *current;
-  current = _nodeCreate(NULL, NULL, NULL);
+  Node current;
 
-  while (!iteratorStarted(it))
-  {
-    iteratorGetNode(it, current);
-    _nodePrint(current, list->type);
+  while (!iteratorStarted(it)) {
+    iteratorGetNode(it, &current);
+    _nodePrint(&current, list->type);
     printf("%s", end);
     iteratorPrevious(it);
   }
+
+  iteratorDelete(it);
 }
 
 /**
@@ -950,51 +859,97 @@ void printListReverse(List *list, char *end)
  * @param list List whose the size will be returned.
  * @return int Length of the list.
  */
-int listGetSize(List *list)
-{
-  return list->length;
+int listGetSize(List *list) { return list->length; }
+
+/**
+ * @internal
+ * @brief Internal function. Merges two sorted runs of nodes, identified by
+ * their data, into a single sorted run. The data is written back into the
+ * same nodes used as input, in sorted order.
+ *
+ * @param nodes Array of node pointers containing the two runs to merge.
+ * @param left Index of the first node of the left run.
+ * @param mid Index of the first node of the right run.
+ * @param right Index one past the last node of the right run.
+ * @param list List the nodes belong to, used to determine the comparison.
+ * @param reverse Order of the sorting. If is 0, the run is sorted lowest to
+ * highest. If 1, it's sorted highest to lowest.
+ */
+static void _listMerge(Node **nodes, int left, int mid, int right, List *list,
+                       int reverse) {
+  int i, j, k, cmp;
+  int left_size, right_size;
+  union Data *merged;
+
+  left_size = mid - left;
+  right_size = right - mid;
+  merged = malloc(sizeof(union Data) * (left_size + right_size));
+
+  i = 0;
+  j = 0;
+  k = 0;
+  while (i < left_size && j < right_size) {
+    cmp = _nodeValueCompare(&nodes[left + i]->data, nodes[mid + j], list);
+    if (reverse == 1)
+      cmp = -cmp;
+
+    if (cmp <= 0)
+      merged[k++] = nodes[left + i++]->data;
+    else
+      merged[k++] = nodes[mid + j++]->data;
+  }
+  while (i < left_size)
+    merged[k++] = nodes[left + i++]->data;
+  while (j < right_size)
+    merged[k++] = nodes[mid + j++]->data;
+
+  for (k = 0; k < left_size + right_size; k++)
+    nodes[left + k]->data = merged[k];
+
+  free(merged);
 }
 
 /**
- * @brief Sorts a list using merge sort. Just because I write it, it means that the sorting algorithm is correct.
- * Don't trust your eyes: this is merge sort indeed. I'm not a liar.
- *
+ * @brief Sorts a list using merge sort.
  *
  * @param list List that will be sorted.
- * @param reverse Order of the sorting. If is 0, the list is sorted lowest to highest. If 1, it's sorted highest to lowest.
+ * @param reverse Order of the sorting. If is 0, the list is sorted lowest to
+ * highest. If 1, it's sorted highest to lowest.
  * @return int 0 in case of success; -1 otherwise.
  */
-int listSort(List *list, int reverse)
-{
-  // TODO implement using merge sort
+int listSort(List *list, int reverse) {
   if (reverse != 0 && reverse != 1)
     return -1;
 
-  int sorted;
-  Iterator *it;
-  Node *current, *next;
+  if (list->length < 2)
+    return 0;
 
-  sorted = 0;
-  while (sorted == 0)
-  {
-    sorted = 1;
-    it = iteratorCreate(list, 0);
-    // evaluate end condition
-    while (!iteratorEnded(it) && it->index < list->length - 1)
-    {
-      current = it->current;
-      next = it->next;
+  Node **nodes;
+  Node *current;
+  int i, width, left;
 
-      if (_nodeCompare(current, next, list->type) == 1)
-      {
-        sorted = 0;
-        _listSwapNodes(current, next);
-      }
-
-      iteratorNext(it);
-    }
-    iteratorDelete(it);
+  nodes = malloc(sizeof(Node *) * list->length);
+  current = list->head;
+  for (i = 0; i < list->length; i++) {
+    nodes[i] = current;
+    current = current->next;
   }
+
+  for (width = 1; width < list->length; width *= 2) {
+    for (left = 0; left < list->length; left += 2 * width) {
+      int mid = left + width;
+      int right = left + 2 * width;
+
+      if (mid >= list->length)
+        continue;
+      if (right > list->length)
+        right = list->length;
+
+      _listMerge(nodes, left, mid, right, list, reverse);
+    }
+  }
+
+  free(nodes);
 
   return 0;
 }
@@ -1005,12 +960,10 @@ int listSort(List *list, int reverse)
  * @param list List that will be shuffled.
  * @return int 0 in case of success; -1 otherwise.
  */
-int listShuffle(List *list)
-{
+int listShuffle(List *list) {
   srand(time(NULL));
 
-  for (int i = list->length - 1; i > 0; i--)
-  {
+  for (int i = list->length - 1; i > 0; i--) {
     int j = rand() % (i + 1);
     listSwap(list, i, j);
   }
@@ -1022,40 +975,46 @@ int listShuffle(List *list)
  * @brief Creates an iterator for the list.
  *
  * @param list List from where the iterator will be extracted.
- * @param index Starting index of the iterator. If 0, starts at the head of the list. If -1, starts at its end.
+ * @param index Starting index of the iterator. If 0, starts at the head of the
+ * list. If -1, starts at its end.
  * @return Iterator* The new iterator.
  */
-Iterator *iteratorCreate(List *list, int index)
-{
+Iterator *iteratorCreate(List *list, int index) {
   Iterator *new = NULL;
   new = (Iterator *)malloc(sizeof(Iterator));
+
+  if (list->length == 0) {
+    // nothing to iterate over
+    new->current = NULL;
+    new->previous = NULL;
+    new->next = NULL;
+    new->index = 0;
+    return new;
+  }
 
   // modulo index to list length
   if (index > list->length - 1)
     index = list->length - 1;
 
-  if (index == 0)
-  {
+  if (index == 0) {
     // point to first item
     new->current = list->head;
     new->next = list->head->next;
     new->previous = NULL;
     new->index = 0;
-  }
-  else if (index == -1)
-  {
+  } else if (index == -1) {
     // point to last item
     new->current = list->tail;
     new->previous = list->tail->previous;
     new->next = NULL;
     new->index = list->length - 1;
-  }
-  else
-  {
+  } else {
     // find a node
     Node *node;
     node = _findNodeByIndex(list, index);
     new->current = node;
+    new->previous = node->previous;
+    new->next = node->next;
     new->index = index;
   }
 
@@ -1067,8 +1026,7 @@ Iterator *iteratorCreate(List *list, int index)
  *
  * @param it Iterator that will be deleted.
  */
-void iteratorDelete(Iterator *it)
-{
+void iteratorDelete(Iterator *it) {
   free(it);
   return;
 }
@@ -1079,10 +1037,7 @@ void iteratorDelete(Iterator *it)
  * @param it Iterator to check.
  * @return int 1 if true, 0 if false.
  */
-int iteratorEnded(Iterator *it)
-{
-  return it->next == NULL ? 1 : 0;
-}
+int iteratorEnded(Iterator *it) { return it->current == NULL ? 1 : 0; }
 
 /**
  * @brief Checks if the iterator has reached the start.
@@ -1090,10 +1045,7 @@ int iteratorEnded(Iterator *it)
  * @param it Iterator to check.
  * @return int 1 if true, 0 if false.
  */
-int iteratorStarted(Iterator *it)
-{
-  return it->previous == NULL ? 1 : 0;
-}
+int iteratorStarted(Iterator *it) { return it->current == NULL ? 1 : 0; }
 
 /**
  * @brief Moves the iterator forward by an item.
@@ -1101,18 +1053,16 @@ int iteratorStarted(Iterator *it)
  * @param it Iterator to move.
  * @return int 0 if it moved successfully, -1 if the list is ended.
  */
-int iteratorNext(Iterator *it)
-{
-  if (it->next != NULL)
-  {
-    it->current = it->next;
-    it->previous = it->current->previous;
-    it->next = it->current->next;
-    it->index++;
-    return 0;
-  }
+int iteratorNext(Iterator *it) {
+  if (it->current == NULL && it->next == NULL)
+    return -1;
 
-  return -1;
+  Node *old_current = it->current;
+  it->current = it->next;
+  it->previous = old_current != NULL ? old_current : it->previous;
+  it->next = it->current != NULL ? it->current->next : NULL;
+  it->index++;
+  return 0;
 }
 
 /**
@@ -1121,45 +1071,46 @@ int iteratorNext(Iterator *it)
  * @param it Iterator to move.
  * @return int 0 if it moved successfully, -1 if the list is ended.
  */
-int iteratorPrevious(Iterator *it)
-{
-  if (it->previous != NULL)
-  {
-    it->current = it->previous;
-    it->previous = it->current->previous;
-    it->next = it->current->next;
-    it->index--;
-    return 0;
-  }
+int iteratorPrevious(Iterator *it) {
+  if (it->current == NULL && it->previous == NULL)
+    return -1;
 
-  return -1;
+  Node *old_current = it->current;
+  it->current = it->previous;
+  it->next = old_current != NULL ? old_current : it->next;
+  it->previous = it->current != NULL ? it->current->previous : NULL;
+  it->index--;
+  return 0;
 }
 
 /**
  * @brief Get the node currently pointed by the iterator.
  *
  * @param it Iterator
- * @param destination Pointer to the variable where the node will be saved. If NULL, nothing will be saved.
+ * @param destination Pointer to the variable where the node will be saved. If
+ * NULL, nothing will be saved.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int iteratorGetNode(Iterator *it, Node *destination)
-{
+int iteratorGetNode(Iterator *it, Node *destination) {
   if (destination == NULL)
     return -1;
 
-  destination = it->current;
-  return sizeof(destination);
+  if (it->current == NULL)
+    return -1;
+
+  *destination = *it->current;
+  return sizeof(*destination);
 }
 
 /**
  * @brief Loads the current value of the iterator.
  *
  * @param it Iterator to get the value of.
- * @param destination Pointer to the variable where the data will be saved. If NULL, nothing will be saved.
+ * @param destination Pointer to the variable where the data will be saved. If
+ * NULL, nothing will be saved.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int iteratorGetData(Iterator *it, union Data *destination)
-{
+int iteratorGetData(Iterator *it, union Data *destination) {
   return _nodeGetData(it->current, destination);
 }
 
@@ -1170,8 +1121,7 @@ int iteratorGetData(Iterator *it, union Data *destination)
  * @param data Pointer to the variable where the data is stored.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int iteratorSetData(Iterator *it, union Data *data)
-{
+int iteratorSetData(Iterator *it, union Data *data) {
   return _nodeSetData(it->current, data);
 }
 
