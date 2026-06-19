@@ -61,7 +61,7 @@ static void compare_type(list_type type) {
       sprintf(data.s, "string %d", i);
       break;
     case POINTER:
-      data.p = (char *)0xdeadbeef + i;
+      data.p = (void *)((uintptr_t)0xdeadbeef + (uintptr_t)i);
       break;
     default:
       TEST_FAIL_MESSAGE("Invalid type");
