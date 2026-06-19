@@ -35,6 +35,15 @@ jobs:
       - name: Run tests under valgrind
         run: valgrind --error-exitcode=1 --leak-check=full ./build/tests
 
+      - name: Configure with sanitizers
+        run: cmake -S . -B build-sanitized -DENABLE_SANITIZERS=ON
+
+      - name: Build with sanitizers
+        run: cmake --build build-sanitized
+
+      - name: Run tests under ASan/UBSan
+        run: ./build-sanitized/tests
+
   pages:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'

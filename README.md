@@ -7,7 +7,7 @@ A simple implementation of doubly linked lists in C.
 
 I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (*it was my first year!*), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.
 
-Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the `tests.c` you will find a good amount of tests, implemented using the Unity test framework.
+Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind, and against memory errors and undefined behavior using AddressSanitizer and UndefinedBehaviorSanitizer. Inside the `tests.c` you will find a good amount of tests, implemented using the Unity test framework.
 
 [Check the documentation here](https://lorossi.github.io/better-lists/html/) or scroll a little bit below to see some examples in action.
 
@@ -18,6 +18,7 @@ Each function is well commented, and in this readme I have included some example
 ```C
 List *listCreate(list_type type);
 void listDelete(List *list);
+void listSetDestructor(List *list, void (*destructor)(void *p));
 int listGetItem(List *list, union Data *destination, int index);
 int listGetFirstItem(List *list, union Data *destination);
 int listGetLastItem(List *list, union Data *destination);
@@ -142,14 +143,15 @@ The `Node` struct represents a node of the list. It contains a `union Data` fiel
 ```C
 typedef struct list
 {
-  Node *head;     /**< Pointer to first node */
-  Node *tail;     /**< Pointer to last node */
-  int length;     /**< Number of nodes in list */
-  list_type type; /**< Type of data contained in node. */
+  Node *head;                  /**< Pointer to first node */
+  Node *tail;                  /**< Pointer to last node */
+  int length;                  /**< Number of nodes in list */
+  list_type type;              /**< Type of data contained in node. */
+  void (*destructor)(void *p); /**< Optional destructor for owned pointers */
 } List;
 ```
 
-The `List` struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list and the type of the list.
+The `List` struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list, the type of the list and an optional destructor.
 
 ### Iterator
 
@@ -191,6 +193,26 @@ When you are done with a list, you have to delete it to free the memory calling 
 ```C
 List *l = listCreate(INTEGER);
 /* ... */
+listDelete(l);
+```
+
+### Freeing owned strings or pointers
+
+If a `STRING` or `POINTER` list owns the memory it points to (e.g. strings allocated with `malloc`), you can register a destructor with `listSetDestructor`. It will be called automatically whenever an item is removed, replaced, or the list itself is deleted - so you don't have to free that memory by hand.
+
+```C
+// create a list of owned, heap-allocated strings
+List *l = listCreate(STRING);
+listSetDestructor(l, free);
+
+union Data data;
+data.s = malloc(20);
+strcpy(data.s, "hello");
+listPush(l, &data);
+
+/* ... */
+
+// frees every remaining string before freeing the list itself
 listDelete(l);
 ```
 
