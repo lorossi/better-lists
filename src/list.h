@@ -14,8 +14,7 @@
 #include <string.h>
 #include <time.h>
 
-union Data
-{
+union Data {
   int i;
   char c;
   float f;
@@ -24,8 +23,7 @@ union Data
   void *p;
 };
 
-typedef enum
-{
+typedef enum {
   INTEGER,
   CHAR,
   FLOAT,
@@ -36,10 +34,10 @@ typedef enum
 
 /**
  * @internal
- * @brief This structure defines a base node. It contains links to previous and next node, as well as saved data.
+ * @brief This structure defines a base node. It contains links to previous and
+ * next node, as well as saved data.
  */
-typedef struct node
-{
+typedef struct node {
   union Data data;       /**< Data contained in node. */
   struct node *previous; /**< Pointer to previous node */
   struct node *next;     /**< Pointer to next node */
@@ -47,23 +45,24 @@ typedef struct node
 
 /**
  * @internal
- * @brief This structure defines a base list. It contains pointers to first and last item, as well as its length.
+ * @brief This structure defines a base list. It contains pointers to first and
+ * last item, as well as its length.
  */
-typedef struct list
-{
-  Node *head;               /**< Pointer to first node */
-  Node *tail;               /**< Pointer to last node */
-  int length;               /**< Number of nodes in list */
-  list_type type;           /**< Type of data contained in node. */
-  void (*destructor)(void *p); /**< Optional destructor called on data.p when a POINTER-type node is removed or replaced. */
+typedef struct list {
+  Node *head;                  /**< Pointer to first node */
+  Node *tail;                  /**< Pointer to last node */
+  int length;                  /**< Number of nodes in list */
+  list_type type;              /**< Type of data contained in node. */
+  void (*destructor)(void *p); /**< Optional destructor called on data.p when a
+                                  POINTER-type node is removed or replaced. */
 } List;
 
 /**
  * @internal
- * @brief This structure defines an iterator. It contains pointers to first, current and next items.
+ * @brief This structure defines an iterator. It contains pointers to first,
+ * current and next items.
  */
-typedef struct iterator
-{
+typedef struct iterator {
   struct node *previous; /**< Pointer to previous node */
   struct node *next;     /**< Pointer to next node */
   struct node *current;  /**< Pointer to current node */
@@ -80,8 +79,10 @@ int listAddItem(List *list, union Data *destination, int index);
 int listPush(List *list, union Data *data);
 int listPrepend(List *list, union Data *data);
 int listReplaceItem(List *list, union Data *new_value, int index);
-int listReplaceItemByValue(List *list, union Data *old_value, union Data *new_value);
-int listCountReplace(List *list, union Data *old_value, union Data *new_value, int replace_count);
+int listReplaceItemByValue(List *list, union Data *old_value,
+                           union Data *new_value);
+int listCountReplace(List *list, union Data *old_value, union Data *new_value,
+                     int replace_count);
 int listCountItem(List *list, union Data *value);
 int listRemoveItem(List *list, union Data *data, int index);
 int listRemoveItemByValue(List *list, union Data *old_value);
