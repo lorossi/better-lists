@@ -1,7 +1,7 @@
-#include <time.h>   // for random initialization
-#include <stdlib.h> // for random values
-#include "unity.h"
 #include "list.h"
+#include "unity.h"
+#include <stdlib.h> // for random values
+#include <time.h>   // for random initialization
 
 // tested against memory leaks using VALGRIND
 // https://stackoverflow.com/questions/5134891/how-do-i-use-valgrind-to-find-memory-leaks
@@ -15,28 +15,23 @@ const int LIST_TEST_SIZE = 10000;
 void setUp(void) {}
 void tearDown(void) {}
 
-void quickPopulate(List *l)
-{
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+void quickPopulate(List *l) {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data d;
     d.i = i;
     listPush(l, &d);
   }
 }
 
-void quickPopulateReverse(List *l)
-{
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+void quickPopulateReverse(List *l) {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data d;
     d.i = LIST_TEST_SIZE - i - 1;
     listPush(l, &d);
   }
 }
 
-void test_empty_list(void)
-{
+void test_empty_list(void) {
   List *l = listCreate(INTEGER);
   union Data d;
 
@@ -52,13 +47,11 @@ void test_empty_list(void)
   listDelete(l);
 }
 
-void test_populate_list(void)
-{
+void test_populate_list(void) {
   List *l = listCreate(INTEGER);
   union Data data_1;
 
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     data_1.i = i;
     // append to list, check size
     TEST_ASSERT_EQUAL_INT(i + 1, listPush(l, &data_1));
@@ -86,15 +79,12 @@ void test_populate_list(void)
   listDelete(l);
 }
 
-static void populate_type(list_type type)
-{
+static void populate_type(list_type type) {
   List *l = listCreate(type);
 
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data data_1;
-    switch (type)
-    {
+    switch (type) {
     case INTEGER:
       data_1.i = i;
       break;
@@ -106,6 +96,10 @@ static void populate_type(list_type type)
       break;
     case DOUBLE:
       data_1.d = (double)i;
+      break;
+    case STRING:
+      data_1.s = malloc(20);
+      sprintf(data_1.s, "string %d", i);
       break;
     default:
       TEST_FAIL_MESSAGE("Invalid type");
@@ -119,11 +113,9 @@ static void populate_type(list_type type)
 
   // check if item was correctly added
   union Data data_2;
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     TEST_ASSERT_EQUAL_INT(sizeof(data_2), listGetItem(l, &data_2, i));
-    switch (type)
-    {
+    switch (type) {
     case INTEGER:
       TEST_ASSERT_EQUAL_INT(i, data_2.i);
       break;
@@ -135,6 +127,11 @@ static void populate_type(list_type type)
       break;
     case DOUBLE:
       TEST_ASSERT_EQUAL_DOUBLE((double)i, data_2.d);
+      break;
+    case STRING:
+      char buffer[20];
+      sprintf(buffer, "string %d", i);
+      TEST_ASSERT_EQUAL_STRING(buffer, data_2.s);
       break;
     default:
       TEST_FAIL_MESSAGE("Invalid type");
@@ -149,9 +146,9 @@ void test_populate_type_integer(void) { populate_type(INTEGER); }
 void test_populate_type_float(void) { populate_type(FLOAT); }
 void test_populate_type_char(void) { populate_type(CHAR); }
 void test_populate_type_double(void) { populate_type(DOUBLE); }
+void test_populate_type_string(void) { populate_type(STRING); }
 
-void test_append_prepend(void)
-{
+void test_append_prepend(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
   const int TEST_VALUE_1 = -1;
@@ -175,8 +172,7 @@ void test_append_prepend(void)
   listDelete(l);
 }
 
-void test_replace(void)
-{
+void test_replace(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
   const int TEST_VALUE_1 = -1;
@@ -192,14 +188,17 @@ void test_replace(void)
 
   // replace last item
   data_1.i = TEST_VALUE_2;
-  TEST_ASSERT_EQUAL_INT(sizeof(data_1), listReplaceItem(l, &data_1, LIST_TEST_SIZE - 1));
+  TEST_ASSERT_EQUAL_INT(sizeof(data_1),
+                        listReplaceItem(l, &data_1, LIST_TEST_SIZE - 1));
   TEST_ASSERT_EQUAL_INT(sizeof(data_2), listGetLastItem(l, &data_2));
   TEST_ASSERT_EQUAL_INT(TEST_VALUE_2, data_2.i);
 
   // replace item in the middle
   data_1.i = TEST_VALUE_3;
-  TEST_ASSERT_EQUAL_INT(sizeof(data_1), listReplaceItem(l, &data_1, LIST_TEST_SIZE / 2));
-  TEST_ASSERT_EQUAL_INT(sizeof(data_2), listGetItem(l, &data_2, LIST_TEST_SIZE / 2));
+  TEST_ASSERT_EQUAL_INT(sizeof(data_1),
+                        listReplaceItem(l, &data_1, LIST_TEST_SIZE / 2));
+  TEST_ASSERT_EQUAL_INT(sizeof(data_2),
+                        listGetItem(l, &data_2, LIST_TEST_SIZE / 2));
   TEST_ASSERT_EQUAL_INT(TEST_VALUE_3, data_2.i);
 
   // test count items
@@ -214,8 +213,7 @@ void test_replace(void)
   listDelete(l);
 }
 
-void test_replace_by_value(void)
-{
+void test_replace_by_value(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
 
@@ -236,14 +234,39 @@ void test_replace_by_value(void)
   listDelete(l);
 }
 
-void test_remove(void)
-{
+void test_replace_by_value_string(void) {
+  List *l = listCreate(STRING);
+
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
+    union Data d;
+    d.s = malloc(20);
+    sprintf(d.s, "string %d", i);
+    listPush(l, &d);
+  }
+
+  const char *old_value = "string 5";
+  const char *new_value = "new string";
+
+  union Data old_data;
+  old_data.s = (char *)old_value;
+  union Data new_data;
+  new_data.s = (char *)new_value;
+
+  // replace
+  TEST_ASSERT_NOT_EQUAL(-1, listReplaceItemByValue(l, &old_data, &new_data));
+  // check if replaced
+  TEST_ASSERT_EQUAL_INT(0, listCountItem(l, &old_data));
+  TEST_ASSERT_EQUAL_INT(1, listCountItem(l, &new_data));
+
+  listDelete(l);
+}
+
+void test_remove(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
 
   // remove first item until list is empty
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data removed;
     TEST_ASSERT_EQUAL_INT(sizeof(removed), listRemoveItem(l, &removed, 0));
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listGetSize(l));
@@ -251,10 +274,10 @@ void test_remove(void)
   TEST_ASSERT_EQUAL_INT(0, listGetSize(l));
 
   quickPopulate(l);
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data removed;
-    TEST_ASSERT_EQUAL_INT(sizeof(removed), listRemoveItem(l, &removed, LIST_TEST_SIZE - i - 1));
+    TEST_ASSERT_EQUAL_INT(sizeof(removed),
+                          listRemoveItem(l, &removed, LIST_TEST_SIZE - i - 1));
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listGetSize(l));
   }
 
@@ -262,20 +285,17 @@ void test_remove(void)
 }
 
 static int destructor_calls = 0;
-static void counting_destructor(void *p)
-{
+static void counting_destructor(void *p) {
   destructor_calls++;
   free(p);
 }
 
-void test_destructor(void)
-{
+void test_destructor(void) {
   List *l = listCreate(POINTER);
   listSetDestructor(l, counting_destructor);
 
   // listRemoveItem and listReplaceItem should invoke the destructor
-  for (int i = 0; i < 10; i++)
-  {
+  for (int i = 0; i < 10; i++) {
     union Data data;
     data.p = malloc(sizeof(int));
     listPush(l, &data);
@@ -304,14 +324,12 @@ void test_destructor(void)
   TEST_ASSERT_EQUAL_INT(2 + remaining, destructor_calls);
 }
 
-void test_pop_push(void)
-{
+void test_pop_push(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
 
   // pop first item until list is empty
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data popped;
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listPop(l, &popped));
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listGetSize(l));
@@ -319,8 +337,7 @@ void test_pop_push(void)
   TEST_ASSERT_EQUAL_INT(0, listGetSize(l));
 
   // push items
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data pushed;
     pushed.i = i;
     TEST_ASSERT_EQUAL_INT(i + 1, listPush(l, &pushed));
@@ -329,8 +346,7 @@ void test_pop_push(void)
   TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE, listGetSize(l));
 
   // shift items
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data shifted;
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listShift(l, &shifted));
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - i - 1, listGetSize(l));
@@ -339,8 +355,7 @@ void test_pop_push(void)
   listDelete(l);
 }
 
-void test_swap(void)
-{
+void test_swap(void) {
   List *l = listCreate(INTEGER);
   listPush(l, &(union Data){.i = 0});
   listPush(l, &(union Data){.i = 1});
@@ -358,8 +373,7 @@ void test_swap(void)
   listDelete(l);
 }
 
-void test_to_array(void)
-{
+void test_to_array(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
 
@@ -375,8 +389,7 @@ void test_to_array(void)
   listDelete(l);
 }
 
-void test_iterator(void)
-{
+void test_iterator(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
 
@@ -384,8 +397,7 @@ void test_iterator(void)
   union Data data;
   int i = 0;
   // test iterator FORWARD
-  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     TEST_ASSERT_EQUAL_INT(sizeof(data), iteratorGetData(it, &data));
     TEST_ASSERT_EQUAL_INT(iteratorGetIndex(it), data.i);
     TEST_ASSERT_EQUAL_INT(i, data.i);
@@ -399,8 +411,7 @@ void test_iterator(void)
   i = LIST_TEST_SIZE - 1;
   l = listCreate(INTEGER);
   quickPopulate(l);
-  for (it = iteratorCreate(l, -1); !iteratorStarted(it); iteratorPrevious(it))
-  {
+  for (it = iteratorCreate(l, -1); !iteratorStarted(it); iteratorPrevious(it)) {
     TEST_ASSERT_EQUAL_INT(sizeof(data), iteratorGetData(it, &data));
     TEST_ASSERT_EQUAL_INT(iteratorGetIndex(it), data.i);
     TEST_ASSERT_EQUAL_INT(i, data.i);
@@ -411,8 +422,7 @@ void test_iterator(void)
   listDelete(l);
 }
 
-void test_iterator_get_set(void)
-{
+void test_iterator_get_set(void) {
   List *l = listCreate(INTEGER);
   Iterator *it;
   int i;
@@ -420,8 +430,7 @@ void test_iterator_get_set(void)
 
   // test iterator set data
   i = 0;
-  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     union Data data;
     iteratorSetData(it, &(union Data){.i = -1});
     TEST_ASSERT_EQUAL_INT(sizeof(data), iteratorGetData(it, &data));
@@ -436,8 +445,7 @@ void test_iterator_get_set(void)
   // test random access
   l = listCreate(INTEGER);
   quickPopulate(l);
-  for (int i = 0; i < LIST_TEST_SIZE; i++)
-  {
+  for (int i = 0; i < LIST_TEST_SIZE; i++) {
     union Data data;
     it = iteratorCreate(l, i);
     TEST_ASSERT_EQUAL_INT(i, iteratorGetIndex(it));
@@ -447,15 +455,13 @@ void test_iterator_get_set(void)
   listDelete(l);
 }
 
-void test_sort(void)
-{
+void test_sort(void) {
   List *l = listCreate(INTEGER);
   quickPopulateReverse(l);
   TEST_ASSERT_EQUAL_INT(0, listSort(l, 0));
 
   Iterator *it;
-  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     union Data data;
     iteratorGetData(it, &data);
     TEST_ASSERT_EQUAL_INT(iteratorGetIndex(it), data.i);
@@ -464,15 +470,13 @@ void test_sort(void)
   listDelete(l);
 }
 
-void test_sort_reverse(void)
-{
+void test_sort_reverse(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
   TEST_ASSERT_EQUAL_INT(0, listSort(l, 1));
 
   Iterator *it;
-  for (it = iteratorCreate(l, -1); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, -1); !iteratorEnded(it); iteratorNext(it)) {
     union Data data;
     iteratorGetData(it, &data);
     TEST_ASSERT_EQUAL_INT(LIST_TEST_SIZE - iteratorGetIndex(it), data.i);
@@ -481,16 +485,14 @@ void test_sort_reverse(void)
   listDelete(l);
 }
 
-void test_shuffle(void)
-{
+void test_shuffle(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
   TEST_ASSERT_EQUAL_INT(0, listShuffle(l));
 
   Iterator *it;
   int count = 0;
-  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     union Data data;
     iteratorGetData(it, &data);
     if (data.i != iteratorGetIndex(it))
@@ -501,8 +503,7 @@ void test_shuffle(void)
 
   // now sort the list back
   TEST_ASSERT_EQUAL_INT(0, listSort(l, 0));
-  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it))
-  {
+  for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     union Data data;
     iteratorGetData(it, &data);
     TEST_ASSERT_EQUAL_INT(iteratorGetIndex(it), data.i);
@@ -512,8 +513,7 @@ void test_shuffle(void)
   listDelete(l);
 }
 
-void test_helper_get(void)
-{
+void test_helper_get(void) {
   List *l = listCreate(INTEGER);
   quickPopulate(l);
   TEST_ASSERT_EQUAL_INT(0, listGetInt(l, 0));
@@ -545,8 +545,7 @@ void test_helper_get(void)
   listDelete(l);
 }
 
-int main(void)
-{
+int main(void) {
   srand(time(NULL));
 
   UNITY_BEGIN();
@@ -558,11 +557,13 @@ int main(void)
   RUN_TEST(test_populate_type_float);
   RUN_TEST(test_populate_type_char);
   RUN_TEST(test_populate_type_double);
+  RUN_TEST(test_populate_type_string);
 
   RUN_TEST(test_append_prepend);
 
   RUN_TEST(test_replace);
   RUN_TEST(test_replace_by_value);
+  RUN_TEST(test_replace_by_value_string);
 
   RUN_TEST(test_remove);
   RUN_TEST(test_pop_push);
