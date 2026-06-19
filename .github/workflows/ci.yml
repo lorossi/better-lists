@@ -54,6 +54,14 @@ jobs:
       - name: Generate coverage report
         run: cmake --build build --target coverage
 
+      - name: Generate coverage badge data
+        run: |
+          gcovr --root . --filter src --json-summary -o /tmp/summary.json
+          PERCENT=$(python3 -c "import json; print(round(json.load(open('/tmp/summary.json'))['line_percent']))")
+          COLOR=$(python3 -c "p=$PERCENT; print('brightgreen' if p>=90 else 'green' if p>=75 else 'yellow' if p>=50 else 'red')")
+          mkdir -p badges
+          echo "{\"schemaVersion\":1,\"label\":\"coverage\",\"message\":\"${PERCENT}%\",\"color\":\"${COLOR}\"}" > badges/coverage.json
+
       - name: Generate Doxygen docs
         run: doxygen Doxyfile
 
@@ -62,6 +70,7 @@ jobs:
           mkdir -p site
           cp -r docs/html site/html
           cp -r build/coverage site/coverage
+          cp -r badges site/badges
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

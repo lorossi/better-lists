@@ -1,5 +1,8 @@
 # Better Lists
 
+[![CI](https://github.com/lorossi/better-lists/actions/workflows/ci.yml/badge.svg)](https://github.com/lorossi/better-lists/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https://lorossi.github.io/better-lists/badges/coverage.json)](https://lorossi.github.io/better-lists/coverage/)
+
 A simple implementation of doubly linked lists in C.
 
 I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (*it was my first year!*), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.
