@@ -19,6 +19,7 @@ Each function is well commented, and in this readme I have included some example
 List *listCreate(list_type type);
 void listDelete(List *list);
 void listSetDestructor(List *list, void (*destructor)(void *p));
+void listSetComparator(List *list, int (*comparator)(void *p1, void *p2));
 int listGetItem(List *list, union Data *destination, int index);
 int listGetFirstItem(List *list, union Data *destination);
 int listGetLastItem(List *list, union Data *destination);
@@ -40,6 +41,8 @@ int listToArray(List *list, union Data *array);
 int listGetSize(List *list);
 int listSort(List *list, int reverse);
 int listShuffle(List *list);
+void printList(List *list, char *end);
+void printListReverse(List *list, char *end);
 ```
 
 #### Helper functions
@@ -148,10 +151,12 @@ typedef struct list
   int length;                  /**< Number of nodes in list */
   list_type type;              /**< Type of data contained in node. */
   void (*destructor)(void *p); /**< Optional destructor for owned pointers */
+  int (*comparator)(void *p1, void *p2); /**< Optional comparator for
+                                  POINTER lists */
 } List;
 ```
 
-The `List` struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list, the type of the list and an optional destructor.
+The `List` struct represents a list. It contains a pointer to the first node, a pointer to the last node, the number of nodes in the list, the type of the list, an optional destructor and an optional comparator.
 
 ### Iterator
 
@@ -214,6 +219,33 @@ listPush(l, &data);
 
 // frees every remaining string before freeing the list itself
 listDelete(l);
+```
+
+### Comparing owned pointers
+
+By default, a `POINTER` list compares items by raw address. If you want `dataInList`, `listSort`, `listRemoveItemByValue`, `listReplaceItemByValue` and other value-based functions to compare the data pointed to instead, register a comparator with `listSetComparator`. It must return `1` if `p1 > p2`, `-1` if `p1 < p2` and `0` if `p1 == p2`.
+
+```C
+int compareInts(void *p1, void *p2) {
+  int a = *(int *)p1;
+  int b = *(int *)p2;
+  if (a > b) return 1;
+  if (a < b) return -1;
+  return 0;
+}
+
+// create a list of pointers to heap-allocated integers
+List *l = listCreate(POINTER);
+listSetComparator(l, compareInts);
+
+union Data data;
+int *value = malloc(sizeof(int));
+*value = 42;
+data.p = value;
+listPush(l, &data);
+
+// now comparisons use compareInts instead of raw addresses
+int found = dataInList(l, &data);
 ```
 
 ### Adding items to list
@@ -388,6 +420,7 @@ The library provides some support functions:
 - `listSort`: sort the list
 - `listShuffle`: shuffle the list
 - `printList`: print the list
+- `printListReverse`: print the list in reverse order
 - `listToArray`: convert the list to an array
 
 ```C
@@ -413,6 +446,8 @@ listShuffle(l);
 printList(l, "\n");
 // print the list, each item separated by a space
 printList(l, " ");
+// print the list in reverse order, each item on a new line
+printListReverse(l, "\n");
 // convert the list to an array
 int *array = listToArray(l);
 ```
@@ -421,14 +456,14 @@ int *array = listToArray(l);
 
 The library provides a structure to iterate over a list (`Iterator` struct) and a set of functions to use it:
 
-- `IteratorCreate`: create an iterator
-- `IteratorDelete`: delete an iterator
-- `IteratorNext`: move the iterator to the next item
-- `IteratorPrevious`: move the iterator to the previous item
-- `IteratorGetNode`: get the node pointed by the iterator
-- `IteratorGetData`: get the data pointed by the iterator
-- `IteratorSetData`: set the data pointed by the iterator
-- `IteratorGetIndex`: get the index of the node pointed by the iterator
+- `iteratorCreate`: create an iterator
+- `iteratorDelete`: delete an iterator
+- `iteratorNext`: move the iterator to the next item
+- `iteratorPrevious`: move the iterator to the previous item
+- `iteratorGetNode`: get the node pointed by the iterator
+- `iteratorGetData`: get the data pointed by the iterator
+- `iteratorSetData`: set the data pointed by the iterator
+- `iteratorGetIndex`: get the index of the node pointed by the iterator
 
 ```C
 // create a list
@@ -436,22 +471,22 @@ List *l = listCreate(INTEGER);
 // create a union Data
 union Data data;
 // create an iterator
-Iterator *it = IteratorCreate(l);
+Iterator *it = iteratorCreate(l);
 // move the iterator to the next item
-IteratorNext(it);
+iteratorNext(it);
 // move the iterator to the previous item
-IteratorPrevious(it);
+iteratorPrevious(it);
 // get the node pointed by the iterator
-Node *node = IteratorGetNode(it);
+Node *node = iteratorGetNode(it);
 // get the data pointed by the iterator
-IteratorGetData(it, &data);
+iteratorGetData(it, &data);
 // set the data pointed by the iterator
 data.i = 1;
-IteratorSetData(it, &data);
+iteratorSetData(it, &data);
 // get the index of the node pointed by the iterator
-int index = IteratorGetIndex(it);
+int index = iteratorGetIndex(it);
 // delete the iterator
-IteratorDelete(it);
+iteratorDelete(it);
 ```
 
 The list can be iterated over using the following code:
@@ -463,13 +498,13 @@ List *l = listCreate(INTEGER);
 // declare an iterator
 Iterator *it;
 // start the loop
-for (it = IteratorCreate(l, 0); !iteratorEnded(it); IteratorNext(it)) {
+for (it = iteratorCreate(l, 0); !iteratorEnded(it); iteratorNext(it)) {
     // get the data pointed by the iterator
-    IteratorGetData(it, &data);
+    iteratorGetData(it, &data);
     /* do something with the data */
 }
 // delete the iterator
-IteratorDelete(it);
+iteratorDelete(it);
 ```
 
 The list can be iterated over in reverse order using the following code:
@@ -481,13 +516,13 @@ List *l = listCreate(INTEGER);
 // declare an iterator
 Iterator *it;
 // start the loop
-for (it = IteratorCreate(l, -1); !iteratorStarted(it); IteratorPrevious(it)) {
+for (it = iteratorCreate(l, -1); !iteratorStarted(it); iteratorPrevious(it)) {
     // get the data pointed by the iterator
-    IteratorGetData(it, &data);
+    iteratorGetData(it, &data);
     /* do something with the data */
 }
 // delete the iterator
-IteratorDelete(it);
+iteratorDelete(it);
 ```
 
 ## License
