@@ -243,6 +243,26 @@ static int _nodeSetData(Node *node, union Data *data) {
 
 /**
  * @internal
+ * @brief Internal function. Calls the list's destructor on a node's owned
+ * pointer (data.p for POINTER lists, data.s for STRING lists), if a
+ * destructor is set. Has no effect for other types, since their data is
+ * stored inline rather than owned via a pointer.
+ *
+ * @param list List the node belongs to.
+ * @param node Node whose owned pointer will be passed to the destructor.
+ */
+static void _nodeDestroyData(List *list, Node *node) {
+  if (list->destructor == NULL)
+    return;
+
+  if (list->type == POINTER)
+    list->destructor(node->data.p);
+  else if (list->type == STRING)
+    list->destructor(node->data.s);
+}
+
+/**
+ * @internal
  * @brief Swaps two nodes.
  *
  * @param n1 Pointer to the first node to be swapped.
@@ -296,26 +316,6 @@ void listSetDestructor(List *list, void (*destructor)(void *p)) {
  */
 void listSetComparator(List *list, int (*comparator)(void *p1, void *p2)) {
   list->comparator = comparator;
-}
-
-/**
- * @internal
- * @brief Internal function. Calls the list's destructor on a node's owned
- * pointer (data.p for POINTER lists, data.s for STRING lists), if a
- * destructor is set. Has no effect for other types, since their data is
- * stored inline rather than owned via a pointer.
- *
- * @param list List the node belongs to.
- * @param node Node whose owned pointer will be passed to the destructor.
- */
-void _nodeDestroyData(List *list, Node *node) {
-  if (list->destructor == NULL)
-    return;
-
-  if (list->type == POINTER)
-    list->destructor(node->data.p);
-  else if (list->type == STRING)
-    list->destructor(node->data.s);
 }
 
 /**
