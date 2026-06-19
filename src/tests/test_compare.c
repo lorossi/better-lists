@@ -33,8 +33,8 @@ static void compare_type(list_type type) {
     absent.s = "missing";
     break;
   case POINTER:
-    present.p = (void *)0xdeadbeef;
-    absent.p = (void *)0xbadc0de;
+    present.p = (void *)(uintptr_t)0xdeadbeef;
+    absent.p = (void *)(uintptr_t)0xbadc0de;
     break;
   default:
     TEST_FAIL_MESSAGE("Invalid type");
