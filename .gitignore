@@ -3,3 +3,6 @@
 lists
 tests
 .vscode
+build/
+docs/
+site/
