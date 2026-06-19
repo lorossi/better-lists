@@ -64,7 +64,7 @@ jobs:
 
       - name: Generate coverage badge data
         run: |
-          gcovr --root . --filter src --json-summary -o /tmp/summary.json
+          gcovr --root . --filter src --exclude src/tests --json-summary -o /tmp/summary.json
           PERCENT=$(python3 -c "import json; print(round(json.load(open('/tmp/summary.json'))['line_percent']))")
           COLOR=$(python3 -c "p=$PERCENT; print('brightgreen' if p>=90 else 'green' if p>=75 else 'yellow' if p>=50 else 'red')")
           mkdir -p badges
