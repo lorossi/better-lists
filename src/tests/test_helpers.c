@@ -28,9 +28,14 @@ void captureStdoutStart(void) {
 }
 
 char *captureStdoutEnd(void) {
+  TEST_ASSERT_NOT_NULL_MESSAGE(capture_file, "stdout capture not active");
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(-1, saved_stdout_fd, "stdout capture not active");
+
   fflush(stdout);
-  dup2(saved_stdout_fd, fileno(stdout));
-  close(saved_stdout_fd);
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(-1, dup2(saved_stdout_fd, fileno(stdout)),
+                               "failed to restore stdout");
+  TEST_ASSERT_NOT_EQUAL_MESSAGE(-1, close(saved_stdout_fd),
+                               "failed to close saved stdout fd");
   saved_stdout_fd = -1;
 
   long size = ftell(capture_file);
