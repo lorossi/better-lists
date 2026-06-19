@@ -65,26 +65,35 @@ static int _compareString(char *s1, char *s2) { return strcmp(s1, s2); }
  *
  * @param d1 Value.
  * @param n2 Node.
+ * @param list List the value and node belong to. Its type determines how
+ * the comparison is performed; for POINTER lists, its comparator is used if
+ * set, otherwise raw addresses are compared.
  *
  * @return int 1 if d1 > n2, -1 if d1 < n2, 0 if d1 == n2.
  */
-static int _nodeValueCompare(union Data *d1, Node *n2, list_type type) {
-  switch (type) {
+static int _nodeValueCompare(union Data *d1, Node *n2, List *list) {
+  if (list->comparator != NULL)
+    return list->comparator(d1->p, n2->data.p);
+
+  switch (list->type) {
   case INTEGER:
     return _compareNumber(d1->i, n2->data.i);
-    break;
+
   case FLOAT:
     return _compareNumber(d1->f, n2->data.f);
-    break;
+
   case DOUBLE:
     return _compareNumber(d1->d, n2->data.d);
-    break;
+
   case CHAR:
     return _compareNumber(d1->c, n2->data.c);
-    break;
+
   case STRING:
     return _compareString(d1->s, n2->data.s);
-    break;
+
+  case POINTER:
+    return _compareNumber((double)(intptr_t)d1->p,
+                          (double)(intptr_t)n2->data.p);
 
   default:
     break;
@@ -184,7 +193,7 @@ static int _findNodeIndexByValue(List *list, union Data *data) {
   int index = 0;
 
   while (current != NULL) {
-    if (_nodeValueCompare(data, current, list->type) == 0)
+    if (_nodeValueCompare(data, current, list) == 0)
       return index;
 
     current = current->next;
@@ -254,6 +263,7 @@ List *listCreate(list_type type) {
   list->tail = NULL;
   list->length = 0;
   list->destructor = NULL;
+  list->comparator = NULL;
   return list;
 }
 
@@ -269,6 +279,19 @@ List *listCreate(list_type type) {
  */
 void listSetDestructor(List *list, void (*destructor)(void *p)) {
   list->destructor = destructor;
+}
+
+/**
+ * @brief Sets the comparator used to order and match items in a POINTER
+ * list. Has no effect on lists of any other type, since they are compared by
+ * value rather than by their pointed-to data.
+ *
+ * @param list List on which the comparator will be set.
+ * @param comparator Function returning 1 if p1 > p2, -1 if p1 < p2, 0 if
+ * p1 == p2. Pass NULL to compare raw addresses instead (default).
+ */
+void listSetComparator(List *list, int (*comparator)(void *p1, void *p2)) {
+  list->comparator = comparator;
 }
 
 /**
@@ -324,7 +347,6 @@ void listDelete(List *list) {
  */
 int listGetItem(List *list, union Data *destination, int index) {
   Node *node = _findNodeByIndex(list, index);
-
   if (node == NULL)
     return -1;
 
@@ -442,7 +464,7 @@ int listCountItem(List *list, union Data *value) {
   Node *current = list->head;
 
   while (current != NULL) {
-    if (_nodeValueCompare(value, current, list->type) == 0)
+    if (_nodeValueCompare(value, current, list) == 0)
       count++;
 
     current = current->next;
@@ -701,9 +723,6 @@ int listToArray(List *list, union Data *array) {
   current = list->head;
 
   for (int i = 0; i < length; i++) {
-    if (current == NULL)
-      return i;
-
     _nodeGetData(current, &array[i]);
     current = current->next;
   }
@@ -720,15 +739,16 @@ int listToArray(List *list, union Data *array) {
 void printList(List *list, char *end) {
   Iterator *it;
   it = iteratorCreate(list, 0);
-  Node *current;
-  current = _nodeCreate(NULL, NULL, NULL);
+  Node current;
 
   while (!iteratorEnded(it)) {
-    iteratorGetNode(it, current);
-    _nodePrint(current, list->type);
+    iteratorGetNode(it, &current);
+    _nodePrint(&current, list->type);
     printf("%s", end);
     iteratorNext(it);
   }
+
+  iteratorDelete(it);
 }
 
 /**
@@ -818,15 +838,16 @@ void *listGetPointer(List *list, int index) {
 void printListReverse(List *list, char *end) {
   Iterator *it;
   it = iteratorCreate(list, -1);
-  Node *current;
-  current = _nodeCreate(NULL, NULL, NULL);
+  Node current;
 
   while (!iteratorStarted(it)) {
-    iteratorGetNode(it, current);
-    _nodePrint(current, list->type);
+    iteratorGetNode(it, &current);
+    _nodePrint(&current, list->type);
     printf("%s", end);
     iteratorPrevious(it);
   }
+
+  iteratorDelete(it);
 }
 
 /**
@@ -838,10 +859,55 @@ void printListReverse(List *list, char *end) {
 int listGetSize(List *list) { return list->length; }
 
 /**
- * @brief Sorts a list using merge sort. Just because I write it, it means that
- * the sorting algorithm is correct. Don't trust your eyes: this is merge sort
- * indeed. I'm not a liar.
+ * @internal
+ * @brief Internal function. Merges two sorted runs of nodes, identified by
+ * their data, into a single sorted run. The data is written back into the
+ * same nodes used as input, in sorted order.
  *
+ * @param nodes Array of node pointers containing the two runs to merge.
+ * @param left Index of the first node of the left run.
+ * @param mid Index of the first node of the right run.
+ * @param right Index one past the last node of the right run.
+ * @param list List the nodes belong to, used to determine the comparison.
+ * @param reverse Order of the sorting. If is 0, the run is sorted lowest to
+ * highest. If 1, it's sorted highest to lowest.
+ */
+static void _listMerge(Node **nodes, int left, int mid, int right, List *list,
+                       int reverse) {
+  int i, j, k, cmp;
+  int left_size, right_size;
+  union Data *merged;
+
+  left_size = mid - left;
+  right_size = right - mid;
+  merged = malloc(sizeof(union Data) * (left_size + right_size));
+
+  i = 0;
+  j = 0;
+  k = 0;
+  while (i < left_size && j < right_size) {
+    cmp = _nodeValueCompare(&nodes[left + i]->data, nodes[mid + j], list);
+    if (reverse == 1)
+      cmp = -cmp;
+
+    if (cmp <= 0)
+      merged[k++] = nodes[left + i++]->data;
+    else
+      merged[k++] = nodes[mid + j++]->data;
+  }
+  while (i < left_size)
+    merged[k++] = nodes[left + i++]->data;
+  while (j < right_size)
+    merged[k++] = nodes[mid + j++]->data;
+
+  for (k = 0; k < left_size + right_size; k++)
+    nodes[left + k]->data = merged[k];
+
+  free(merged);
+}
+
+/**
+ * @brief Sorts a list using merge sort.
  *
  * @param list List that will be sorted.
  * @param reverse Order of the sorting. If is 0, the list is sorted lowest to
@@ -849,32 +915,38 @@ int listGetSize(List *list) { return list->length; }
  * @return int 0 in case of success; -1 otherwise.
  */
 int listSort(List *list, int reverse) {
-  // TODO implement using merge sort
   if (reverse != 0 && reverse != 1)
     return -1;
 
-  int sorted;
-  Iterator *it;
-  Node *current, *next;
+  if (list->length < 2)
+    return 0;
 
-  sorted = 0;
-  while (sorted == 0) {
-    sorted = 1;
-    it = iteratorCreate(list, 0);
-    // evaluate end condition
-    while (!iteratorEnded(it) && it->index < list->length - 1) {
-      current = it->current;
-      next = it->next;
+  Node **nodes;
+  Node *current;
+  int i, width, left;
 
-      if (_nodeValueCompare(&current->data, next, list->type) == 1) {
-        sorted = 0;
-        _listSwapNodes(current, next);
-      }
-
-      iteratorNext(it);
-    }
-    iteratorDelete(it);
+  nodes = malloc(sizeof(Node *) * list->length);
+  current = list->head;
+  for (i = 0; i < list->length; i++) {
+    nodes[i] = current;
+    current = current->next;
   }
+
+  for (width = 1; width < list->length; width *= 2) {
+    for (left = 0; left < list->length; left += 2 * width) {
+      int mid = left + width;
+      int right = left + 2 * width;
+
+      if (mid >= list->length)
+        continue;
+      if (right > list->length)
+        right = list->length;
+
+      _listMerge(nodes, left, mid, right, list, reverse);
+    }
+  }
+
+  free(nodes);
 
   return 0;
 }
@@ -908,6 +980,15 @@ Iterator *iteratorCreate(List *list, int index) {
   Iterator *new = NULL;
   new = (Iterator *)malloc(sizeof(Iterator));
 
+  if (list->length == 0) {
+    // nothing to iterate over
+    new->current = NULL;
+    new->previous = NULL;
+    new->next = NULL;
+    new->index = 0;
+    return new;
+  }
+
   // modulo index to list length
   if (index > list->length - 1)
     index = list->length - 1;
@@ -929,6 +1010,8 @@ Iterator *iteratorCreate(List *list, int index) {
     Node *node;
     node = _findNodeByIndex(list, index);
     new->current = node;
+    new->previous = node->previous;
+    new->next = node->next;
     new->index = index;
   }
 
@@ -951,7 +1034,7 @@ void iteratorDelete(Iterator *it) {
  * @param it Iterator to check.
  * @return int 1 if true, 0 if false.
  */
-int iteratorEnded(Iterator *it) { return it->next == NULL ? 1 : 0; }
+int iteratorEnded(Iterator *it) { return it->current == NULL ? 1 : 0; }
 
 /**
  * @brief Checks if the iterator has reached the start.
@@ -959,7 +1042,7 @@ int iteratorEnded(Iterator *it) { return it->next == NULL ? 1 : 0; }
  * @param it Iterator to check.
  * @return int 1 if true, 0 if false.
  */
-int iteratorStarted(Iterator *it) { return it->previous == NULL ? 1 : 0; }
+int iteratorStarted(Iterator *it) { return it->current == NULL ? 1 : 0; }
 
 /**
  * @brief Moves the iterator forward by an item.
@@ -968,15 +1051,15 @@ int iteratorStarted(Iterator *it) { return it->previous == NULL ? 1 : 0; }
  * @return int 0 if it moved successfully, -1 if the list is ended.
  */
 int iteratorNext(Iterator *it) {
-  if (it->next != NULL) {
-    it->current = it->next;
-    it->previous = it->current->previous;
-    it->next = it->current->next;
-    it->index++;
-    return 0;
-  }
+  if (it->current == NULL && it->next == NULL)
+    return -1;
 
-  return -1;
+  Node *old_current = it->current;
+  it->current = it->next;
+  it->previous = old_current != NULL ? old_current : it->previous;
+  it->next = it->current != NULL ? it->current->next : NULL;
+  it->index++;
+  return 0;
 }
 
 /**
@@ -986,15 +1069,15 @@ int iteratorNext(Iterator *it) {
  * @return int 0 if it moved successfully, -1 if the list is ended.
  */
 int iteratorPrevious(Iterator *it) {
-  if (it->previous != NULL) {
-    it->current = it->previous;
-    it->previous = it->current->previous;
-    it->next = it->current->next;
-    it->index--;
-    return 0;
-  }
+  if (it->current == NULL && it->previous == NULL)
+    return -1;
 
-  return -1;
+  Node *old_current = it->current;
+  it->current = it->previous;
+  it->next = old_current != NULL ? old_current : it->next;
+  it->previous = it->current != NULL ? it->current->previous : NULL;
+  it->index--;
+  return 0;
 }
 
 /**
@@ -1009,8 +1092,8 @@ int iteratorGetNode(Iterator *it, Node *destination) {
   if (destination == NULL)
     return -1;
 
-  destination = it->current;
-  return sizeof(destination);
+  *destination = *it->current;
+  return sizeof(*destination);
 }
 
 /**
