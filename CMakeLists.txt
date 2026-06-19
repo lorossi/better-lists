@@ -18,7 +18,16 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(unity)
 target_compile_definitions(unity PUBLIC UNITY_INCLUDE_DOUBLE)
 
-add_executable(tests src/tests.c)
+add_executable(tests
+  src/tests/tests.c
+  src/tests/test_helpers.c
+  src/tests/test_basic.c
+  src/tests/test_modify.c
+  src/tests/test_compare.c
+  src/tests/test_iterate.c
+  src/tests/test_print.c
+)
+target_include_directories(tests PRIVATE src/tests)
 target_link_libraries(tests PRIVATE list unity)
 
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
@@ -42,6 +51,7 @@ if(ENABLE_COVERAGE)
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/coverage
     COMMAND tests
     COMMAND ${GCOVR_PATH} --root ${CMAKE_SOURCE_DIR} --filter ${CMAKE_SOURCE_DIR}/src
+            --exclude ${CMAKE_SOURCE_DIR}/src/tests
             --html --html-details -o ${CMAKE_BINARY_DIR}/coverage/index.html
             --print-summary
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}

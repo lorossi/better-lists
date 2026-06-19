@@ -1,8 +1,9 @@
 *.d
 *.o
-lists
-tests
+lists.d
+tests.d
 .vscode
 build/
 docs/
 site/
+compile_commands.json
