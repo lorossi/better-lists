@@ -1,6 +1,6 @@
 # Better Lists
 
-[![CI](https://github.com/lorossi/better-lists/actions/workflows/ci.yml/badge.svg)](https://github.com/lorossi/better-lists/actions/workflows/ci.yml)
+[![CI](https://github.com/lorossi/better-lists/actions/workflows/test_deploy.yml/badge.svg)](https://github.com/lorossi/better-lists/actions/workflows/test_deploy.yml)
 [![Coverage](https://img.shields.io/endpoint?url=https://lorossi.github.io/better-lists/badges/coverage.json)](https://lorossi.github.io/better-lists/coverage/)
 
 A simple implementation of doubly linked lists in C.
