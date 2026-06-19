@@ -95,7 +95,7 @@ void test_print_list_float_double(void) {
 
 void test_print_list_pointer(void) {
   List *l = listCreate(POINTER);
-  void *ptr = (void *)0xdeadbeef;
+  void *ptr = (void *)(uintptr_t)0xdeadbeef;
   listPush(l, &(union Data){.p = ptr});
 
   char expected[64];
