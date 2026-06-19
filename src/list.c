@@ -1092,6 +1092,9 @@ int iteratorGetNode(Iterator *it, Node *destination) {
   if (destination == NULL)
     return -1;
 
+  if (it->current == NULL)
+    return -1;
+
   *destination = *it->current;
   return sizeof(*destination);
 }
