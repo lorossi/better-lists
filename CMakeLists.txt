@@ -49,7 +49,7 @@ if(ENABLE_COVERAGE)
   find_program(GCOVR_PATH gcovr REQUIRED)
   add_custom_target(coverage
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/coverage
-    COMMAND tests
+    COMMAND $<TARGET_FILE:tests>
     COMMAND ${GCOVR_PATH} --root ${CMAKE_SOURCE_DIR} --filter ${CMAKE_SOURCE_DIR}/src
             --exclude ${CMAKE_SOURCE_DIR}/src/tests
             --html --html-details -o ${CMAKE_BINARY_DIR}/coverage/index.html
