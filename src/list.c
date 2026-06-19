@@ -9,7 +9,7 @@
  * @param data Data to be put in the new node.
  * @return Node* the new node, already linked.
  */
-Node *_nodeCreate(Node *previous, Node *next, union Data *data)
+static Node *_nodeCreate(Node *previous, Node *next, union Data *data)
 {
   Node *new = NULL;
   new = (Node *)malloc(sizeof(Node));
@@ -27,7 +27,7 @@ Node *_nodeCreate(Node *previous, Node *next, union Data *data)
  *
  * @param node Pointer to the node to be deleted.
  */
-void _nodeDelete(Node *node)
+static void _nodeDelete(Node *node)
 {
   free(node);
   return;
@@ -42,7 +42,7 @@ void _nodeDelete(Node *node)
  *
  * @return int 1 if a > b, -1 if a < b, 0 if a == b.
  */
-int _compareDouble(double a, double b)
+static int _compareNumber(double a, double b)
 {
   if (a > b)
     return 1;
@@ -53,39 +53,16 @@ int _compareDouble(double a, double b)
 }
 
 /**
- * @internal
- * @brief Internal function. Compares two nodes.
- *
- * @param n1 First node.
- * @param n2 Second node.
- *
- * @return int 1 if n1 > n2, -1 if n1 < n2, 0 if n1 == n2.
- */
-int _nodeCompare(Node *n1, Node *n2, list_type type)
+* @internal
+* @brief Compares two strings.
+*
+* @param s1 First string.
+* @param s2 Second string.
+* @return int 1 if s1 > s2, -1 if s1 < s2, 0 if s1 == s2.
+*/
+static int _compareString(char *s1, char *s2)
 {
-  switch (type)
-  {
-  case INTEGER:
-    return _compareDouble(n1->data.i, n2->data.i);
-    break;
-  case FLOAT:
-    return _compareDouble(n1->data.f, n2->data.f);
-    break;
-  case DOUBLE:
-    return _compareDouble(n1->data.d, n2->data.d);
-    break;
-  case CHAR:
-    return _compareDouble(n1->data.c, n2->data.c);
-    break;
-  case STRING:
-    return strcmp(n1->data.s, n2->data.s) == 0;
-    break;
-
-  default:
-    break;
-  }
-
-  return 0;
+  return strcmp(s1, s2);
 }
 
 /**
@@ -97,24 +74,24 @@ int _nodeCompare(Node *n1, Node *n2, list_type type)
  *
  * @return int 1 if d1 > n2, -1 if d1 < n2, 0 if d1 == n2.
  */
-int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
+static int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
 {
   switch (type)
   {
   case INTEGER:
-    return _compareDouble(d1->i, n2->data.i);
+    return _compareNumber(d1->i, n2->data.i);
     break;
   case FLOAT:
-    return _compareDouble(d1->f, n2->data.f);
+    return _compareNumber(d1->f, n2->data.f);
     break;
   case DOUBLE:
-    return _compareDouble(d1->d, n2->data.d);
+    return _compareNumber(d1->d, n2->data.d);
     break;
   case CHAR:
-    return _compareDouble(d1->c, n2->data.c);
+    return _compareNumber(d1->c, n2->data.c);
     break;
   case STRING:
-    return strcmp(d1->s, n2->data.s) == 0;
+    return _compareString(d1->s, n2->data.s);
     break;
 
   default:
@@ -124,6 +101,7 @@ int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
   return 0;
 }
 
+
 /**
  * @internal
  * @brief Internal function. Prints a node.
@@ -131,7 +109,7 @@ int _nodeValueCompare(union Data *d1, Node *n2, list_type type)
  * @param node Node to be printed.
  * @param type Type of the node.
  */
-void _nodePrint(Node *node, list_type type)
+static void _nodePrint(Node *node, list_type type)
 {
   switch (type)
   {
@@ -167,7 +145,7 @@ void _nodePrint(Node *node, list_type type)
  * @param index Index of the node.
  * @return Node*
  */
-Node *_findNodeByIndex(List *list, int index)
+static Node *_findNodeByIndex(List *list, int index)
 {
   if (index >= listGetSize(list))
     return NULL;
@@ -216,7 +194,7 @@ Node *_findNodeByIndex(List *list, int index)
  * @param data Value of the node.
  * @return Node*
  */
-Node *_findNodeByValue(List *list, union Data *data)
+static Node *_findNodeByValue(List *list, union Data *data)
 {
   Node *current = list->head;
 
@@ -237,9 +215,9 @@ Node *_findNodeByValue(List *list, union Data *data)
  *
  * @param list List containing the node to look for.
  * @param data Pointer containing value of the node.
- * @return int Index of the nome.
+ * @return int Index of the node.
  */
-int _findNodeIndexByValue(List *list, union Data *data)
+static int _findNodeIndexByValue(List *list, union Data *data)
 {
   Node *current = list->head;
   int index = 0;
@@ -264,7 +242,7 @@ int _findNodeIndexByValue(List *list, union Data *data)
  * @param destination Pointer to the variable where data will be saved. If it's NULL, no value is read.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _nodeGetData(Node *node, union Data *destination)
+static int _nodeGetData(Node *node, union Data *destination)
 {
   if (node != NULL && destination != NULL)
   {
@@ -283,7 +261,7 @@ int _nodeGetData(Node *node, union Data *destination)
  * @param data Pointer to the source variable. If it's NULL, no value is written.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _nodeSetData(Node *node, union Data *data)
+static int _nodeSetData(Node *node, union Data *data)
 {
   if (node != NULL)
   {
@@ -303,7 +281,7 @@ int _nodeSetData(Node *node, union Data *data)
  * @param index Index of the node in the list.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _listGetNode(List *list, Node *destination, int index)
+static int _listGetNode(List *list, Node *destination, int index)
 {
   Node *node;
   node = _findNodeByIndex(list, index);
@@ -325,7 +303,7 @@ int _listGetNode(List *list, Node *destination, int index)
  * @param destination Pointer to the variable where data will be saved.
  * @return int -1 if an error is encountered; size of the items otherwise.
  */
-int _listGetNodeByValue(List *list, Node *destination, union Data *value)
+static int _listGetNodeByValue(List *list, Node *destination, union Data *value)
 {
   Node *node;
   node = _findNodeByValue(list, value);
@@ -346,7 +324,7 @@ int _listGetNodeByValue(List *list, Node *destination, union Data *value)
  * @param n1 Pointer to the first node to be swapped.
  * @param n2 Pointer to the second node to be swapped.
  */
-void _listSwapNodes(Node *n1, Node *n2)
+static void _listSwapNodes(Node *n1, Node *n2)
 {
   union Data temp;
   temp = n1->data;
@@ -1015,7 +993,7 @@ int listSort(List *list, int reverse)
       current = it->current;
       next = it->next;
 
-      if (_nodeCompare(current, next, list->type) == 1)
+      if (_nodeValueCompare(&current->data, next, list->type) == 1)
       {
         sorted = 0;
         _listSwapNodes(current, next);
