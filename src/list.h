@@ -9,6 +9,7 @@
  * @brief Simple linked list library made because I wanted to kill some time.
  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,6 +58,10 @@ typedef struct list {
                                   owned pointer (data.p for POINTER lists,
                                   data.s for STRING lists) when it is removed
                                   or replaced. */
+  int (*comparator)(void *p1, void *p2); /**< Optional comparator for POINTER
+                                  lists, used instead of comparing raw
+                                  addresses. Must return 1 if p1 > p2, -1 if
+                                  p1 < p2, 0 if p1 == p2. */
 } List;
 
 /**
@@ -74,6 +79,7 @@ typedef struct iterator {
 List *listCreate(list_type type);
 void listDelete(List *list);
 void listSetDestructor(List *list, void (*destructor)(void *p));
+void listSetComparator(List *list, int (*comparator)(void *p1, void *p2));
 int listGetItem(List *list, union Data *destination, int index);
 int listGetFirstItem(List *list, union Data *destination);
 int listGetLastItem(List *list, union Data *destination);
@@ -98,6 +104,7 @@ int listGetSize(List *list);
 int listSort(List *list, int reverse);
 int listShuffle(List *list);
 void printList(List *list, char *end);
+void printListReverse(List *list, char *end);
 
 // Helper functions
 int listGetInt(List *list, int index);
