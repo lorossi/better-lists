@@ -53,8 +53,10 @@ typedef struct list {
   Node *tail;                  /**< Pointer to last node */
   int length;                  /**< Number of nodes in list */
   list_type type;              /**< Type of data contained in node. */
-  void (*destructor)(void *p); /**< Optional destructor called on data.p when a
-                                  POINTER-type node is removed or replaced. */
+  void (*destructor)(void *p); /**< Optional destructor called on a node's
+                                  owned pointer (data.p for POINTER lists,
+                                  data.s for STRING lists) when it is removed
+                                  or replaced. */
 } List;
 
 /**
