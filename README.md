@@ -2,7 +2,7 @@
 
 A simple implementation of doubly linked lists in C.
 
-I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (*it was my first year!)*, I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.
+I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (*it was my first year!*), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.
 
 Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the `tests.c` file I have implemented a simple test suite using the `assert.h` library. It's not pretty, but it works.
 
@@ -89,7 +89,7 @@ To access the value associated to a `Data union`, simply access the field associ
 ```C
 // define a generic union Data
 union Data data;
-// get an integer 
+// get an integer
 int i_data = data.i;
 // get a char
 char c_data = data.c;
