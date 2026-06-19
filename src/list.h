@@ -55,9 +55,9 @@ typedef struct list {
   int length;                  /**< Number of nodes in list */
   list_type type;              /**< Type of data contained in node. */
   void (*destructor)(void *p); /**< Optional destructor called on a node's
-                                  owned pointer (data.p for POINTER lists,
-                                  data.s for STRING lists) when it is removed
-                                  or replaced. */
+                                   owned pointer (data.p for POINTER lists,
+                                   data.s for STRING lists) when it is removed,
+                                   replaced, or when the list is deleted. */
   int (*comparator)(void *p1, void *p2); /**< Optional comparator for POINTER
                                   lists, used instead of comparing raw
                                   addresses. Must return 1 if p1 > p2, -1 if
