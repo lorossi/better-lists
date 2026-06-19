@@ -5,15 +5,11 @@
  * @file list.h
  * @author Lorenzo Rossi - https://github.com/lorossi/better-lists
  * @date 26/10/2021
- * @version 1.1.0
+ * @version 1.2.0
  * @brief Simple linked list library made because I wanted to kill some time.
  */
 
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 union Data {
   int i;
