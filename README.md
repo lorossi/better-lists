@@ -4,7 +4,7 @@ A simple implementation of doubly linked lists in C.
 
 I made this mostly because I was bored, but I went on because I took this as a challenge. When I first studied C at university (*it was my first year!*), I couldn't get linked lists to work. It's a very satisfying goal to reach, about 5 years *(and a degree)* later.
 
-Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the `tests.c` file I have implemented a simple test suite using the `assert.h` library. It's not pretty, but it works.
+Each function is well commented, and in this readme I have included some examples. The code is fully tested against memory leaks using Valgrind. Inside the `tests.c` you will find a good amount of tests, implemented using the Unity test framework.
 
 [Check the documentation here](https://lorossi.github.io/better-lists/html/) or scroll a little bit below to see some examples in action.
 
