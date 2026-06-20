@@ -78,8 +78,8 @@ static void benchRemoveItem(int size) {
   }
   double elapsed = now() - start;
 
-  printf("%-20s n=%-8d %10.6f s  (%.0f ops/s)\n", "remove_item", size,
-         elapsed, size / elapsed);
+  printf("%-20s n=%-8d %10.6f s  (%.0f ops/s)\n", "remove_item", size, elapsed,
+         size / elapsed);
   listDelete(list);
 }
 
@@ -123,15 +123,58 @@ static void benchIterate(int size) {
   listDelete(list);
 }
 
+static void benchPop(int size) {
+  List *list = listCreate(INTEGER);
+  union Data data;
+  for (int i = 0; i < size; i++) {
+    data.i = i;
+    listPush(list, &data);
+  }
+
+  double start = now();
+  for (int i = size - 1; i >= 0; i--) {
+    listPop(list, &data);
+  }
+  double elapsed = now() - start;
+
+  printf("%-20s n=%-8d %10.6f s  (%.0f ops/s)\n", "pop", size, elapsed,
+         size / elapsed);
+  listDelete(list);
+}
+
+static void benchRandomGet(int size) {
+  List *list = listCreate(INTEGER);
+  union Data data;
+  srand(0xDEADBEEF);
+
+  for (int i = 0; i < size; i++) {
+    data.i = i;
+    listPush(list, &data);
+  }
+
+  double start = now();
+  for (int i = 0; i < size; i++) {
+    int index = rand() % size;
+    listGetItem(list, &data, index);
+  }
+  double elapsed = now() - start;
+
+  printf("%-20s n=%-8d %10.6f s  (%.0f ops/s)\n", "random_access", size,
+         elapsed, size / elapsed);
+  listDelete(list);
+}
+
 int main(void) {
   for (int i = 0; i < NUM_SIZES; i++) {
     int size = SIZES[i];
     benchPush(size);
+    benchPop(size);
     benchPrepend(size);
     benchGetItem(size);
     benchIterate(size);
     benchSort(size);
     benchRemoveItem(size);
+    benchRandomGet(size);
     printf("\n");
   }
 
