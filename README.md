@@ -11,6 +11,30 @@ Each function is well commented, and in this readme I have included some example
 
 [Check the documentation here](https://lorossi.github.io/better-lists/html/) or scroll a little bit below to see some examples in action.
 
+## Building and testing
+
+```sh
+cmake -S . -B build
+cmake --build build
+./build/tests
+```
+
+### Benchmarking
+
+A `bench` target times the core list operations (`push`, `prepend`, `get_item`, `iterate`, `sort`, `remove_item`) at increasing list sizes, printing wall-clock time and ops/s for each:
+
+```sh
+cmake --build build --target bench
+./build/bench
+```
+
+For deeper profiling (cycles, instructions, branch misses, call graphs), run it under [`perf`](https://perf.wiki.kernel.org/):
+
+```sh
+perf stat ./build/bench
+perf record -g ./build/bench && perf report
+```
+
 ## Functions in library
 
 ### Lists related
