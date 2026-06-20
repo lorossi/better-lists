@@ -41,7 +41,6 @@ if(ENABLE_SANITIZERS)
   target_link_options(list PRIVATE ${SANITIZER_FLAGS})
   target_compile_options(tests PRIVATE ${SANITIZER_FLAGS})
   target_link_options(tests PRIVATE ${SANITIZER_FLAGS})
-  target_compile_options(bench PRIVATE ${SANITIZER_FLAGS})
   target_link_options(bench PRIVATE ${SANITIZER_FLAGS})
 endif()
 

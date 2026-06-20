@@ -614,7 +614,20 @@ int listSwap(List *list, int first_index, int second_index) {
     second = first_index;
   }
   n1 = _findNodeByIndex(list, first);
-  n2 = _findNodeByIndexStartingFrom(second - first, 1, n1);
+
+  // n2 can be reached either by walking forward from n1 (second - first
+  // steps) or by letting _findNodeByIndex pick the cheapest of head/tail;
+  // use whichever is fewer steps so swapping indices near opposite ends of
+  // the list doesn't degenerate into an O(n) walk
+  int steps_from_n1 = second - first;
+  int steps_from_tail = listGetSize(list) - 1 - second;
+  int steps_from_ends = (second < steps_from_tail) ? second : steps_from_tail;
+
+  if (steps_from_n1 <= steps_from_ends) {
+    n2 = _findNodeByIndexStartingFrom(steps_from_n1, 1, n1);
+  } else {
+    n2 = _findNodeByIndex(list, second);
+  }
 
   // swap two nodes
   _listSwapNodes(n1, n2);
