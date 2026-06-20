@@ -142,6 +142,25 @@ static void benchPop(int size) {
   listDelete(list);
 }
 
+static void benchSwap(int size) {
+  List *list = listCreate(INTEGER);
+  union Data data;
+  for (int i = 0; i < size; i++) {
+    data.i = i;
+    listPush(list, &data);
+  }
+
+  double start = now();
+  for (int i = 0; i < size / 2; i++) {
+    listSwap(list, i, size - 1 - i);
+  }
+  double elapsed = now() - start;
+
+  printf("%-20s n=%-8d %10.6f s  (%.0f ops/s)\n", "swap", size, elapsed,
+         size / elapsed);
+  listDelete(list);
+}
+
 static void benchRandomGet(int size) {
   List *list = listCreate(INTEGER);
   union Data data;
@@ -169,6 +188,7 @@ int main(void) {
     int size = SIZES[i];
     benchPush(size);
     benchPop(size);
+    benchSwap(size);
     benchPrepend(size);
     benchGetItem(size);
     benchIterate(size);
