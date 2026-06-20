@@ -41,6 +41,8 @@ if(ENABLE_SANITIZERS)
   target_link_options(list PRIVATE ${SANITIZER_FLAGS})
   target_compile_options(tests PRIVATE ${SANITIZER_FLAGS})
   target_link_options(tests PRIVATE ${SANITIZER_FLAGS})
+  target_compile_options(bench PRIVATE ${SANITIZER_FLAGS})
+  target_link_options(bench PRIVATE ${SANITIZER_FLAGS})
 endif()
 
 option(ENABLE_COVERAGE "Build with coverage instrumentation" OFF)
@@ -49,6 +51,8 @@ if(ENABLE_COVERAGE)
   target_link_options(list PRIVATE --coverage)
   target_compile_options(tests PRIVATE --coverage -O0 -g)
   target_link_options(tests PRIVATE --coverage)
+  target_compile_options(bench PRIVATE --coverage -O0 -g)
+  target_link_options(bench PRIVATE --coverage)
 
   find_program(GCOVR_PATH gcovr REQUIRED)
   add_custom_target(coverage
