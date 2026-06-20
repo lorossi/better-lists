@@ -84,13 +84,9 @@ jobs:
       - name: Build coverage & benchmark report
         run: |
           {
-            echo "## Coverage & Benchmark Report"
-            echo ""
-            echo "### Coverage"
-            echo ""
             cat coverage_table.md
             echo ""
-            echo "### Benchmark"
+            echo "# Benchmark"
             echo ""
             cat bench_table.md
           } > pr_comment.md
