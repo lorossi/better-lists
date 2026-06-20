@@ -141,6 +141,41 @@ static void _nodePrint(Node *node, list_type type) {
 
 /**
  * @internal
+ * @brief Internal function. Finds a node by walking a number of steps from a
+ * given starting node.
+ * @param steps Number of steps to walk from start.
+ * @param direction Direction to walk in the list. 1 for forward, -1 for
+ * backward.
+ * @param start Node from which the search will start.
+ * @return Node* Pointer to the found node, or NULL if not found.
+ */
+static Node *_findNodeByIndexStartingFrom(int steps, int direction,
+                                          Node *start) {
+
+  if (steps < 0)
+    return NULL;
+
+  if (direction != 1 && direction != -1)
+    return NULL;
+
+  Node *current = start;
+  int count = steps;
+
+  // loop over the list
+  while (current != NULL) {
+    if (count == 0)
+      return current;
+
+    count--;
+
+    current = (direction == 1) ? current->next : current->previous;
+  }
+
+  return NULL;
+}
+
+/**
+ * @internal
  * @brief Internal function. Finds a node by its index.
  *
  * @param list List containing the node to look for.
@@ -152,36 +187,22 @@ static Node *_findNodeByIndex(List *list, int index) {
     return NULL;
 
   Node *current;
-  int count, increment;
+  int direction, steps;
 
   if (index > listGetSize(list) / 2) {
     // if the node is closer to then end than to the start, go backwards from
     // the tail
     current = list->tail;
-    count = listGetSize(list) - 1;
-    increment = -1;
+    direction = -1;
+    steps = listGetSize(list) - 1 - index;
   } else {
     // otherwise, go forward from the head
     current = list->head;
-    count = 0;
-    increment = 1;
+    direction = 1;
+    steps = index;
   }
 
-  // loop over the list
-  while (current != NULL) {
-    if (index == count)
-      return current;
-
-    count += increment;
-
-    // increment according to direction
-    if (increment == 1)
-      current = current->next;
-    else
-      current = current->previous;
-  }
-
-  return NULL;
+  return _findNodeByIndexStartingFrom(steps, direction, current);
 }
 
 /**
@@ -573,12 +594,28 @@ int listShift(List *list, union Data *first) {
  */
 int listSwap(List *list, int first_index, int second_index) {
   // check if the indexes are in bound
-  if (first_index > list->length || second_index > list->length)
+  if (first_index < 0 || second_index < 0)
     return -1;
+
+  if (first_index >= list->length || second_index >= list->length)
+    return -1;
+
+  if (first_index == second_index)
+    return 0;
+
   // fetch the nodes
   Node *n1, *n2;
-  n1 = _findNodeByIndex(list, first_index);
-  n2 = _findNodeByIndex(list, second_index);
+  int first, second;
+  if (first_index < second_index) {
+    first = first_index;
+    second = second_index;
+  } else {
+    first = second_index;
+    second = first_index;
+  }
+  n1 = _findNodeByIndex(list, first);
+  n2 = _findNodeByIndexStartingFrom(second - first, 1, n1);
+
   // swap two nodes
   _listSwapNodes(n1, n2);
   return 0;
