@@ -43,6 +43,28 @@ jobs:
       - name: Run tests under ASan/UBSan
         run: ./build-sanitized/tests
 
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install perf
+        run: sudo apt-get update && sudo apt-get install -y linux-tools-common linux-tools-generic linux-tools-$(uname -r) || true
+
+      - name: Configure
+        run: cmake -S . -B build
+
+      - name: Build bench
+        run: cmake --build build --target bench
+
+      - name: Run benchmark
+        run: ./build/bench
+
+      - name: Run benchmark under perf stat
+        run: |
+          sudo sysctl -w kernel.perf_event_paranoid=-1 || true
+          perf stat ./build/bench || echo "perf stat unavailable on this runner, skipping"
+
   pages:
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
