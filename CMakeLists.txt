@@ -62,7 +62,6 @@ if(ENABLE_COVERAGE)
     COMMAND $<TARGET_FILE:tests>
     COMMAND ${GCOVR_PATH} --root ${CMAKE_SOURCE_DIR} --filter ${CMAKE_SOURCE_DIR}/src
             --exclude ${CMAKE_SOURCE_DIR}/src/tests
-            --gcov-ignore-parse-errors negative_hits.warn
             --html --html-details -o ${CMAKE_BINARY_DIR}/coverage/index.html
             --print-summary
             -- ${CMAKE_BINARY_DIR}
