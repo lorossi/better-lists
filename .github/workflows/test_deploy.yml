@@ -68,7 +68,7 @@ jobs:
       - name: Generate coverage summary table
         run: |
           gcovr --root . --filter src --exclude src/tests \
-            --gcov-ignore-parse-errors suspicious_hits.warn \
+            --gcov-ignore-parse-errors negative_hits.warn \
             --markdown -o coverage_table.md -- build-coverage
 
       - name: Format benchmark as table
@@ -123,7 +123,7 @@ jobs:
       - name: Generate coverage badge data
         run: |
           gcovr --root . --filter src --exclude src/tests \
-            --gcov-ignore-parse-errors suspicious_hits.warn \
+            --gcov-ignore-parse-errors negative_hits.warn \
             --json-summary -o /tmp/summary.json -- build
           PERCENT=$(python3 -c "import json; print(round(json.load(open('/tmp/summary.json'))['line_percent']))")
           COLOR=$(python3 -c "p=$PERCENT; print('brightgreen' if p>=90 else 'green' if p>=75 else 'yellow' if p>=50 else 'red')")
