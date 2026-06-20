@@ -51,7 +51,9 @@ if(ENABLE_COVERAGE)
   target_link_options(list PRIVATE --coverage)
   target_compile_options(tests PRIVATE --coverage -O0 -g)
   target_link_options(tests PRIVATE --coverage)
-  target_compile_options(bench PRIVATE --coverage -O0 -g)
+  # bench.c itself is not instrumented (no .gcno for it, which would confuse
+  # gcovr since it's never run for coverage), but it still needs the gcov
+  # runtime at link time since it links against the instrumented list library
   target_link_options(bench PRIVATE --coverage)
 
   find_program(GCOVR_PATH gcovr REQUIRED)
@@ -60,8 +62,10 @@ if(ENABLE_COVERAGE)
     COMMAND $<TARGET_FILE:tests>
     COMMAND ${GCOVR_PATH} --root ${CMAKE_SOURCE_DIR} --filter ${CMAKE_SOURCE_DIR}/src
             --exclude ${CMAKE_SOURCE_DIR}/src/tests
+            --gcov-ignore-parse-errors suspicious_hits.warn
             --html --html-details -o ${CMAKE_BINARY_DIR}/coverage/index.html
             --print-summary
+            -- ${CMAKE_BINARY_DIR}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     DEPENDS tests
     COMMENT "Running tests and generating coverage report"
