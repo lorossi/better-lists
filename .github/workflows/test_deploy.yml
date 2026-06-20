@@ -25,7 +25,9 @@ jobs:
       - name: Install valgrind, perf and gcovr
         run: |
           sudo apt-get update
-          sudo apt-get install -y valgrind linux-tools-common linux-tools-generic linux-tools-$(uname -r) gcovr || true
+          sudo apt-get install -y valgrind linux-tools-common linux-tools-generic linux-tools-$(uname -r) || true
+          pip install --user gcovr
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Configure
         run: cmake -S . -B build
@@ -108,7 +110,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install doxygen and gcovr
-        run: sudo apt-get update && sudo apt-get install -y doxygen graphviz gcovr
+        run: |
+          sudo apt-get update && sudo apt-get install -y doxygen graphviz
+          pip install --user gcovr
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Configure with coverage
         run: cmake -S . -B build -DENABLE_COVERAGE=ON
