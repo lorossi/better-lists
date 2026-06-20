@@ -16,11 +16,16 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install valgrind
-        run: sudo apt-get update && sudo apt-get install -y valgrind
+      - name: Install valgrind, perf and gcovr
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind linux-tools-common linux-tools-generic linux-tools-$(uname -r) gcovr || true
 
       - name: Configure
         run: cmake -S . -B build
@@ -43,58 +48,31 @@ jobs:
       - name: Run tests under ASan/UBSan
         run: ./build-sanitized/tests
 
-  benchmark:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install perf
-        run: sudo apt-get update && sudo apt-get install -y linux-tools-common linux-tools-generic linux-tools-$(uname -r) || true
-
-      - name: Configure
-        run: cmake -S . -B build
-
-      - name: Build bench
-        run: cmake --build build --target bench
-
       - name: Run benchmark
-        run: ./build/bench
+        run: ./build/bench | tee bench_output.txt
 
       - name: Run benchmark under perf stat
         run: |
           sudo sysctl -w kernel.perf_event_paranoid=-1 || true
           perf stat ./build/bench || echo "perf stat unavailable on this runner, skipping"
 
-  pr-report:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install gcovr
-        run: sudo apt-get update && sudo apt-get install -y gcovr
-
       - name: Configure with coverage
-        run: cmake -S . -B build -DENABLE_COVERAGE=ON
+        run: cmake -S . -B build-coverage -DENABLE_COVERAGE=ON
 
-      - name: Build tests and bench
-        run: cmake --build build --target tests bench
+      - name: Build tests with coverage
+        run: cmake --build build-coverage --target tests
 
       - name: Run tests to generate coverage data
-        run: ./build/tests
+        run: ./build-coverage/tests
 
       - name: Generate coverage summary table
         run: |
           gcovr --root . --filter src --exclude src/tests \
             --gcov-ignore-parse-errors suspicious_hits.warn \
-            --markdown -o coverage_table.md -- build
+            --markdown -o coverage_table.md -- build-coverage
 
-      - name: Run benchmark and format as table
+      - name: Format benchmark as table
         run: |
-          ./build/bench > bench_output.txt
           {
             echo "| Operation | n | Time (s) | Ops/s |"
             echo "|---|---|---|---|"
@@ -102,7 +80,7 @@ jobs:
               | sed -e 's/n=//' -e 's/(//'
           } > bench_table.md
 
-      - name: Build PR comment body
+      - name: Build coverage & benchmark report
         run: |
           {
             echo "## Coverage & Benchmark Report"
@@ -117,6 +95,7 @@ jobs:
           } > pr_comment.md
 
       - name: Post or update PR comment
+        if: github.event_name == 'pull_request'
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: coverage-benchmark-report
