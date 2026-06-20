@@ -30,6 +30,10 @@ add_executable(tests
 target_include_directories(tests PRIVATE src/tests)
 target_link_libraries(tests PRIVATE list unity)
 
+add_executable(bench src/bench/bench.c)
+target_link_libraries(bench PRIVATE list)
+target_compile_options(bench PRIVATE -O2 -g -fno-omit-frame-pointer)
+
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 if(ENABLE_SANITIZERS)
   set(SANITIZER_FLAGS -fsanitize=address,undefined -fno-omit-frame-pointer -O0 -g)
@@ -37,6 +41,7 @@ if(ENABLE_SANITIZERS)
   target_link_options(list PRIVATE ${SANITIZER_FLAGS})
   target_compile_options(tests PRIVATE ${SANITIZER_FLAGS})
   target_link_options(tests PRIVATE ${SANITIZER_FLAGS})
+  target_link_options(bench PRIVATE ${SANITIZER_FLAGS})
 endif()
 
 option(ENABLE_COVERAGE "Build with coverage instrumentation" OFF)
@@ -45,6 +50,10 @@ if(ENABLE_COVERAGE)
   target_link_options(list PRIVATE --coverage)
   target_compile_options(tests PRIVATE --coverage -O0 -g)
   target_link_options(tests PRIVATE --coverage)
+  # bench.c itself is not instrumented (no .gcno for it, which would confuse
+  # gcovr since it's never run for coverage), but it still needs the gcov
+  # runtime at link time since it links against the instrumented list library
+  target_link_options(bench PRIVATE --coverage)
 
   find_program(GCOVR_PATH gcovr REQUIRED)
   add_custom_target(coverage
@@ -54,6 +63,7 @@ if(ENABLE_COVERAGE)
             --exclude ${CMAKE_SOURCE_DIR}/src/tests
             --html --html-details -o ${CMAKE_BINARY_DIR}/coverage/index.html
             --print-summary
+            -- ${CMAKE_BINARY_DIR}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     DEPENDS tests
     COMMENT "Running tests and generating coverage report"

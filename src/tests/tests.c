@@ -30,6 +30,7 @@ void test_remove(void);
 void test_destructor(void);
 void test_pop_push(void);
 void test_swap(void);
+void test_swap_large_list(void);
 
 void test_compare_type_integer(void);
 void test_compare_type_float(void);
@@ -102,6 +103,7 @@ int main(void) {
   RUN_TEST(test_destructor);
 
   RUN_TEST(test_swap);
+  RUN_TEST(test_swap_large_list);
 
   RUN_TEST(test_to_array);
 

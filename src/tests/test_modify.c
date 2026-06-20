@@ -320,5 +320,58 @@ void test_swap(void) {
   TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 1));
   TEST_ASSERT_EQUAL_INT(0, data.i);
 
+  // swapping with a negative index fails and leaves the list untouched
+  TEST_ASSERT_EQUAL_INT(-1, listSwap(l, -1, 0));
+  TEST_ASSERT_EQUAL_INT(-1, listSwap(l, 0, -1));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 0));
+  TEST_ASSERT_EQUAL_INT(1, data.i);
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 1));
+  TEST_ASSERT_EQUAL_INT(0, data.i);
+
+  // swapping the index with itself is a no-op
+  TEST_ASSERT_EQUAL_INT(0, listSwap(l, 0, 0));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 0));
+  TEST_ASSERT_EQUAL_INT(1, data.i);
+
+  // swapping with the last valid index (length - 1) succeeds
+  TEST_ASSERT_EQUAL_INT(0, listSwap(l, 0, 1));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 0));
+  TEST_ASSERT_EQUAL_INT(0, data.i);
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 1));
+  TEST_ASSERT_EQUAL_INT(1, data.i);
+
+  listDelete(l);
+}
+
+void test_swap_large_list(void) {
+  List *l = listCreate(INTEGER);
+  quickPopulate(l);
+
+  union Data data;
+  int last = LIST_TEST_SIZE - 1;
+
+  // both indexes close to the head: cheap to reach n2 by walking forward
+  // from n1
+  TEST_ASSERT_EQUAL_INT(0, listSwap(l, 1, 3));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 1));
+  TEST_ASSERT_EQUAL_INT(3, data.i);
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 3));
+  TEST_ASSERT_EQUAL_INT(1, data.i);
+
+  // one index near the head and one near the tail: walking forward from n1
+  // would be O(n), so n2 should be reached from the tail instead
+  TEST_ASSERT_EQUAL_INT(0, listSwap(l, 5, last - 1));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, 5));
+  TEST_ASSERT_EQUAL_INT(last - 1, data.i);
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, last - 1));
+  TEST_ASSERT_EQUAL_INT(5, data.i);
+
+  // both indexes close to the tail
+  TEST_ASSERT_EQUAL_INT(0, listSwap(l, last - 3, last));
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, last - 3));
+  TEST_ASSERT_EQUAL_INT(last, data.i);
+  TEST_ASSERT_EQUAL_INT(sizeof(data), listGetItem(l, &data, last));
+  TEST_ASSERT_EQUAL_INT(last - 3, data.i);
+
   listDelete(l);
 }
