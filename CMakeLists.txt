@@ -30,6 +30,10 @@ add_executable(tests
 target_include_directories(tests PRIVATE src/tests)
 target_link_libraries(tests PRIVATE list unity)
 
+add_executable(bench src/bench/bench.c)
+target_link_libraries(bench PRIVATE list)
+target_compile_options(bench PRIVATE -O2 -g -fno-omit-frame-pointer)
+
 option(ENABLE_SANITIZERS "Build with AddressSanitizer and UndefinedBehaviorSanitizer" OFF)
 if(ENABLE_SANITIZERS)
   set(SANITIZER_FLAGS -fsanitize=address,undefined -fno-omit-frame-pointer -O0 -g)
